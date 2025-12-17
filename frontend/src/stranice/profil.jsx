@@ -14,6 +14,7 @@ export default function Profil(){
             <p>Email: {korisnik.email}</p>
             <p>Uloga: {korisnik.role || "Nije odabrana"}</p>
             <button onClick={odjava}>Odjavi se</button>
+            <button>Tests</button>
             </div>
         </>
     )
