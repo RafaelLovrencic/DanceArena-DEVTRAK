@@ -79,13 +79,13 @@ router.post('/registracija', function(req, res) {
 router.put('/:id', async function(req, res) {
     try {
 
-        const { ime, prezime, uloga, email, imeKluba, lokacija } = req.body;
+        const { ime, prezime, role, email, imeKluba, lokacija } = req.body;
 
         const updateData = {};
 
         if (ime) updateData.ime = ime;
         if (prezime) updateData.prezime = prezime;
-        if (uloga) updateData.uloga = uloga;
+        if (role) updateData.role = role;
         if (email) updateData.email = email;
         if (imeKluba) updateData.imeKluba = imeKluba;
         if (lokacija) updateData.lokacija = lokacija;
@@ -107,12 +107,6 @@ router.put('/:id', async function(req, res) {
         console.error("Greška pri ažuriranju korisnika:", err);
         res.status(500).json({ poruka: "Greška pri ažuriranju korisnika" });
     }
-});
-
-
-
-router.get('/:id', async function(req, res) {
-    
 });
 
 

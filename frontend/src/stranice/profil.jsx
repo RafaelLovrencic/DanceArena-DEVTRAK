@@ -16,7 +16,6 @@ export default function Profil({ onClose }){
         imeKluba: korisnik.role === "voditelj" ? korisnik.imeKluba || "" : "",
         lokacijaKluba: korisnik.role === "voditelj" ? korisnik.lokacijaKluba || "" : "",
     });
-    console.log(korisnik);
     const promijeniPodatke = (e) => {
         const { name, value } = e.target;
         setPodaciOKorisniku(prev => ({ ...prev, [name]: value }));
