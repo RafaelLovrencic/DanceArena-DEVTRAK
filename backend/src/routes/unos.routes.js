@@ -110,4 +110,39 @@ router.put('/:id', async function(req, res) {
 });
 
 
+
+router.put('/:id', async function(req, res) {
+    try {
+
+        const { ime, prezime, uloga, email, imeKluba, lokacija } = req.body;
+
+        const updateData = {};
+
+        if (ime) updateData.ime = ime;
+        if (prezime) updateData.prezime = prezime;
+        if (uloga) updateData.uloga = uloga;
+        if (email) updateData.email = email;
+        if (imeKluba) updateData.imeKluba = imeKluba;
+        if (lokacija) updateData.lokacija = lokacija;
+
+        const azurirano = await Korisnici.findByIdAndUpdate(
+            req.params.id,
+            updateData,
+            { new: true }
+        );
+            //.populate("suci", "ime email")
+            //.populate("kategorije", "godiste stil velicina");
+
+        if (!azurirano)
+            return res.status(404).json({ poruka: "Korisnik nije pronađen" });
+
+        res.json({ poruka: "Korisnik uspješno ažuriran", natjecanje: azurirano });
+    
+    } catch (err) {
+        console.error("Greška pri ažuriranju korisnika:", err);
+        res.status(500).json({ poruka: "Greška pri ažuriranju korisnika" });
+    }
+});
+
+
 module.exports = router;
