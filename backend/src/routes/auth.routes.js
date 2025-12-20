@@ -2,6 +2,7 @@ const express = require("express");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const Korisnici = require("../models/user");
+const Klubovi = require("../models/klub");
 const { FRONTEND_URL } = require("../../config");
 
 var router = express.Router();
@@ -53,7 +54,13 @@ router.get("/provjera-autentifikacije", async (req, res) => {
     const korisnik = await Korisnici.findById(decoded.id);
     if (!korisnik) return res.status(404).json({ greska: "Korisnik nije pronađen" });
 
-    res.json({ korisnik });
+
+    let klub = null;
+    if (korisnik.klubId) {
+      klub = await Klubovi.findById(korisnik.klubId);
+    }
+
+    res.json({ korisnik, klub });
   } catch (err) {
     console.error("Greška pri provjeri autentifikacije:", err);
     res.status(401).json({ greska: "Neuspjela autentifikacija" });
