@@ -45,8 +45,8 @@ export default function Natjecanja() {
         if (!odabranoNatjecanje) return;
         const response = await fetch(`${BACKEND_IP}/natjecanja/${odabranoNatjecanje._id}`, {credentials: "include"});
         const data = await response.json();
-        console.log(data);
-
+        console.log(data.organizatorId._id);
+        console.log(korisnik._id);
         if (data.organizatorId._id !== korisnik._id) {
             alert('Nemate dopuštenje brisati ovo natjecanje.');
             return;

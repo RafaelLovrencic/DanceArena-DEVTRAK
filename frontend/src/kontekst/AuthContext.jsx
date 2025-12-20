@@ -7,6 +7,10 @@ export function AuthProvider({ children }) {
   const [korisnik, setKorisnik] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const azurirajKorisnika = (noviPodaci) => {
+    setKorisnik((prev) => ({ ...prev, ...noviPodaci }));
+  };
+
   useEffect(() => {
     const provjeriKorisnika = async () => {
       try {
@@ -46,7 +50,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ korisnik, setKorisnik, loading, odjava }}>
+    <AuthContext.Provider value={{ korisnik, setKorisnik, loading, odjava, azurirajKorisnika }}>
       {children}
     </AuthContext.Provider>
   );

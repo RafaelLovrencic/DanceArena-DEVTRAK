@@ -1,9 +1,11 @@
 import { useAuth } from "../kontekst/AuthContext";
 import { useState } from "react";
 import "../izgled/profil.css";
+import { BACKEND_IP } from '../config.js';
+
 
 export default function Profil({ onClose }){
-    const { korisnik, odjava } = useAuth();
+    const { korisnik, odjava, azurirajKorisnika } = useAuth();
     const [editiranje, setEditiranje] = useState(false);
     const [ime, prezime] = korisnik.ime.split(" ");
     const [podaciOKorisniku, setPodaciOKorisniku] = useState({
@@ -22,6 +24,14 @@ export default function Profil({ onClose }){
     };
 
     const pohraniProfil = async () => {
+        if (!podaciOKorisniku.imeKluba.trim() && podaciOKorisniku.role === "voditelj") {
+            alert("Ime kluba je obavezno!");
+            return;
+        }
+        if (!podaciOKorisniku.lokacijaKluba.trim() && podaciOKorisniku.role === "voditelj") {
+            alert("Lokacija kluba je obavezna!");
+            return;
+        }
         const punoIme = `${podaciOKorisniku.ime} ${podaciOKorisniku.prezime}`.trim();
         const noviPodaci = {
             ime: punoIme,
@@ -34,7 +44,7 @@ export default function Profil({ onClose }){
             noviPodaci.lokacijaKluba = podaciOKorisniku.lokacijaKluba;
         }
         try {
-            await fetch(`${BACKEND_IP}/korisnik/${korisnik._id}`, {
+            await fetch(`${BACKEND_IP}/unospodataka/${korisnik._id}`, {
                 method: "PUT", 
                 headers: {
                     "Content-Type": "application/json",
@@ -46,6 +56,7 @@ export default function Profil({ onClose }){
             console.error("Greška pri spremanju:", error);
             alert("Greška pri spremanju podataka.");
         }
+        azurirajKorisnika(noviPodaci);
         setEditiranje(false);
     };
     return (
@@ -97,7 +108,7 @@ export default function Profil({ onClose }){
                             <div>
                                 <span>Ime kluba:</span>
                                 {editiranje ? (
-                                    <input name="imeKluba" value={podaciOKorisniku.imeKluba} onChange={promijeniPodatke} required/>
+                                    <input name="imeKluba" value={podaciOKorisniku.imeKluba} onChange={promijeniPodatke}/>
                                 ) : (
                                     <span>{podaciOKorisniku.imeKluba || "Nije uneseno"}</span>
                                 )}
@@ -105,7 +116,7 @@ export default function Profil({ onClose }){
                             <div>
                                 <span>Lokacija kluba:</span>
                                 {editiranje ? (
-                                    <input name="lokacijaKluba" value={podaciOKorisniku.lokacijaKluba} onChange={promijeniPodatke} required/>
+                                    <input name="lokacijaKluba" value={podaciOKorisniku.lokacijaKluba} onChange={promijeniPodatke}/>
                                 ) : (
                                     <span>{podaciOKorisniku.lokacijaKluba || "Nije uneseno"}</span>
                                 )}
