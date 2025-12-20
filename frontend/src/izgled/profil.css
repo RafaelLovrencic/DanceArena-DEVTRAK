@@ -99,7 +99,7 @@
     background: rgb(132, 52, 159);
 }
 
-.podaciKorisnik>div>input, .podaciKorisnik select {
+.podaciKorisnik>div>input {
     height: 25px;
     font-size: 18px;
     color: #AB58C7; 
@@ -133,8 +133,18 @@
         box-shadow: none !important;
     }
 
+    .profilTipke {
+        gap: 20px;
+    }
+
     .profilTipke > button {
         box-shadow: none;
         transition: none; 
+    }
+
+    .podaciKorisnik>div>input {
+        width: 100%;
+        height: 30px;
+        padding-left: 30px;
     }
 }

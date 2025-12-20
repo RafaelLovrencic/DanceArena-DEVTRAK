@@ -76,32 +76,41 @@ router.post('/registracija', function(req, res) {
 
 
 
-router.put('/:id', async function(req, res) {
+router.put('/:id/:idKlub', async function(req, res) {
     try {
-
+        const { id, idKlub } = req.params;
         const { ime, prezime, role, email, imeKluba, lokacija } = req.body;
 
         const updateData = {};
+        const updateDataKlub = {};
 
         if (ime) updateData.ime = ime;
         if (prezime) updateData.prezime = prezime;
         if (role) updateData.role = role;
         if (email) updateData.email = email;
-        if (imeKluba) updateData.imeKluba = imeKluba;
-        if (lokacija) updateData.lokacija = lokacija;
+        if (imeKluba) updateDataKlub.ime = imeKluba;
+        if (lokacija) updateDataKlub.lokacija = lokacija;
 
         const azurirano = await Korisnici.findByIdAndUpdate(
-            req.params.id,
+            id,
             updateData,
             { new: true }
         );
             //.populate("suci", "ime email")
             //.populate("kategorije", "godiste stil velicina");
-
         if (!azurirano)
             return res.status(404).json({ poruka: "Korisnik nije pronađen" });
 
-        res.json({ poruka: "Korisnik uspješno ažuriran", natjecanje: azurirano });
+        const azuriranoKlub = await Klub.findByIdAndUpdate(
+            idKlub,
+            updateDataKlub,
+            { new: true }
+        );
+
+        if (!azuriranoKlub)
+            return res.status(404).json({ poruka: "Klub nije pronađen" });
+
+        res.json({ poruka: "Korisnik i klub uspješno ažurirani" });
     
     } catch (err) {
         console.error("Greška pri ažuriranju korisnika:", err);

@@ -1,9 +1,9 @@
-    const express = require("express");
-    const passport = require("passport");
-    const jwt = require("jsonwebtoken");
-    const Korisnici = require("../models/user");
-    const Klubovi = require("../models/klub");
-    const { FRONTEND_URL } = require("../../config");
+const express = require("express");
+const passport = require("passport");
+const jwt = require("jsonwebtoken");
+const Korisnici = require("../models/user");
+const Klub = require("../models/klub");
+const { FRONTEND_URL } = require("../../config");
 
     var router = express.Router();
 
@@ -54,11 +54,7 @@
         const korisnik = await Korisnici.findById(decoded.id);
         if (!korisnik) return res.status(404).json({ greska: "Korisnik nije pronađen" });
 
-
-        let klub = null;
-        if (korisnik.klubId) {
-        klub = await Klubovi.findById(korisnik.klubId);
-        }
+    const klub = await Klub.findOne({ ownerId: korisnik._id });
 
         res.json({ korisnik, klub });
     } catch (err) {

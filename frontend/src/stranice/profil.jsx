@@ -5,7 +5,7 @@ import { BACKEND_IP } from '../config.js';
 
 
 export default function Profil({ onClose }){
-    const { korisnik, odjava, azurirajKorisnika } = useAuth();
+    const { korisnik, odjava, azurirajKorisnika, klub, azurirajKlub } = useAuth();
     const [editiranje, setEditiranje] = useState(false);
     const [ime, prezime] = korisnik.ime.split(" ");
     const [podaciOKorisniku, setPodaciOKorisniku] = useState({
@@ -13,8 +13,8 @@ export default function Profil({ onClose }){
         prezime: prezime,
         email: korisnik.email,
         role: korisnik.role,
-        imeKluba: korisnik.role === "voditelj" ? korisnik.imeKluba || "" : "",
-        lokacijaKluba: korisnik.role === "voditelj" ? korisnik.lokacijaKluba || "" : "",
+        imeKluba: korisnik.role === "voditelj" ? klub.ime || "" : "",
+        lokacijaKluba: korisnik.role === "voditelj" ? klub.lokacija || "" : "",
     });
     const promijeniPodatke = (e) => {
         const { name, value } = e.target;
@@ -37,13 +37,17 @@ export default function Profil({ onClose }){
             email: podaciOKorisniku.email,
             role: podaciOKorisniku.role,
         };
+        const noviPodaciKlub = {};
 
         if (podaciOKorisniku.role === "voditelj") {
             noviPodaci.imeKluba = podaciOKorisniku.imeKluba;
-            noviPodaci.lokacijaKluba = podaciOKorisniku.lokacijaKluba;
+            noviPodaci.lokacija = podaciOKorisniku.lokacijaKluba;
+            noviPodaciKlub.ime = podaciOKorisniku.imeKluba;
+            noviPodaciKlub.lokacija = podaciOKorisniku.lokacijaKluba;
         }
+
         try {
-            await fetch(`${BACKEND_IP}/unospodataka/${korisnik._id}`, {
+            await fetch(`${BACKEND_IP}/unospodataka/${korisnik._id}/${klub._id}`, {
                 method: "PUT", 
                 headers: {
                     "Content-Type": "application/json",
@@ -56,6 +60,7 @@ export default function Profil({ onClose }){
             alert("Greška pri spremanju podataka.");
         }
         azurirajKorisnika(noviPodaci);
+        azurirajKlub(noviPodaciKlub);
         setEditiranje(false);
     };
     return (
@@ -82,11 +87,7 @@ export default function Profil({ onClose }){
 
                     <div>
                         <span>Email:</span>
-                        {editiranje ? (
-                            <input name="email" value={podaciOKorisniku.email} onChange={promijeniPodatke} />
-                        ) : (
-                            <span>{podaciOKorisniku.email}</span>
-                        )}
+                        <span>{podaciOKorisniku.email}</span>
                     </div>
 
                     <div>

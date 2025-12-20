@@ -5,10 +5,15 @@ const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [korisnik, setKorisnik] = useState(null);
+  const [klub, setKlub] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const azurirajKorisnika = (noviPodaci) => {
     setKorisnik((prev) => ({ ...prev, ...noviPodaci }));
+  };
+
+  const azurirajKlub = (noviPodaciKlub) => {
+    setKlub((prev) => ({ ...prev, ...noviPodaciKlub }));
   };
 
   useEffect(() => {
@@ -23,10 +28,14 @@ export function AuthProvider({ children }) {
         } else {
           const data = await response.json();
           setKorisnik(data.korisnik);
+          setKlub(data.klub);
+          console.log(data.korisnik);
+          console.log(data.klub);
         }
       } catch (err) {
         console.error("Greška pri provjeri korisnika:", err);
         setKorisnik(null);
+        setKlub(null);
       } finally {
         setLoading(false);
       }
@@ -50,7 +59,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ korisnik, setKorisnik, loading, odjava, azurirajKorisnika }}>
+    <AuthContext.Provider value={{ korisnik, setKorisnik, loading, odjava, azurirajKorisnika, klub, azurirajKlub }}>
       {children}
     </AuthContext.Provider>
   );
