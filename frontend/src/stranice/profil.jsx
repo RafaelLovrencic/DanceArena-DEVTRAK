@@ -18,9 +18,34 @@ export default function Profil({ onClose }){
     const promijeniPodatke = (e) => {
         const { name, value } = e.target;
         setPodaciOKorisniku(prev => ({ ...prev, [name]: value }));
+        console.log(korisnik._id);
     };
 
     const pohraniProfil = async () => {
+        const punoIme = `${podaciOKorisniku.ime} ${podaciOKorisniku.prezime}`.trim();
+        const noviPodaci = {
+            ime: punoIme,
+            email: podaciOKorisniku.email,
+            role: podaciOKorisniku.role,
+        };
+
+        if (podaciOKorisniku.role === "voditelj") {
+            noviPodaci.imeKluba = podaciOKorisniku.imeKluba;
+            noviPodaci.lokacijaKluba = podaciOKorisniku.lokacijaKluba;
+        }
+        try {
+            await fetch(`${BACKEND_IP}/korisnik/${korisnik._id}`, {
+                method: "PUT", 
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(noviPodaci),
+            });
+            setEditiranje(false);
+        } catch (error) {
+            console.error("Greška pri spremanju:", error);
+            alert("Greška pri spremanju podataka.");
+        }
         setEditiranje(false);
     };
     return (
@@ -72,7 +97,7 @@ export default function Profil({ onClose }){
                             <div>
                                 <span>Ime kluba:</span>
                                 {editiranje ? (
-                                    <input name="imeKluba" value={podaciOKorisniku.imeKluba} onChange={promijeniPodatke} />
+                                    <input name="imeKluba" value={podaciOKorisniku.imeKluba} onChange={promijeniPodatke} required/>
                                 ) : (
                                     <span>{podaciOKorisniku.imeKluba || "Nije uneseno"}</span>
                                 )}
@@ -80,11 +105,7 @@ export default function Profil({ onClose }){
                             <div>
                                 <span>Lokacija kluba:</span>
                                 {editiranje ? (
-                                    <input
-                                        name="lokacijaKluba"
-                                        value={podaciOKorisniku.lokacijaKluba}
-                                        onChange={promijeniPodatke}
-                                    />
+                                    <input name="lokacijaKluba" value={podaciOKorisniku.lokacijaKluba} onChange={promijeniPodatke} required/>
                                 ) : (
                                     <span>{podaciOKorisniku.lokacijaKluba || "Nije uneseno"}</span>
                                 )}
