@@ -91,15 +91,7 @@ export default function Profil({ onClose }){
 
                     <div>
                         <span>Uloga:</span>
-                        {editiranje ? (
-                            <select name="role" value={podaciOKorisniku.role} onChange={promijeniPodatke}>
-                            <option value="organizator">Organizator</option>
-                            <option value="voditelj">Voditelj</option>
-                            <option value="sudac">Sudac</option>
-                            </select>
-                        ) : (
-                            <span>{podaciOKorisniku.role || "Nije odabrana"}</span>
-                        )}
+                        <span>{podaciOKorisniku.role || "Nije odabrana"}</span>
                     </div>
 
                     {podaciOKorisniku.role === "voditelj" && (
