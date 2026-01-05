@@ -29,7 +29,27 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Klub',
     required: false
-  }
+  },
+  stripePayment: {
+    stripeCustomerId: {
+      type: String,
+      default: null,
+    },
+    subscription: {
+      active: {
+        type: Boolean,
+        default: false, 
+      },
+      subscriptionId: {
+        type: String,
+        default: null,
+      },
+      vrijediDo: { 
+        type: Date,
+        default: null,
+      },
+    }
+  },
 });
 
 module.exports = mongoose.model('User', userSchema, 'user');

@@ -2,17 +2,25 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
-const passport = require("passport")
+const passport = require("passport");
 require("dotenv").config();
 
 const homeRuter = require('./src/routes/home.routes')
 const authRuter = require("./src/routes/auth.routes");
 const unosRuter = require("./src/routes/unos.routes");
 const natjecanjaRuter = require("./src/routes/natjecanja.routes");
+const transakcijeRouter = require("./src/routes/transakcije.routes");
 const { FRONTEND_URL } = require("./config");
 
 
 const app = express();
+
+// VAŽNO!!!
+// ovo mora biti prije app.use(express.json()) zbog Stripe Webhook-a
+app.post('/napravi-transakciju/webhook', 
+    express.raw({type: 'application/json'}), 
+    transakcijeRouter
+);
 
 app.use(express.json()); // da dopustimo JSON body u POST requestu
 app.use(cookieParser());
@@ -37,6 +45,7 @@ app.use('/', homeRuter)
 app.use("/auth", authRuter);
 app.use("/unospodataka", unosRuter);
 app.use("/natjecanja", natjecanjaRuter);
+app.use("/napravi-transakciju", transakcijeRouter);
 
 const SERVER_PORT = process.env.PORT || 5001;
 
