@@ -2,6 +2,7 @@ const express = require("express");
 const User = require("../models/user");
 const Kategorije = require("../models/kategorije");
 const Natjecanje = require("../models/natjecanje");
+const { posaljiSucuPoziv } = require("../services/email.service");
 
 const router = express.Router();
 
@@ -140,6 +141,7 @@ router.post("/add", async (req, res) => {
                     }
                 });
                 await sudac.save();
+                await posaljiSucuPoziv(sudac);
             }
             suciIds.push(sudac._id);
         }
