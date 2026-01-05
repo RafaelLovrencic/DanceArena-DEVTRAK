@@ -42,8 +42,8 @@ export default function DodajNatjecanje({onClose, natjecanjeZaUredi}) {
             .split('\n')
             .map(s => s.trim())
             .filter(s => s !== '');
-        if (suciPolje.length < 3) return alert('Morate unijeti najmanje 3 suca.');
-        if (suciPolje.length % 2 === 0) return alert('Broj sudaca mora biti neparan.');
+        if (suciPolje.length + noviSuciMailovi.length < 3) return alert('Morate unijeti najmanje 3 suca.');
+        if ((suciPolje.length + noviSuciMailovi.length) % 2 === 0) return alert('Broj sudaca mora biti neparan.');
 
         const method = natjecanjeZaUredi ? 'PUT' : 'POST';
         const url = natjecanjeZaUredi 
@@ -177,7 +177,7 @@ export default function DodajNatjecanje({onClose, natjecanjeZaUredi}) {
                                 MultiValue: () => null       
                             }}
                         />
-                        <textarea name="suci" type='text' placeholder={'Ako sudac nema račun:\nmarko.horvat@gmail.com\nivo.ivic@gmail.com...'} value={podaciNatjecanje.noviSuci} onChange={napraviPromjenu} required/>
+                        <textarea name="noviSuci" type='text' placeholder={'Ako sudac nema račun:\nmarko.horvat@gmail.com\nivo.ivic@gmail.com...'} value={podaciNatjecanje.noviSuci} onChange={napraviPromjenu}/>
                     </div>
                     <div className='submitOdustani'>
                         <button type="submit">Pohrani podatke</button>
