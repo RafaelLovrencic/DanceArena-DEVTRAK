@@ -1,12 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import '../izgled/suceljeDodajNatjecanja.css';
 import { BACKEND_IP } from "../config";
 import { useAuth } from "../kontekst/AuthContext";
+import Select from "react-select";
 
 export default function DodajNatjecanje({onClose, natjecanjeZaUredi}) {
     const { korisnik } = useAuth();
+    const [suciOpcije, setSuciOpcije] = useState([]);
+    const [odabraniSuci, setOdabraniSuci] = useState([]);
     const [podaciNatjecanje, setPodaciNatjecanje] = useState(() => {
         if (natjecanjeZaUredi) {
             return {
@@ -19,11 +22,12 @@ export default function DodajNatjecanje({onClose, natjecanjeZaUredi}) {
                 stilPlesa: natjecanjeZaUredi.kategorije?.[0]?.stil || '',
                 velicinaGrupa: natjecanjeZaUredi.kategorije?.[0]?.velicina.replace('_', ' ') || '',
                 suci: (natjecanjeZaUredi.suci || []).map(s => s.ime).join('\n'),
+                noviSuci: ''
             };
         }
         return {
             ime: '', opis: '', datum: null, lokacija: '', kotizacija: '',
-            dobnaKategorija: '', stilPlesa: '', velicinaGrupa: '', suci: ''
+            dobnaKategorija: '', stilPlesa: '', velicinaGrupa: '', suci: '', noviSuci: ''
         };
     });
     const napraviPromjenu = (e) => {
@@ -33,10 +37,11 @@ export default function DodajNatjecanje({onClose, natjecanjeZaUredi}) {
     
     const pohraniPromjene = async (e) => {
         e.preventDefault();
-        const suciPolje = podaciNatjecanje.suci
-                    .split('\n')
-                    .map(s => s.trim())
-                    .filter(s => s !== '')
+        const suciPolje = odabraniSuci;
+        const noviSuciMailovi = podaciNatjecanje.noviSuci
+            .split('\n')
+            .map(s => s.trim())
+            .filter(s => s !== '');
         if (suciPolje.length < 3) return alert('Morate unijeti najmanje 3 suca.');
         if (suciPolje.length % 2 === 0) return alert('Broj sudaca mora biti neparan.');
 
@@ -58,7 +63,8 @@ export default function DodajNatjecanje({onClose, natjecanjeZaUredi}) {
             organizatorId: korisnik._id, 
             kotizacija: podaciNatjecanje.kotizacija,
             kategorije: kategorijePolje,
-            suci: suciPolje
+            suci: suciPolje,
+            noviSuci: noviSuciMailovi
         };
 
         try {
@@ -81,6 +87,26 @@ export default function DodajNatjecanje({onClose, natjecanjeZaUredi}) {
             alert('Došlo je do pogreške pri slanju podataka');
         }
     }
+
+    useEffect(() => {
+        const fetchSuci = async () => {
+        try {
+            const res = await fetch(`${BACKEND_IP}/users/suci`, {
+            credentials: "include"
+            });
+            if (!res.ok) throw new Error("Greška pri dohvaćanju sudaca");
+            const data = await res.json();
+
+            setSuciOpcije(data.map(s => ({
+            value: s._id,
+            label: s.ime
+            })));
+        } catch (error) {
+            console.error(error);
+        }
+        };
+        fetchSuci();
+    }, []);
     return (
         <>
             <div className="sucelje">
@@ -137,7 +163,21 @@ export default function DodajNatjecanje({onClose, natjecanjeZaUredi}) {
                     </div>
                     <div className='suci'>
                         <label>Suci:</label>
-                        <textarea name="suci" type='text' placeholder={'Ivan Horvat\nAna Kovač\nMarko Babić\n...'} value={podaciNatjecanje.suci} onChange={napraviPromjenu} required/>
+                        <Select
+                            options={suciOpcije}
+                            isMulti
+                            closeMenuOnSelect={false}
+                            hideSelectedOptions={false}
+                            onChange={(selected) => setOdabraniSuci(selected.map(s => s.value))}
+                            value={suciOpcije.filter(s => odabraniSuci.includes(s.value))}
+                            className="my-select"      
+                            classNamePrefix="my-select"
+                            placeholder="Odaberi"
+                            components={{
+                                MultiValue: () => null       
+                            }}
+                        />
+                        <textarea name="suci" type='text' placeholder={'Ako sudac nema račun:\nmarko.horvat@gmail.com\nivo.ivic@gmail.com...'} value={podaciNatjecanje.noviSuci} onChange={napraviPromjenu} required/>
                     </div>
                     <div className='submitOdustani'>
                         <button type="submit">Pohrani podatke</button>
