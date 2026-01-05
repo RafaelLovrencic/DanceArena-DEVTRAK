@@ -127,7 +127,6 @@ router.post("/add", async (req, res) => {
 
         const { ime, opis, datum, lokacija, organizatorId, kategorije, suci, kotizacija, noviSuciMailovi } = req.body;
 
-        const suciIds = [];
         for (const imeSuca of suci) {
             let sudac = await User.findOne({ ime: imeSuca });
             if (!sudac) {
@@ -167,7 +166,7 @@ router.post("/add", async (req, res) => {
             lokacija,
             organizatorId,
             kategorije: [kategorijaDoc._id],
-            suci: suciIds,
+            suci: suci,
             kotizacija: kotizacija    
         });
 
