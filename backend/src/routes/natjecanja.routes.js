@@ -178,7 +178,7 @@ router.post("/add", async (req, res) => {
             });
 
             await noviPozivSucu.save();
-            await posaljiPozivNaEmail(noviSudac);
+            await posaljiPozivNaEmail(noviSudac, ime);
         }
 
         await novoNatjecanje.save();

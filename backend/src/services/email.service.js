@@ -8,14 +8,14 @@ async function posaljiSucuPoziv(user) {
     });
 }
 
-async function posaljiPozivNaEmail(email) {
+async function posaljiPozivNaEmail(email, imeNatjecanja) {
     return sendEmail({
         to: email,
         subject: "Dobrodošli u DanceArenu-DEVTRAK!",
         html: 
             `<h1>Hello ${email}</h1>
-            <p>Welcome to our app 🎉</p>
-            <a href="https://www.youtube.com">Registriraj se!</a>`
+            <p>Pozvani ste da sudjelete kao sudac u ocjenjivanju nastupa na natjecanju ${imeNatjecanja} 🎉</p>
+            <a href="http://localhost:5001/unospodataka/prijaviSuca">Registriraj se!</a>`
     });
 }
 

@@ -2,6 +2,7 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const Korisnici = require("../models/user");
 const Klub = require("../models/klub");
+const { FRONTEND_URL } = require("../../config");
 
 var router = express.Router();
 
@@ -73,5 +74,10 @@ router.post('/registracija', function(req, res) {
 
     res.status(200).send();
 })
+
+
+router.get('/prijaviSuca', function(req, res) {
+  res.redirect(`${FRONTEND_URL}/obavijestsucu`);
+});
 
 module.exports = router;
