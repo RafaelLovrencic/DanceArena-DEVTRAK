@@ -2,6 +2,7 @@ import '../izgled/natjecanja.css'
 import NavigacijskaTraka from './navigacijskatraka.jsx'
 import DodajNatjecanje from "./suceljeDodajNatjecanje.jsx";
 import {useState, useEffect} from 'react'
+import {Link} from 'react-router-dom';
 import { BACKEND_IP } from "../config";
 import { useAuth } from "../kontekst/AuthContext";
 
@@ -100,6 +101,7 @@ export default function Natjecanja() {
                             <th>Datum</th>
                             <th>Mjesto</th>
                             <th>Stil plesa</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -114,6 +116,7 @@ export default function Natjecanja() {
                                 <td>{new Date(comp.datum).toLocaleDateString('hr-HR')}</td>
                                 <td>{comp.lokacija}</td>
                                 <td>{comp.kategorije?.[0]?.stil || '-'}</td>
+                                <td><Link to={`/natjecanje/${comp._id}`} className="link" title="Više informacija o natjecanju.">+</Link></td>
                             </tr>
                         ))}
                     </tbody>

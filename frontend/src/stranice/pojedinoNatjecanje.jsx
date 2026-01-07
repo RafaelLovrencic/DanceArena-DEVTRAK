@@ -1,0 +1,111 @@
+import '../izgled/pojedinoNatjecanje.css'
+import NavigacijskaTraka from './navigacijskatraka.jsx'
+import {useState, useEffect} from 'react'
+import { BACKEND_IP } from "../config";
+import { useAuth } from "../kontekst/AuthContext";
+import { useParams } from "react-router-dom";
+
+export default function pojedinoNatjecanje(){
+    const { korisnik } = useAuth();
+    const { id } = useParams();
+    const [natjecanje, setNatjecanje] = useState(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch (`${BACKEND_IP}/natjecanja/${id}`, {credentials: "include"});
+                const data = await response.json();
+                setNatjecanje(data);
+            } catch (err){
+                console.error("Greška kod dohvaćanja podataka o natjecanju:", err);
+            }
+        };
+        fetchData();
+    }, [id])
+
+    return (
+        <>
+            <nav>
+                <NavigacijskaTraka />
+            </nav>
+            <div className="boja">
+                <section className="naslov-sekcija">
+                    <h1 className = "naslov">{natjecanje?.ime}</h1>
+                </section>
+            <div className="prvi_blok">
+                <p className="opis">{natjecanje?.opis}</p>
+                <p className="kotizacija">Kotizacija: {natjecanje?.kotizacija} eura</p>
+            </div>
+            <div className="informacije">
+                <div className="osnovne_info">
+                    <div className="prvi">
+                        <div className="drugi">
+                            <p className="treci">Mjesto:</p>
+                        </div>
+                        <div className="ime_mjesta">
+                            <p className="ime_mjesta2">{natjecanje?.lokacija}</p>
+                        </div>
+                    </div>
+                    <div className="prvi">
+                        <div className="drugi">
+                            <p className="treci">Datum:</p>
+                        </div>
+                        <div className="vrijeme_dog">
+                            <p className="vrijeme2">{new Date(natjecanje?.datum).toLocaleDateString('hr-HR')}</p>
+                        </div>
+                    </div>
+                    <div className="prvi">
+                        <div className="drugi">
+                            <p className="treci">Sudci:</p>
+                        </div>
+                        <div className="popis_sud">
+                            {natjecanje?.suci?.map((sudac) => (
+                            <p className="ime_sud" key={sudac._id}>
+                            {sudac.ime} {sudac.prezime}
+                            </p> ))}
+                        </div>
+                    </div>
+                </div>
+                <div className="kategorije_info">
+                    <div className="prvi">
+                        <div className="drugi">
+                            <p className="treci">Dob:</p>
+                        </div>
+                        <div className="popis">
+                            {natjecanje?.kategorije?.map((kat) => (
+                            <p className="kat" key={kat._id}>
+                            {kat.godiste}
+                            </p> ))}
+                        </div>
+                    </div>
+                    <div className="prvi">
+                        <div className="drugi">
+                            <p className="treci">Stil:</p>
+                        </div>
+                        <div className="popis">
+                            {natjecanje?.kategorije?.map((kat) => (
+                            <p className="kat" key={kat._id}>
+                            {kat.stil}
+                            </p> ))}
+                        </div>
+                    </div>
+                    <div className="prvi">
+                        <div className="drugi">
+                            <p className="treci">Veličina grupe:</p>
+                        </div>
+                        <div className="popis">
+                            {natjecanje?.kategorije?.map((kat) => (
+                            <p className="kat" key={kat._id}>
+                            {kat.velicina}
+                            </p> ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="prijava_box">
+               <button className="gumb_prijava">Prijavi se!</button>                 
+            </div>
+            </div>
+        </>
+            )
+}
