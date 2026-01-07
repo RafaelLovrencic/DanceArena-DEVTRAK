@@ -44,6 +44,7 @@ export default function DodajNatjecanje({onClose, natjecanjeZaUredi}) {
             .filter(s => s !== '');
         if (suciPolje.length + noviSuciMailovi.length < 3) return alert('Morate unijeti najmanje 3 suca.');
         if ((suciPolje.length + noviSuciMailovi.length) % 2 === 0) return alert('Broj sudaca mora biti neparan.');
+        if (podaciNatjecanje.kotizacija < 0) return alert('Kotizacija mora biti veća od 0.');
 
         const method = natjecanjeZaUredi ? 'PUT' : 'POST';
         const url = natjecanjeZaUredi 

@@ -124,8 +124,8 @@ router.delete("/:id", async (req, res) => {
 
 router.post("/add", async (req, res) => {
     try {
-
-        const { ime, opis, datum, lokacija, organizatorId, kategorije, suci, kotizacija, noviSuciMailovi } = req.body;
+        const suciIds = [];
+        const { ime, opis, datum, lokacija, organizatorId, kategorije, suci, kotizacija, noviSuci } = req.body;
 
         for (const imeSuca of suci) {
             let sudac = await User.findOne({ ime: imeSuca });
