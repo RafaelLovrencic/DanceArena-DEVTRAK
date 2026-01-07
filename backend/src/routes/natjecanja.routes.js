@@ -2,7 +2,8 @@ const express = require("express");
 const User = require("../models/user");
 const Kategorije = require("../models/kategorije");
 const Natjecanje = require("../models/natjecanje");
-const { posaljiSucuPoziv } = require("../services/email.service");
+const PozivSucu = require("../models/poziv_sucu");
+const { posaljiPozivNaEmail } = require("../services/email.service");
 
 const router = express.Router();
 
@@ -127,24 +128,6 @@ router.post("/add", async (req, res) => {
         const suciIds = [];
         const { ime, opis, datum, lokacija, organizatorId, kategorije, suci, kotizacija, noviSuci } = req.body;
 
-        for (const imeSuca of suci) {
-            let sudac = await User.findOne({ ime: imeSuca });
-            if (!sudac) {
-                sudac = new User({ 
-                    role: "sudac",
-                    ime: imeSuca,
-                    email: imeSuca + "@gmail.com",
-                    oauthProvider: {
-                        type: "testni provider",
-                        providerId: "test"
-                    }
-                });
-                await sudac.save();
-                await posaljiSucuPoziv(sudac);
-            }
-            suciIds.push(sudac._id);
-        }
-
         let kategorijaDoc = await Kategorije.findOne({
             godiste: kategorije[0],
             stil: kategorije[1],
@@ -170,12 +153,41 @@ router.post("/add", async (req, res) => {
             kotizacija: kotizacija    
         });
 
+        const vecRegistriran = [];
+
+        for (const noviSudac of noviSuci) {
+            const sudac = await User.find({ email: noviSudac });
+            if (sudac.length > 0) {
+                vecRegistriran.push(noviSudac);
+            }
+        }
+
+        // ako su pronađeni korisnici čiji mail već postoji u bazi, vrati error
+        if (vecRegistriran.length > 0) {
+            console.error( "Ovi korisnici već postoje");
+            return res.status(400).json({
+                poruka: "Ovi korisnici već postoje",
+                emails: vecRegistriran 
+            });
+        }
+
+        for (const noviSudac of noviSuci) {
+            const noviPozivSucu = new PozivSucu({
+                email: noviSudac,
+                natjecanjeId: novoNatjecanje._id
+            });
+
+            await noviPozivSucu.save();
+            await posaljiPozivNaEmail(noviSudac);
+        }
+
         await novoNatjecanje.save();
-        res.status(201).json({ poruka: "Natjecanje uspješno dodano", natjecanje: novoNatjecanje });
+
+        return res.status(201).json({ poruka: "Natjecanje uspješno dodano", natjecanje: novoNatjecanje });
     
     } catch (err) {
         console.error("Greška pri dodavanju natjecanja:", err);
-        res.status(500).json({ poruka: "Greška pri dodavanju natjecanja" });
+        return res.status(500).json({ poruka: "Greška pri dodavanju natjecanja" });
     }
 });
 

@@ -8,4 +8,15 @@ async function posaljiSucuPoziv(user) {
     });
 }
 
-module.exports = { posaljiSucuPoziv };
+async function posaljiPozivNaEmail(email) {
+    return sendEmail({
+        to: email,
+        subject: "Dobrodošli u DanceArenu-DEVTRAK!",
+        html: 
+            `<h1>Hello ${email}</h1>
+            <p>Welcome to our app 🎉</p>
+            <a href="https://www.youtube.com">Registriraj se!</a>`
+    });
+}
+
+module.exports = { posaljiSucuPoziv, posaljiPozivNaEmail };
