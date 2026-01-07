@@ -7,10 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function UnosPodatakaSudac() {
   const { korisnik, loading } = useAuth();
-  const [uloga, setUloga] = useState('');
   const [ime, setIme] = useState('');
-  const [lokacija, setLokacija] = useState('');
-  const [imeKluba, setImeKluba] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -32,7 +29,7 @@ export default function UnosPodatakaSudac() {
 
   const posaljiPodatke = async (e) => {
     e.preventDefault(); 
-    if (!ime || !uloga || (uloga === 'voditelj' && (!imeKluba) && (!lokacija))) {
+    if (!ime) {
       alert("Molimo popunite sva polja!");
       return;
     }
@@ -44,9 +41,7 @@ export default function UnosPodatakaSudac() {
         credentials: "include",
         body: JSON.stringify({
           ime,
-          uloga,
-          imeKluba: uloga === 'voditelj' ? imeKluba : null,
-          lokacija: uloga === 'voditelj' ? lokacija : null,
+          uloga : "sudac"
         }),
       });
 
@@ -76,7 +71,11 @@ export default function UnosPodatakaSudac() {
       <div className='okvirZaFormu'>
         <form className="unosPodataka" onSubmit={posaljiPodatke}>
             {error && <div style={{ color: "red", marginBottom: "10px" }}>{error}</div>}
-          
+            
+            <div className="ulogaSudac">
+              <label>Uloga:</label>
+              <input type="text" value="Sudac" disabled />
+            </div>
             <div className='tekstOpcije'>
                 <div className="ime">
                 <label>Ime i prezime:</label>
