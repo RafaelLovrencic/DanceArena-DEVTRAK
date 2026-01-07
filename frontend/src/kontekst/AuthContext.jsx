@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { IP } from "../config";
+import { BACKEND_IP } from "../config";
 
 const AuthContext = createContext();
 
@@ -10,7 +10,7 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const provjeriKorisnika = async () => {
       try {
-        const response = await fetch(`${IP}/auth/provjera-autentifikacije`, {
+        const response = await fetch(`${BACKEND_IP}/auth/provjera-autentifikacije`, {
           credentials: "include", 
         });
 
@@ -33,7 +33,7 @@ export function AuthProvider({ children }) {
 
   const odjava = async () => {
     try {
-      await fetch(`${IP}/auth/logout`, {
+      await fetch(`${BACKEND_IP}/auth/logout`, {
         method: "POST",
         credentials: "include",
         cache: "no-store",

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import '../izgled/suceljeDodajNatjecanja.css';
-import { IP } from "../config";
+import { BACKEND_IP } from "../config";
 import { useAuth } from "../kontekst/AuthContext";
 
 export default function DodajNatjecanje({onClose, natjecanjeZaUredi}) {
@@ -42,8 +42,8 @@ export default function DodajNatjecanje({onClose, natjecanjeZaUredi}) {
 
         const method = natjecanjeZaUredi ? 'PUT' : 'POST';
         const url = natjecanjeZaUredi 
-        ? `${IP}/natjecanja/${natjecanjeZaUredi._id}`
-        : `${IP}/natjecanja/add`;
+        ? `${BACKEND_IP}/natjecanja/${natjecanjeZaUredi._id}`
+        : `${BACKEND_IP}/natjecanja/add`;
 
         const kategorijePolje = [
             podaciNatjecanje.dobnaKategorija,

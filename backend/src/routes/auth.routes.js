@@ -2,6 +2,7 @@ const express = require("express");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const Korisnici = require("../models/user");
+const { FRONTEND_URL } = require("../../config");
 
 var router = express.Router();
 
@@ -17,7 +18,7 @@ router.get("/google/callback",
   passport.authenticate("google", { session: false }),
   (req, res) => {
     try {
-      if (!req.user) return res.redirect("https://dance-arena-devtrak.vercel.app");
+      if (!req.user) return res.redirect(FRONTEND_URL);
 
       const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
@@ -31,13 +32,13 @@ router.get("/google/callback",
 
 
       if (req.user.role) {
-        return res.redirect("https://dance-arena-devtrak.vercel.app");
+        return res.redirect(FRONTEND_URL);
       }
 
-      res.redirect("https://dance-arena-devtrak.vercel.app/unospodataka");
+      res.redirect(`${FRONTEND_URL}/unospodataka`);
     } catch (err) {
       console.error("Greška u callback-u:", err);
-      res.redirect("https://dance-arena-devtrak.vercel.app");
+      res.redirect(FRONTEND_URL);
     }
   }
 );

@@ -112,11 +112,11 @@ nav {
   font-weight: normal;
 }
 
-.precaci>button {
+.svaNatjecanja {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.precaci>button:hover {
+.svaNatjecanja:hover {
   cursor: pointer;
   transform: scale(1.1);
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);  
@@ -156,13 +156,13 @@ nav {
     font-size: 6vw;
     height: 100px;
   }
-  .precaci>button {
+  .svaNatjecanja {
     box-shadow: none;
     transition: none; 
     width: 100px;
   }
 
-  .precaci>button:hover {
+  .svaNatjecanja:hover {
     transform: none !important;
     box-shadow: none !important;
   }

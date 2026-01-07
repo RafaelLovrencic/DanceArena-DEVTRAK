@@ -3,7 +3,7 @@ import logo from '../izgled/pozadine/logo.png';
 import profil from '../izgled/pozadine/profilIkona.png';
 import { Link, useLocation } from 'react-router-dom';
 import { useState } from 'react';
-import { IP } from '../config.js';
+import { BACKEND_IP } from '../config.js';
 import { useAuth } from "../kontekst/AuthContext";
 
 export default function NavigacijskaTraka() {
@@ -33,7 +33,7 @@ export default function NavigacijskaTraka() {
     </div>
     <div className='tipke'>
       {!korisnik && lokacija.pathname !== '/unospodataka' && lokacija.pathname !== 'profil' && (
-        <button className="prijava" onClick={() => window.location.href=`${IP}/auth/google`}>Prijava</button>
+        <button className="prijava" onClick={() => window.location.href=`${BACKEND_IP}/auth/google`}>Prijava</button>
       )}
       {korisnik && lokacija.pathname !== '/unospodataka' && lokacija.pathname !== '/profil' && (
         <Link to="/profil" className='profil'><img src={profil} alt="Profil" className='profilImg'/></Link>

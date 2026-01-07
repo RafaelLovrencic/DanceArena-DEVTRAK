@@ -2,7 +2,7 @@ import '../izgled/natjecanja.css'
 import NavigacijskaTraka from './navigacijskatraka.jsx'
 import DodajNatjecanje from "./suceljeDodajNatjecanje.jsx";
 import {useState, useEffect} from 'react'
-import { IP } from "../config";
+import { BACKEND_IP } from "../config";
 import { useAuth } from "../kontekst/AuthContext";
 
 export default function Natjecanja() {
@@ -12,9 +12,11 @@ export default function Natjecanja() {
     const [pokaziSucelje, setPokaziSucelje] = useState(false);
     const [odabranoNatjecanje, setOdabranoNatjecanje] = useState(null);
     const [podaciZaUredi, setPodaciZaUredi] = useState(null);
+    const [kotizacijaPlacena, setKotizacijaPlacena] = useState(false);
+
     const dohvatiPodatkeONatjecanju = async () => {
         if (!odabranoNatjecanje) return;
-        const response = await fetch(`${IP}/natjecanja/${odabranoNatjecanje._id}`, {credentials: "include"});
+        const response = await fetch(`${BACKEND_IP}/natjecanja/${odabranoNatjecanje._id}`, {credentials: "include"});
         const data = await response.json();
         console.log(data);
 
@@ -29,7 +31,7 @@ export default function Natjecanja() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`${IP}/natjecanja`, {credentials: "include"});
+                const response = await fetch(`${BACKEND_IP}/natjecanja`, {credentials: "include"});
                 const data = await response.json();
                 setCompetitions(data);
             } catch (err) {
@@ -41,9 +43,31 @@ export default function Natjecanja() {
         fetchData();
     }, [competitions]);
 
+    useEffect(() => {
+        if (!odabranoNatjecanje || korisnik?.role !== "voditelj") {
+            setKotizacijaPlacena(false);
+            return;
+        }
+
+        const provjeriKotizaciju = async () => {
+            try {
+                const res = await fetch(`${BACKEND_IP}/napravi-transakciju/status-kotizacije/${odabranoNatjecanje._id}`, {
+                    credentials: "include",
+                });
+                const data = await res.json();
+                setKotizacijaPlacena(data.placeno);
+            } catch (err) {
+                console.error("Greška pri dohvaćanju statusa kotizacije:", err);
+            }
+        };
+
+        provjeriKotizaciju();
+    }, [odabranoNatjecanje, korisnik]);
+
+
    const obrisiNatjecanje = async () => {
         if (!odabranoNatjecanje) return;
-        const response = await fetch(`${IP}/natjecanja/${odabranoNatjecanje._id}`, {credentials: "include"});
+        const response = await fetch(`${BACKEND_IP}/natjecanja/${odabranoNatjecanje._id}`, {credentials: "include"});
         const data = await response.json();
         console.log(data);
 
@@ -53,7 +77,7 @@ export default function Natjecanja() {
         }
 
         try {
-            const response = await fetch (`${IP}/natjecanja/${odabranoNatjecanje._id}`, {
+            const response = await fetch (`${BACKEND_IP}/natjecanja/${odabranoNatjecanje._id}`, {
                 method: "DELETE",
                 credentials: "include"
             });
@@ -72,13 +96,43 @@ export default function Natjecanja() {
     };
     const osvjeziNatjecanja = async () => {
         try {
-            const response = await fetch(`${IP}/natjecanja`, {credentials: "include"}, {credentials: "include"});
+            const response = await fetch(`${BACKEND_IP}/natjecanja`, {credentials: "include"}, {credentials: "include"});
             const data = await response.json();
             setCompetitions(data);
         } catch (err) {
             console.error('Greška kod dohvaćanja natjecanja:', err);
         }
     };
+
+    const napraviTransakciju = async () => {
+        if (!odabranoNatjecanje) return;
+
+        try {
+            const res = await fetch(`${BACKEND_IP}/napravi-transakciju/kotizacija`, {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    natjecanjeId: odabranoNatjecanje._id,
+                    korisnikId: korisnik._id,
+                }),
+            });
+
+            const { url } = await res.json();
+            console.log(url);
+            if (url) {
+
+                window.location.href = url;
+            } else {
+                console.error("Nema URL-a za checkout");
+            }
+        } catch (err) {
+            console.error("Greška pri plaćanju:", err);
+        }
+    };
+
     return (
     <>
         <nav>
@@ -130,6 +184,17 @@ export default function Natjecanja() {
                     <button className="uredi" onClick={dohvatiPodatkeONatjecanju} style={{backgroundColor: odabranoNatjecanje ? '#2CDE32' : 'rgba(23, 101, 25, 1)', cursor: odabranoNatjecanje ? 'pointer' : 'not-allowed'}}>Uredi natjecanje</button>
                     <button className="obrisi" onClick={obrisiNatjecanje} style={{backgroundColor: odabranoNatjecanje ? '#2CDE32' : 'rgba(23, 101, 25, 1)', cursor: odabranoNatjecanje ? 'pointer' : 'not-allowed'}}>Obriši natjecanje</button>
                 </>
+                )}
+                {korisnik?.role === "voditelj" && odabranoNatjecanje && !kotizacijaPlacena && (
+                    <button className='prijava'
+                        onClick={napraviTransakciju}
+                        style={{ backgroundColor: '#2CDE32', cursor: 'pointer' }}
+                    >
+                        Plati kotizaciju
+                    </button>
+                )}
+                {korisnik?.role === "voditelj" && kotizacijaPlacena && (
+                    <p style={{ color: 'green', fontWeight: 'bold' }}>Kotizacija plaćena</p>
                 )}
             </div>
         </section>
