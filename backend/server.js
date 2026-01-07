@@ -17,10 +17,10 @@ const app = express();
 
 // VAŽNO!!!
 // ovo mora biti prije app.use(express.json()) zbog Stripe Webhook-a
-/*/app.post('/napravi-transakciju/webhook', 
+app.post('/napravi-transakciju/webhook', 
     express.raw({type: 'application/json'}), 
     transakcijeRouter
-);/*/
+);
 
 app.use(express.json()); // da dopustimo JSON body u POST requestu
 app.use(cookieParser());
