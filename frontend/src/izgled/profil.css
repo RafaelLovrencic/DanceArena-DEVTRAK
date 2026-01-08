@@ -173,6 +173,16 @@
         box-shadow: none !important;
     }
 
+    .clanarinaStatus button:hover {
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    .clanarinaStatus button {
+        box-shadow: none;
+        transition: none; 
+    }
+
     .profilTipke {
         gap: 20px;
     }
