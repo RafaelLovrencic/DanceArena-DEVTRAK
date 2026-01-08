@@ -120,6 +120,7 @@
     font-style: normal;
     font-weight: 400;
     font-size: 18px;
+    margin: 10px;
 }
 
 .clanarinaStatus button {
@@ -127,8 +128,8 @@
     font-family: 'Sedan SC';
     font-style: normal;
     font-weight: 400;
-    font-size: 15px;
-    border-radius: 12px;
+    font-size: 18px;
+    border-radius: 10px;
     border: 0;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     color: black;
