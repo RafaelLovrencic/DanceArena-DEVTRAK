@@ -120,7 +120,7 @@
     font-style: normal;
     font-weight: 400;
     font-size: 18px;
-    margin: 10px;
+    gap: 10px;
 }
 
 .clanarinaStatus button {
