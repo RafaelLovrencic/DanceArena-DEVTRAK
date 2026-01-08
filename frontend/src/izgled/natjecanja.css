@@ -176,6 +176,10 @@ body {
   color: rgb(255, 255, 255);
 }
 
+.link:hover {
+  transform: scale(1.1);
+}
+
 @media (max-width: 700px){
     .tablica {
       min-width: 0;
@@ -226,6 +230,10 @@ body {
     .gumbovi > button:hover{
       transform: none !important;
       box-shadow: none !important;
+    }
+
+    .link:hover {
+      transform: none !important;
     }
 
     .naslov-sekcija {

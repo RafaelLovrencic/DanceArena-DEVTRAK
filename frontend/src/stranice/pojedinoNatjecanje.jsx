@@ -4,11 +4,32 @@ import {useState, useEffect} from 'react'
 import { BACKEND_IP } from "../config";
 import { useAuth } from "../kontekst/AuthContext";
 import { useParams } from "react-router-dom";
+import PrijavaNaNatjecanje from './suceljePrijava.jsx';
 
 export default function pojedinoNatjecanje(){
     const { korisnik } = useAuth();
     const { id } = useParams();
     const [natjecanje, setNatjecanje] = useState(null);
+    const [pokaziSucelje, setPokaziSucelje] = useState(false);
+    const [prijavaPodaci, setPrijavaPodaci] = useState(null);
+
+    const otvoriPrijavu = () => {
+        setPrijavaPodaci({
+            natjecanjeId: natjecanje._id,
+            kotizacija: natjecanje.kotizacija,
+            kategorije: natjecanje.kategorije,
+
+            nazivKoreografije: "",
+            trajanje: "",
+            koreograf: "",
+            dob: "",
+            stil: "",
+            velicina: "",
+            glazba: ""
+        });
+
+        setPokaziSucelje(true);
+    }
 
     useEffect(() => {
         const fetchData = async () => {
@@ -103,9 +124,16 @@ export default function pojedinoNatjecanje(){
                 </div>
             </div>
             <div className="prijava_box">
-               <button className="gumb_prijava">Prijavi se!</button>                 
+               <button className="gumb_prijava" onClick={otvoriPrijavu}>Prijavi se!</button>                 
             </div>
             </div>
+            {pokaziSucelje && (
+                <PrijavaNaNatjecanje onClose={() => {
+                    setPokaziSucelje(false)
+                }}
+                prijavaPodaci={prijavaPodaci}
+                />
+            )}
         </>
             )
 }

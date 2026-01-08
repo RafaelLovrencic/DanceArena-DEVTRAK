@@ -1,0 +1,168 @@
+.sucelje {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    max-height: 85vh;
+    overflow-y: auto;
+    transform: translate(-50%, -50%);
+    background: rgba(171, 88, 199, 0.98);
+    width: 600px;
+    padding: 15px;
+    border-radius: 2px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    border-width: 4px 8px;
+    border-style: solid;
+    border-color: #2CDE32;
+    animation: fadeInSucelja 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.formaZaPrijavu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+}
+
+.formaZaPrijavu > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 600px;
+}
+
+.formaZaPrijavu select option {
+    text-transform: capitalize;
+}
+
+.formaZaPrijavu label {
+    width: 237px;
+    font-family: 'Sedan SC';
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+}
+
+.formaZaPrijavu input[type="text"] {
+    width: 300px;
+    height: 36px;
+    padding: 6px 10px;
+    background: #E3C1EE;
+    border: none;
+    font-family: 'Inter';
+}
+
+.gumbovi {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.gumbovi > :first-child {
+    padding: 12px 16px;
+    width: 120px;
+    height: 46px;
+    background: #2CDE32;
+    border-radius: 12px;
+    font-family: 'Sedan SC';
+    font-size: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0;
+    cursor: pointer;
+    color: black;
+}
+
+.gumbovi > :nth-child(2) {
+    height: 46px;
+    padding: 12px 16px;
+    background-color: lightgray;
+    color: black;
+    border-radius: 8px;
+    border: 0;
+    cursor: pointer;
+    font-family: 'Sedan SC';
+}
+
+.formaZaPrijavu select {
+    width: 300px;
+    height: 36px;
+    padding: 6px 10px;
+    background: #E3C1EE;
+    border: none;
+    font-family: 'Inter';
+    font-size: 14px;
+    color: black;
+    appearance: auto;
+    cursor: pointer;
+}
+
+.kotizacija_iznos {
+    width: 300px;
+    height: 36px;
+    padding: 3px 5px;
+    font-family: 'Inter';
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    color: white;
+    font-weight: bolder;
+}
+
+.formaZaPrijavu input[type="file"] {
+    width: 300px;
+    font-family: 'Inter';
+    font-size: 14px;
+    color: black;
+}
+
+@media (max-width: 700px) {
+    .formaZaPrijavu > div {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .formaZaPrijavu select {
+        width: 100%;
+    }
+
+    .formaZaPrijavu label {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .formaZaPrijavu input[type="text"] {
+        width: 100%;
+    }
+
+    .sucelje {
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        max-height: none;
+        transform: none;
+        border-radius: 0;
+        box-sizing: border-box;
+        animation: fadeInSuceljaMobitel 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .kotizacija_iznos {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .formaZaPrijavu input[type="file"] {
+        width: 100%;
+    }
+}

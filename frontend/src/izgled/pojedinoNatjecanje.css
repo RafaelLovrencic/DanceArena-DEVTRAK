@@ -24,7 +24,7 @@ body {
 
 .naslov {
   font-family: 'Sedan SC';
-  font-size: clamp(36px, 6vw, 80px);
+  font-size: clamp(28px, 5vw, 60px);
   text-align: center;
   color: #AB58C7;
   margin: 0;
@@ -41,7 +41,7 @@ body {
 .kotizacija {
   margin: 0;
   font-family: 'Sedan SC';
-  font-size: clamp(20px, 3vw, 40px);
+  font-size: clamp(18px, 2.5vw, 32px);
   line-height: 145%;
   color: white;
   text-align: right;
@@ -77,7 +77,7 @@ body {
 
 .treci {
   font-family: 'Sedan SC';
-  font-size: clamp(18px, 3vw, 48px);
+  font-size: clamp(20px, 2.5vw, 36px);
   color: white;
   margin: 0;
 }
@@ -96,7 +96,7 @@ body {
 .ime_sud,
 .kat {
   font-family: 'Sedan SC';
-  font-size: clamp(15px, 3vw, 48px);
+  font-size: clamp(14px, 2vw, 24px);
   color: white;
   text-align: right;
   margin: 0;
@@ -138,6 +138,10 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 30px;
+  }
+
+  .naslov {
+    font-size: clamp(40px, 7vw, 80px);
   }
 
   .osnovne_info,
