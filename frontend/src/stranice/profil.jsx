@@ -134,8 +134,6 @@ export default function Profil({ onClose }) {
         }
     };
 
-    if (loading || ucitavanje) return <p>Učitavanje...</p>;
-
     return (
         <>
             <div className="profilSucelje">
