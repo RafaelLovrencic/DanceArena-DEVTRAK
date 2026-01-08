@@ -11,7 +11,6 @@ var router = express.Router();
 var path = require('path');
 var fs = require('fs');
 const { type } = require("os");
-const { default: Natjecanja } = require("../../../frontend/src/stranice/natjecanja");
 
 
 async function oznaciNatjecanjaSucuMiddleware(req, res, next) {

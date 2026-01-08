@@ -42,6 +42,18 @@ export default function DodajNatjecanje({onClose, natjecanjeZaUredi}) {
             .split('\n')
             .map(s => s.trim())
             .filter(s => s !== '');
+
+        const duplikati = noviSuciMailovi.filter((item, index) => noviSuciMailovi.indexOf(item) !== index);
+        if (duplikati.length > 0) {
+            return alert(`Emailovi sudaca se ponavljaju: ${[...new Set(duplikati)].join(', ')}`);
+        }    
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const nevaljani = noviSuciMailovi.filter(email => !emailRegex.test(email));
+        if (nevaljani.length > 0) {
+            return alert(`Sljedeći emailovi nisu valjani: ${nevaljani.join(', ')}`);
+        }
+
         if (suciPolje.length + noviSuciMailovi.length < 3) return alert('Morate unijeti najmanje 3 suca.');
         if ((suciPolje.length + noviSuciMailovi.length) % 2 === 0) return alert('Broj sudaca mora biti neparan.');
         if (podaciNatjecanje.kotizacija < 0) return alert('Kotizacija mora biti veća od 0.');
