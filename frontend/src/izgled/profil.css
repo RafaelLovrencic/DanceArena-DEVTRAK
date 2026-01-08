@@ -133,7 +133,8 @@
     font-style: normal;
     font-weight: 400;
     font-size: 18px;
-    border-radius: 10px;
+    padding: 8px 8px;
+    border-radius: 6px;
     border: 0;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     color: black;
