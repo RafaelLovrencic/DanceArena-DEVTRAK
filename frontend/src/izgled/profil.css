@@ -110,6 +110,10 @@
     border: 0;
 }
 
+.clanarinaStatus > * {
+    margin: 0px;
+}
+
 .clanarinaStatus {
     display: flex;
     justify-content: center;
