@@ -14,8 +14,16 @@ export default function Natjecanja() {
     const [podaciZaUredi, setPodaciZaUredi] = useState(null);
     const [kotizacijaPlacena, setKotizacijaPlacena] = useState(false);
 
+    const [clanarinaAktivna, setClanarinaAktivna] = useState(false);
+    const [vrijediDo, setVrijediDo] = useState(null);
+    const [ucitavanje, setUcitavanje] = useState(true);
+
     const dohvatiPodatkeONatjecanju = async () => {
         if (!odabranoNatjecanje) return;
+        if (korisnik.role == "organizator" && !clanarinaAktivna) {
+            alert('Nemate aktivnu članarinu!');
+            return;
+        }
         const response = await fetch(`${BACKEND_IP}/natjecanja/${odabranoNatjecanje._id}`, {credentials: "include"});
         const data = await response.json();
         console.log(data);
@@ -64,9 +72,22 @@ export default function Natjecanja() {
         provjeriKotizaciju();
     }, [odabranoNatjecanje, korisnik]);
 
+    const dodajNatjecanje = () => {
+        if (korisnik.role === "organizator" && !clanarinaAktivna) {
+            alert("Nemate aktivnu članarinu!");
+            return;
+        }
+
+        setPokaziSucelje(true);
+    };
+
 
    const obrisiNatjecanje = async () => {
         if (!odabranoNatjecanje) return;
+        if (korisnik.role == "organizator" && !clanarinaAktivna) {
+            alert('Nemate aktivnu članarinu!');
+            return;
+        }
         const response = await fetch(`${BACKEND_IP}/natjecanja/${odabranoNatjecanje._id}`, {credentials: "include"});
         const data = await response.json();
         console.log(data.organizatorId._id);
@@ -133,6 +154,33 @@ export default function Natjecanja() {
         }
     };
 
+    useEffect(() => {
+        if (!korisnik) return;
+
+        if (korisnik.role !== "organizator") {
+            setUcitavanje(false);
+            return;
+        }
+
+        const statusClanarine = async () => {
+            try {
+                const res = await fetch(`${BACKEND_IP}/napravi-transakciju/status-clanarine`, {
+                    credentials: "include",
+                });
+                const data = await res.json();
+                setClanarinaAktivna(data.active);
+                setVrijediDo(data.vrijediDo || null);
+            } catch (err) {
+                console.error(err);
+                setGreska("Greška pri dohvaćanju statusa članarine");
+            } finally {
+                setUcitavanje(false);
+            }
+        };
+
+        statusClanarine();
+    }, [korisnik]);
+
     return (
     <>
         <nav>
@@ -180,7 +228,7 @@ export default function Natjecanja() {
             <div className="gumbovi">
                 {korisnik?.role === "organizator" && (
                 <>
-                    <button className="dodaj" onClick={() => setPokaziSucelje(true)}>Dodaj natjecanje</button>
+                    <button className="dodaj" onClick={dodajNatjecanje}>Dodaj natjecanje</button>
                     <button className="uredi" onClick={dohvatiPodatkeONatjecanju} style={{backgroundColor: odabranoNatjecanje ? '#2CDE32' : 'rgba(23, 101, 25, 1)', cursor: odabranoNatjecanje ? 'pointer' : 'not-allowed'}}>Uredi natjecanje</button>
                     <button className="obrisi" onClick={obrisiNatjecanje} style={{backgroundColor: odabranoNatjecanje ? '#2CDE32' : 'rgba(23, 101, 25, 1)', cursor: odabranoNatjecanje ? 'pointer' : 'not-allowed'}}>Obriši natjecanje</button>
                 </>
