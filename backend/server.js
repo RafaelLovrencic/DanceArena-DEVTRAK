@@ -9,6 +9,7 @@ const homeRuter = require('./src/routes/home.routes')
 const authRuter = require("./src/routes/auth.routes");
 const unosRuter = require("./src/routes/unos.routes");
 const natjecanjaRuter = require("./src/routes/natjecanja.routes");
+const exportRuter = require("./src/routes/export.routes");
 
 
 const app = express();
@@ -40,6 +41,7 @@ app.use('/', homeRuter)
 app.use("/auth", authRuter);
 app.use("/unospodataka", unosRuter);
 app.use("/natjecanja", natjecanjaRuter);
+app.use("/export", exportRuter);
 
 const PORT = process.env.PORT || 5001;
 
