@@ -20,10 +20,7 @@ export default function Natjecanja() {
 
     const dohvatiPodatkeONatjecanju = async () => {
         if (!odabranoNatjecanje) return;
-        if (korisnik.role == "organizator" && !clanarinaAktivna) {
-            alert('Nemate aktivnu članarinu!');
-            return;
-        }
+        if (!(await provjeriClanarinuSvjeze())) return;
         const response = await fetch(`${BACKEND_IP}/natjecanja/${odabranoNatjecanje._id}`, {credentials: "include"});
         const data = await response.json();
         console.log(data);
@@ -72,22 +69,15 @@ export default function Natjecanja() {
         provjeriKotizaciju();
     }, [odabranoNatjecanje, korisnik]);
 
-    const dodajNatjecanje = () => {
-        if (korisnik.role === "organizator" && !clanarinaAktivna) {
-            alert("Nemate aktivnu članarinu!");
-            return;
-        }
-
+    const dodajNatjecanje = async () => {
+        if (!(await provjeriClanarinuSvjeze())) return;
         setPokaziSucelje(true);
     };
 
 
    const obrisiNatjecanje = async () => {
         if (!odabranoNatjecanje) return;
-        if (korisnik.role == "organizator" && !clanarinaAktivna) {
-            alert('Nemate aktivnu članarinu!');
-            return;
-        }
+        if (!(await provjeriClanarinuSvjeze())) return;
         const response = await fetch(`${BACKEND_IP}/natjecanja/${odabranoNatjecanje._id}`, {credentials: "include"});
         const data = await response.json();
         console.log(data.organizatorId._id);
@@ -180,6 +170,27 @@ export default function Natjecanja() {
 
         statusClanarine();
     }, [korisnik]);
+
+    const provjeriClanarinuSvjeze = async () => {
+        try {
+            const res = await fetch(`${BACKEND_IP}/napravi-transakciju/status-clanarine`, {
+                credentials: "include",
+            });
+            const data = await res.json();
+
+            setClanarinaAktivna(data.active);
+
+            if (!data.active) {
+                alert("Nemate aktivnu članarinu!");
+                return false;
+            }
+
+            return true;
+        } catch (err) {
+            alert("Greška pri provjeri članarine");
+            return false;
+        }
+    };
 
     return (
     <>
