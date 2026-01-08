@@ -43,6 +43,7 @@ export default function UnosPodatakaSudac() {
           ime,
           uloga : "sudac"
         }),
+        iskljucivoSudac : true,
       });
 
       if (!response.ok) {
