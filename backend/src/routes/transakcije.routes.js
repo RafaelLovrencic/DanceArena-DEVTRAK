@@ -43,8 +43,8 @@ router.post("/clanarina", authMiddleware, async (req, res) => {
                 },
             ],
             customer_email: user.email,
-            success_url: `${FRONTEND_URL}/profil`,
-            cancel_url: `${FRONTEND_URL}/profil`,
+            success_url: `${FRONTEND_URL}`,
+            cancel_url: `${FRONTEND_URL}`,
         });
 
         res.json({ url: session.url });
