@@ -110,6 +110,37 @@
     border: 0;
 }
 
+.clanarinaStatus {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #FFFFFF;
+    font-family: 'Sedan SC';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 26px;
+}
+
+.clanarinaStatus button {
+    background: #2CDE32;
+    font-family: 'Sedan SC';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+    border-radius: 12px;
+    border: 0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    color: black;
+    text-decoration: none;
+    text-align: center;
+}
+
+.clanarinaStatus button:hover {
+    cursor: pointer;
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
 @media (max-width: 700px){
     .profilSucelje {
         position: fixed;
