@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../kontekst/AuthContext";
 import { BACKEND_IP } from "../config";
+import "../izgled/profil.css";
 
 export default function Profil({ onClose }) {
     const { korisnik, odjava, azurirajKorisnika, klub, azurirajKlub, loading } = useAuth();
