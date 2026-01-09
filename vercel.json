@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://dancearena-devtrak-backend.onrender.com"
+      "destination": "https://dancearena-devtrak-backend.onrender.com/$1"
     }
   ]
 }
