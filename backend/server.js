@@ -8,6 +8,7 @@ require("dotenv").config();
 const homeRuter = require('./src/routes/home.routes')
 const authRuter = require("./src/routes/auth.routes");
 const unosRuter = require("./src/routes/unos.routes");
+const usersRouter = require("./src/routes/users.routes");
 const natjecanjaRuter = require("./src/routes/natjecanja.routes");
 const transakcijeRouter = require("./src/routes/transakcije.routes");
 const { FRONTEND_URL } = require("./config");
@@ -48,6 +49,7 @@ app.use("/unospodataka", unosRuter);
 app.use("/natjecanja", natjecanjaRuter);
 app.use("/napravi-transakciju", transakcijeRouter);
 app.use("/export", exportRuter);
+app.use("/users", usersRouter);
 
 const SERVER_PORT = process.env.PORT || 5001;
 

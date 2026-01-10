@@ -48,6 +48,7 @@ export default function UnosPodataka() {
           imeKluba: uloga === 'voditelj' ? imeKluba : null,
           lokacija: uloga === 'voditelj' ? lokacija : null,
         }),
+        iskljucivoSudac : false,
       });
 
       if (!response.ok) {
