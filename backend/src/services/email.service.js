@@ -24,4 +24,4 @@ async function posaljiPozivNaEmail(email, imeNatjecanja) {
     });
 }
 
-module.exports = { posaljiSucuPoziv, posaljiPozivNaEmail };
+module.exports = { posaljiPozivNaEmail };
