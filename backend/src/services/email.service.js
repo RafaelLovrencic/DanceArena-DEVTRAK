@@ -16,7 +16,7 @@ async function posaljiPozivNaEmail(email, imeNatjecanja) {
         imeNatjecanja: imeNatjecanja
     });
 
-    const link = `http://localhost:5001/unospodataka/prijaviSuca?token=${token}`;
+    const link = `https://dancearena-devtrak-backend.onrender.com/unospodataka/prijaviSuca?token=${token}`;
 
     return sendEmail({
         to: email,
