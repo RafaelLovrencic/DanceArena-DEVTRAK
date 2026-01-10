@@ -126,6 +126,13 @@ export default function pojedinoNatjecanje(){
             <div className="prijava_box">
                <button className="gumb_prijava" onClick={otvoriPrijavu}>Prijavi se!</button>                 
             </div>
+            <div className="prijave">
+                <div className="naslov_prijava">
+                    <p className="tekst_prijave">Prijave:</p>
+                </div>
+                <div className="lista_prijava">
+                    
+                </div>
             </div>
             {pokaziSucelje && (
                 <PrijavaNaNatjecanje onClose={() => {
@@ -134,6 +141,7 @@ export default function pojedinoNatjecanje(){
                 prijavaPodaci={prijavaPodaci}
                 />
             )}
+            </div>
         </>
-            )
+             )
 }

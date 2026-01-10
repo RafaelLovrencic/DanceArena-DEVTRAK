@@ -33,7 +33,7 @@
     max-width: 600px;
 }
 
-.formaZaPrijavu select option {
+.formaZaPrijavu select, option {
     text-transform: capitalize;
 }
 
