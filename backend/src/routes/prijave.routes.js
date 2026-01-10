@@ -7,7 +7,7 @@ const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-router.get("/nastup/:id", async (req, res) => {
+router.get("/natjecanje/:id", async (req, res) => {
     try {
         const id = req.params.id;
         
