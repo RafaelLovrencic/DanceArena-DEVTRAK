@@ -47,10 +47,21 @@ export default function PrijavaNaNatjecanje({onClose, prijavaPodaci}){
     const obaviSubmit = async (e) => {
         e.preventDefault();
 
-        if (!prijavaPodaci) return alert("Nema podataka za prijavu");
+        if (!prijavaPodaci) return alert("Nema podataka za prijavu!");
+
+        if(!forma.nazivKor || !forma.imeKor) return alert("Nisu unešeni svi podaci o koreografiji!")
 
         if(!forma.dob || !forma.stil || !forma.velicina){
             return alert("Nisu odabrane sve kategorije!");
+        }
+
+        if(!forma.glazba){
+            return alert("Nije odabrana audio datoteka!")
+        }
+
+        const trajanjeBroj = Number(forma.trajanje);
+        if(forma.trajanje === '' || Number.isNaN(trajanjeBroj) || trajanjeBroj < 0){
+            return alert("Pogrešan unos trajanja izvedbe!")
         }
 
         const podaci = {
@@ -58,7 +69,7 @@ export default function PrijavaNaNatjecanje({onClose, prijavaPodaci}){
             kotizacija: prijavaPodaci.kotizacija,
             kategorije: prijavaPodaci.kategorije,
             nazivKoreografije: forma.nazivKor,
-            trajanje: forma.trajanje,
+            trajanje: trajanjeBroj,
             koreograf: forma.imeKor,
             dob: forma.dob,
             stil: forma.stil,
@@ -99,7 +110,7 @@ export default function PrijavaNaNatjecanje({onClose, prijavaPodaci}){
                     </div>
                     <div className="trajanje">
                         <label>Duljina trajanja:</label>
-                        <input name="trajanje" type="text" value={forma.trajanje} onChange={obaviPromjenu}/>
+                        <input name="trajanje" type="text" placeholder="Unesite trajanje u minutama:" value={forma.trajanje} onChange={obaviPromjenu}/>
                     </div>
                     <div className="imeKor">
                         <label>Ime koreografa:</label>
