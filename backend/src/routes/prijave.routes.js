@@ -3,6 +3,7 @@ const User = require("../models/user");
 const Kategorije = require("../models/kategorije");
 const Natjecanje = require("../models/natjecanje");
 const Nastup = require("../models/nastup");
+const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
@@ -20,7 +21,7 @@ router.get("/nastup/:id", async (req, res) => {
     }
 });
 
-router.post("/application", async (req, res) => {
+router.post("/application", authMiddleware, async (req, res) => {
     try {
         const {
             natjecanjeId,
@@ -74,6 +75,7 @@ router.post("/application", async (req, res) => {
             nastup: noviNastup
         });
     } catch (err) {
+        console.log(err);
         res.status(500).json({ "error": "Greška pri prijavi na natjecanje" });
     }
 });
