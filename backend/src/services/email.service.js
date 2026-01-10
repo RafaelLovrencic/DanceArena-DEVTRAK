@@ -1,13 +1,8 @@
 const { sendEmail } = require("../../utils/mailer");
 const { generirajPozivToken } = require("./token.service");
+const { Resend } = require("resend");
 
-async function posaljiSucuPoziv(user) {
-    return sendEmail({
-        to: user.email,
-        subject: "Dobrodošli u DanceArenu-DEVTRAK!",
-        html: `<h1>Hello ${user.ime}</h1><p>Welcome to our app 🎉</p>`
-    });
-}
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 async function posaljiPozivNaEmail(email, imeNatjecanja) {
 
@@ -18,7 +13,8 @@ async function posaljiPozivNaEmail(email, imeNatjecanja) {
 
     const link = `https://dancearena-devtrak-backend.onrender.com/unospodataka/prijaviSuca?token=${token}`;
 
-    return sendEmail({
+    await resend.emails.send({
+        from: process.env.EMAIL_USER,
         to: email,
         subject: "Dobrodošli u DanceArenu-DEVTRAK!",
         html: 
