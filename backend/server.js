@@ -11,6 +11,7 @@ const unosRuter = require("./src/routes/unos.routes");
 const natjecanjaRuter = require("./src/routes/natjecanja.routes");
 const transakcijeRouter = require("./src/routes/transakcije.routes");
 const { FRONTEND_URL } = require("./config");
+const exportRuter = require("./src/routes/export.routes");
 
 
 const app = express();
@@ -46,6 +47,7 @@ app.use("/auth", authRuter);
 app.use("/unospodataka", unosRuter);
 app.use("/natjecanja", natjecanjaRuter);
 app.use("/napravi-transakciju", transakcijeRouter);
+app.use("/export", exportRuter);
 
 const SERVER_PORT = process.env.PORT || 5001;
 
