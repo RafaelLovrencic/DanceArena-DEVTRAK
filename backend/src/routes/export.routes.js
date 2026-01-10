@@ -4,10 +4,7 @@ const Nastup = require("../models/nastup");
 const Natjecanje = require("../models/natjecanje");
 const path = require("path");
 
-var doc = new pdfkit({
-    margin: 50,
-    size: 'A4'
-});
+var doc = new pdfkit({ margin: 50, size: 'A4' });
 const router = express.Router();
 
 router.get('/:id', async (req, res) => {
@@ -17,16 +14,15 @@ router.get('/:id', async (req, res) => {
         doc.font('SedanSC');
         doc.pipe(res);
 
-        const natjecanjeId = req.params.id;
+        const id = req.params.id;
         
-        /*
         const natjecanje = await Natjecanje.findById(id)
             .populate('kategorije')
             .populate('organizatorId', 'ime email')
             .lean();
 
         const nastupi = await Nastup.find({
-            natjecanjeId
+            natjecanjeId: id
         }).populate("kategorijaId", "godiste stil velicina")
           .populate("klubId", "ime lokacija")
           .lean();
@@ -49,72 +45,18 @@ router.get('/:id', async (req, res) => {
             
             return grupa;
         });
-        console.log(rez);
-        */
         
-        const natjecanje = {
-            "naziv": "probno natjecanje"
-        };
-        
-        const rez = [
-            {
-                "kategorija": {
-                    "_id": "...",
-                    "godiste": "juniori",
-                    "stil": "hiphop",
-                    "velicina": "formacija"
-                },
-                "nastupi": [
-                    {
-                        "redniBroj": 1,
-                        "imekoreografije": "Break the Floor",
-                        "klubId": {
-                            "ime": "Dance Studio Alpha"
-                        }
-                    },
-                    {
-                        "redniBroj": 2,
-                        "imekoreografije": "Street Power",
-                        "klubId": {
-                            "ime": "Urban Crew"
-                        }
-                    }
-                ]
-            },
-            {
-                "kategorija": {
-                    "_id": "...",
-                    "godiste": "seniori",
-                    "stil": "hiphop",
-                    "velicina": "formacija"
-                },
-                "nastupi": [
-                    {
-                        "redniBroj": 1,
-                        "imekoreografije": "Break the Floor",
-                        "klubId": {
-                            "ime": "Dance Studio Alpha"
-                        }
-                    },
-                    {
-                        "redniBroj": 2,
-                        "imekoreografije": "Street Power",
-                        "klubId": {
-                            "ime": "Urban Crew"
-                        }
-                    }
-                ]
-            }
-        ];
-        
-        doc.fontSize(25).fillColor('#ab58c7').text(`${natjecanje.naziv} - STARTNA LISTA`);
-        doc.fontSize(13).fillColor('black').text(`ID: ${natjecanjeId}`);
+        doc.fontSize(25).fillColor('#ab58c7').text(`${natjecanje.ime} - startna lista`);
+        doc.fontSize(13).fillColor('black').text(`ID: ${id}`);
+        doc.text(`Vrijeme: ${natjecanje.datum}`);
+        doc.text(`Lokacija: ${natjecanje.lokacija}`);
+        doc.text(`Kontakt organizatora: ${natjecanje.organizatorId.email}`);
         doc.moveDown();
-        doc.fontSize(15);
+        doc.fontSize(11);
         
         rez.forEach(kategorija => {
             var podaci = [
-                ["REDNI BROJ NASTUPA", "IME KLUBA", "IME KOREOGRAFIJE"]
+                ["REDNI BROJ NASTUPA", "IME KLUBA", "IME KOREOGRAFIJE", "TRAJANJE", "KOREOGRAF"]
             ];
             
             for (let i = 0; i < 2; i++) {
@@ -131,13 +73,21 @@ router.get('/:id', async (req, res) => {
             doc.moveDown(0.4);
             
             kategorija.nastupi.forEach(nastup => {
-                podaci.push([nastup.redniBroj, nastup.klubId.ime, nastup.imekoreografije]);
+                podaci.push([
+                    nastup.redniBroj,
+                    nastup.klubId.ime, 
+                    nastup.imekoreografije, 
+                    (nastup.trajanje % 60 > 0) ? 
+                        `${Math.floor(nastup.trajanje / 60)} min ${nastup.trajanje % 60} s` : 
+                        `${Math.floor(nastup.trajanje / 60)} min`,
+                    nastup.imekoreografa
+                ]);
             });
 
             doc.table({
                 columnStyles: (ind) => {
                     if (ind === 0)
-                        return { maxWidth: 100 };
+                        return { maxWidth: 60 };
                 },
                 rowStyles: (ind) => {
                     if (ind === 0)
