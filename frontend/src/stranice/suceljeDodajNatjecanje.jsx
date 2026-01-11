@@ -71,7 +71,7 @@ export default function DodajNatjecanje({onClose, natjecanjeZaUredi, pozvaniSuci
 
         if (ukupnoSudaca < 3) return alert(`Ukupan broj sudaca je ${ukupnoSudaca}, mora biti najmanje 3.`);
         if (ukupnoSudaca % 2 === 0) return alert(`Ukupan broj sudaca je ${ukupnoSudaca}, mora biti neparan.`);
-        if (podaciNatjecanje.kotizacija < 0) return alert('Kotizacija mora biti veća od 0.');
+        if (podaciNatjecanje.kotizacija < 0) return alert('Kotizacija mora biti pozitivna.');
 
         const method = natjecanjeZaUredi ? 'PUT' : 'POST';
         const url = natjecanjeZaUredi 
