@@ -25,16 +25,24 @@ router.get("/user", authMiddleware, async (req, res) => {
                 ...new Set(nastupi.map(n => n.natjecanjeId.toString()))
             ];
 
-            natjecanja = await Natjecanje.find({_id: { $in: natjecanjeIds }});
+            natjecanja = await Natjecanje.find({_id: { $in: natjecanjeIds }})
+                .populate("organizatorId")
+                .populate("kategorije")
+                .populate("suci");
 
         } else if (uloga === "organizator") {
 
-            natjecanja = await Natjecanje.find({ organizatorId: uId });
+            natjecanja = await Natjecanje.find({ organizatorId: uId })
+                .populate("organizatorId")
+                .populate("kategorije")
+                .populate("suci");
 
         } else if (uloga === "sudac") {
 
-            natjecanja = await Natjecanje.find({ suci: uId });
-
+            natjecanja = await Natjecanje.find({ suci: uId })
+                .populate("organizatorId")
+                .populate("kategorije")
+                .populate("suci");
         }
 
         if (!natjecanja.length) {
@@ -42,7 +50,6 @@ router.get("/user", authMiddleware, async (req, res) => {
                 poruka: "Za ovog korisnika nije pronađeno nijedno natjecanje"
             });
         }
-
         res.status(200).json(natjecanja);
 
     } catch (err) {

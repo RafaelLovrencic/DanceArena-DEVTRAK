@@ -72,6 +72,10 @@ nav {
   animation: fadeIn 0.8s ease forwards;
 }
 
+.animacijaTablice {
+  animation: fadeIn 0.8s ease forwards;
+}
+
 .obavijestiTekst {
   font-family: 'Sedan SC';
   font-style: normal;
