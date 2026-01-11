@@ -10,11 +10,11 @@ export default function DodajNatjecanje({onClose, natjecanjeZaUredi}) {
     const { korisnik } = useAuth();
     const [suciOpcije, setSuciOpcije] = useState([]);
     const [odabraniSuci, setOdabraniSuci] = useState(() => {
-                                    if (natjecanjeZaUredi && natjecanjeZaUredi.suci) {
-                                        return natjecanjeZaUredi.suci.map(s => s._id);
-                                    }
-                                    return [];
-                                });
+                            if (natjecanjeZaUredi && natjecanjeZaUredi.suci) {
+                                return natjecanjeZaUredi.suci.map(s => ({ value: s._id, label: s.ime }));
+                            }
+                            return [];
+                        });
     const [podaciNatjecanje, setPodaciNatjecanje] = useState(() => {
         if (natjecanjeZaUredi) {
             return {
@@ -42,7 +42,7 @@ export default function DodajNatjecanje({onClose, natjecanjeZaUredi}) {
     
     const pohraniPromjene = async (e) => {
         e.preventDefault();
-        const suciPolje = odabraniSuci;
+        const suciPolje = odabraniSuci.map(s => s.value);
         const noviSuciMailovi = podaciNatjecanje.noviSuci
             .split('\n')
             .map(s => s.trim())
@@ -188,14 +188,11 @@ export default function DodajNatjecanje({onClose, natjecanjeZaUredi}) {
                             isMulti
                             closeMenuOnSelect={false}
                             hideSelectedOptions={false}
-                            onChange={(selected) => setOdabraniSuci(selected.map(s => s.value))}
-                            value={suciOpcije.filter(s => odabraniSuci.includes(s.value))}
+                            onChange={(selected) => setOdabraniSuci(selected)}
+                            value={odabraniSuci}
                             className="my-select"      
                             classNamePrefix="my-select"
                             placeholder="Odaberi"
-                            components={{
-                                MultiValue: () => null       
-                            }}
                         />
                         <textarea name="noviSuci" type='text' placeholder={'Ako sudac nema račun:\nmarko.horvat@gmail.com\nivo.ivic@gmail.com...'} value={podaciNatjecanje.noviSuci} onChange={napraviPromjenu}/>
                     </div>
