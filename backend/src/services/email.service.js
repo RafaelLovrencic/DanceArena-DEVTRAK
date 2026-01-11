@@ -1,31 +1,39 @@
 const { sendEmail } = require("../../utils/mailer");
 const { generirajPozivToken } = require("./token.service");
+const { Resend } = require("resend");
 
-async function posaljiSucuPoziv(user) {
-    return sendEmail({
-        to: user.email,
-        subject: "Dobrodošli u DanceArenu-DEVTRAK!",
-        html: `<h1>Hello ${user.ime}</h1><p>Welcome to our app 🎉</p>`
-    });
-}
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 async function posaljiPozivNaEmail(email, imeNatjecanja) {
-
+  try {
     const token = generirajPozivToken({
-        email: email,
-        imeNatjecanja: imeNatjecanja
+      email,
+      imeNatjecanja
     });
 
-    const link = `http://localhost:5001/unospodataka/prijaviSuca?token=${token}`;
+    const link = `https://dancearena-devtrak-backend.onrender.com/unospodataka/prijaviSuca?token=${token}`;
 
-    return sendEmail({
-        to: email,
-        subject: "Dobrodošli u DanceArenu-DEVTRAK!",
-        html: 
-            `<h1>Hello ${email}</h1>
-            <p>Pozvani ste da sudjelete kao sudac u ocjenjivanju nastupa na natjecanju ${imeNatjecanja} 🎉</p>
-            <a href="${link}">Registriraj se!</a>`
+    console.log("Šaljem mail:", {
+      email,
+      RESEND_API_KEY: process.env.RESEND_API_KEY?.slice(0, 8) + "..."
     });
+
+    const response = await resend.emails.send({
+      from: "Devtrak <onboarding@resend.dev>",
+      to: email,
+      subject: "Dobrodošli u DanceArenu-DEVTRAK!",
+      html: `
+        <h1>Pozdrav!</h1>
+        <p>Pozvani ste da sudjelujete kao sudac na natjecanju <b>${imeNatjecanja}</b> 🎉</p>
+        <a href="${link}">Registriraj se</a>
+      `
+    });
+
+    console.log("Resend response:", response);
+  } catch (err) {
+    console.error("Resend error:", err);
+  }
 }
 
-module.exports = { posaljiSucuPoziv, posaljiPozivNaEmail };
+
+module.exports = { posaljiPozivNaEmail };
