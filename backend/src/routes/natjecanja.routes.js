@@ -4,6 +4,7 @@ const Kategorije = require("../models/kategorije");
 const Natjecanje = require("../models/natjecanje");
 const PozivSucu = require("../models/poziv_sucu");
 const { posaljiPozivNaEmail } = require("../services/email.service");
+const authMiddleware = require("../services/authMiddleware");
 
 const router = express.Router();
 
@@ -40,6 +41,9 @@ router.get("/:id", async (req, res) => {
         console.error("Greška pri dohvaćanju natjecanja:", err);
         res.status(500).json({ poruka: "Greška pri dohvaćanju natjecanja" });
     }
+});
+
+router.get("/user", authMiddleware, async (req, res) => {
 });
 
 router.put("/:id", async (req, res) => {
