@@ -28,7 +28,7 @@ export default function Natjecanja() {
         console.log(data);
         
         const { natjecanje, pozvani_suci } = data;
-        if (natjecanje.organizatorId._id !== korisnik._id) {
+        if (natjecanje.organizatorId?._id !== korisnik._id) {
             alert('Nemate dopuštenje uređivati ovo natjecanje.');
             return;
         }
