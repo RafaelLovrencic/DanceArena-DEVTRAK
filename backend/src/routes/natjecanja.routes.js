@@ -44,7 +44,7 @@ router.get("/:id", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
     try {
-        const { ime, opis, datum, lokacija, suci, kategorije, kotizacija } = req.body;
+        const { ime, opis, datum, lokacija, organizatorId, kategorije, suci, kotizacija, noviSuci } = req.body;
 
         const updateData = {};
 
@@ -54,22 +54,39 @@ router.put("/:id", async (req, res) => {
         if (lokacija) updateData.lokacija = lokacija;
         if (kotizacija) updateData.kotizacija = kotizacija;
 
+        const vecRegistriran = [];
+
+        for (const noviSudac of noviSuci) {
+            const sudac = await User.find({ email: noviSudac });
+            const pozvanSudac = await PozivSucu.find({ email: noviSudac, natjecanjeId: req.params.id });
+            if (sudac.length > 0 || pozvanSudac.length > 0) {
+                vecRegistriran.push(noviSudac);
+            }
+        }
+
+        // ako su pronađeni korisnici čiji mail već postoji u bazi, vrati error
+        if (vecRegistriran.length > 0) {
+            console.error( "Ovi korisnici već postoje");
+            return res.status(400).json({
+                poruka: "Ovi korisnici već postoje",
+                emails: vecRegistriran 
+            });
+        }
+
+        for (const noviSudac of noviSuci) {
+            const noviPozivSucu = new PozivSucu({
+                email: noviSudac,
+                natjecanjeId: req.params.id,
+            });
+
+            await noviPozivSucu.save();
+            await posaljiPozivNaEmail(noviSudac, ime);
+        }
+
         if (Array.isArray(suci) && suci.length > 0) {
             const suciIds = [];
             for (const imeSuca of suci) {
                 let sudac = await User.findOne({ ime: imeSuca });
-                if (!sudac) {
-                    sudac = new User({ 
-                    role: "sudac",
-                    ime: imeSuca,
-                    email: imeSuca + "@gmail.com",
-                    oauthProvider: {
-                        type: "testni provider",
-                        providerId: "test"
-                    }
-                });
-                    await sudac.save();
-                }
                 suciIds.push(sudac._id);
             }
             updateData.suci = suciIds;
@@ -125,7 +142,6 @@ router.delete("/:id", async (req, res) => {
 
 router.post("/add", async (req, res) => {
     try {
-        const suciIds = [];
         const { ime, opis, datum, lokacija, organizatorId, kategorije, suci, kotizacija, noviSuci } = req.body;
 
         let kategorijaDoc = await Kategorije.findOne({
