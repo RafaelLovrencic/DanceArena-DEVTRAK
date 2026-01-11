@@ -31,7 +31,7 @@ router.get("/:id", async (req, res) => {
             .populate("kategorije")
             .populate("suci");
 
-        const pozivi = await PozivSucu.find({ natjecanjeId: req.params.id })
+        const pozivi = await PozivSucu.find({ natjecanjeId: req.params.id, status: "pozvan" })
             .populate("email");
 
         if (!natjecanje) {
