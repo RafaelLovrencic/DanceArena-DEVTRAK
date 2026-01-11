@@ -44,7 +44,9 @@ export default function DodajNatjecanje({onClose, natjecanjeZaUredi, pozvaniSuci
         e.preventDefault();
 
         let brojNeregistriranih = pozvaniSuci.length;
-        if (urediMod) brojNeregistriranih = 0;
+        if (!urediMod) brojNeregistriranih = 0;
+
+        console.log(urediMod);
 
         const suciPolje = odabraniSuci.map(s => s.value);
         const noviSuciMailovi = podaciNatjecanje.noviSuci
@@ -65,8 +67,10 @@ export default function DodajNatjecanje({onClose, natjecanjeZaUredi, pozvaniSuci
             return alert(`Sljedeći emailovi nisu valjani: ${nevaljani.join(', ')}`);
         }
 
-        if ((suciPolje.length + noviSuciMailovi.length + brojNeregistriranih) < 3) return alert('Morate unijeti najmanje 3 suca.');
-        if ((suciPolje.length + noviSuciMailovi.length + brojNeregistriranih) % 2 === 0) return alert('Broj sudaca mora biti neparan.');
+        const ukupnoSudaca = suciPolje.length + noviSuciMailovi.length + brojNeregistriranih;
+
+        if (ukupnoSudaca < 3) return alert(`Ukupan broj sudaca je ${ukupnoSudaca}, mora biti najmanje 3.`);
+        if (ukupnoSudaca % 2 === 0) return alert(`Ukupan broj sudaca je ${ukupnoSudaca}, mora biti neparan.`);
         if (podaciNatjecanje.kotizacija < 0) return alert('Kotizacija mora biti veća od 0.');
 
         const method = natjecanjeZaUredi ? 'PUT' : 'POST';
