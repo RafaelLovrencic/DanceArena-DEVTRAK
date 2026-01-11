@@ -31,10 +31,16 @@ router.get("/:id", async (req, res) => {
             .populate("kategorije")
             .populate("suci");
 
+        const pozivi = await PozivSucu.find({ natjecanjeId: req.params.id })
+            .populate("email");
+
         if (!natjecanje) {
             return res.status(404).json({ poruka: "Natjecanje nije pronađeno" });
         }
-        res.json(natjecanje);
+        res.json({
+            natjecanje: natjecanje,
+            pozvani_suci: pozivi,
+        });
 
     } catch (err) {
         console.error("Greška pri dohvaćanju natjecanja:", err);
