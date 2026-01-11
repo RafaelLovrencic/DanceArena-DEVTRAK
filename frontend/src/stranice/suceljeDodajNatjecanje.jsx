@@ -48,6 +48,8 @@ export default function DodajNatjecanje({onClose, natjecanjeZaUredi}) {
             .map(s => s.trim())
             .filter(s => s !== '');
 
+        console.log(suciPolje);
+
         const duplikati = noviSuciMailovi.filter((item, index) => noviSuciMailovi.indexOf(item) !== index);
         if (duplikati.length > 0) {
             return alert(`Emailovi sudaca se ponavljaju: ${[...new Set(duplikati)].join(', ')}`);
