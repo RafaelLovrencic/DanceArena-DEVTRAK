@@ -2,12 +2,56 @@ const express = require("express");
 const User = require("../models/user");
 const Kategorije = require("../models/kategorije");
 const Natjecanje = require("../models/natjecanje");
+const Nastup = require("../models/nastup");
 const PozivSucu = require("../models/poziv_sucu");
 const { posaljiPozivNaEmail } = require("../services/email.service");
 const authMiddleware = require("../services/authMiddleware");
 
 const router = express.Router();
 
+router.get("/user", authMiddleware, async (req, res) => {
+    try {
+        const uId = req.user._id;
+        const kId = req.user.klubId;
+        const uloga = req.user.role;
+
+        let natjecanja = [];
+
+        if (uloga === "voditelj") {
+
+            const nastupi = await Nastup.find({ klubId: kId });
+
+            const natjecanjeIds = [
+                ...new Set(nastupi.map(n => n.natjecanjeId.toString()))
+            ];
+
+            natjecanja = await Natjecanje.find({_id: { $in: natjecanjeIds }});
+
+        } else if (uloga === "organizator") {
+
+            natjecanja = await Natjecanje.find({ organizatorId: uId });
+
+        } else if (uloga === "sudac") {
+
+            natjecanja = await Natjecanje.find({ suci: uId });
+
+        }
+
+        if (!natjecanja.length) {
+            return res.status(404).json({
+                poruka: "Za ovog korisnika nije pronađeno nijedno natjecanje"
+            });
+        }
+
+        res.status(200).json(natjecanja);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            poruka: "Greška pri dohvaćanju korisnikovih natjecanja"
+        });
+    }
+});
 
 router.get("/", async (req, res) => {
     try {
@@ -41,9 +85,6 @@ router.get("/:id", async (req, res) => {
         console.error("Greška pri dohvaćanju natjecanja:", err);
         res.status(500).json({ poruka: "Greška pri dohvaćanju natjecanja" });
     }
-});
-
-router.get("/user", authMiddleware, async (req, res) => {
 });
 
 router.put("/:id", async (req, res) => {
