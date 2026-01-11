@@ -84,12 +84,7 @@ router.put("/:id", async (req, res) => {
         }
 
         if (Array.isArray(suci) && suci.length > 0) {
-            const suciIds = [];
-            for (const imeSuca of suci) {
-                let sudac = await User.findOne({ ime: imeSuca });
-                suciIds.push(sudac._id);
-            }
-            updateData.suci = suciIds;
+            updateData.suci = suci;
         }
 
         if (Array.isArray(kategorije) && kategorije.length === 3) {
