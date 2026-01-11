@@ -9,7 +9,7 @@ body {
 
 .boja {
   background-color: black;
-  min-height: 100vh;
+  min-height: 190vh;
 }
 
 .naslov-sekcija {
@@ -166,8 +166,11 @@ body {
   gap: 6px;
 }
 
-.red_koreografije,
 .red_prijave {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   font-family: 'Sedan SC';
   font-size: clamp(14px, 2vw, 20px);
   color: white;
@@ -175,6 +178,27 @@ body {
   white-space: nowrap; 
   overflow: hidden;      
   text-overflow: ellipsis;
+}
+
+.red_koreografije {
+  display:flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.tekst_prijave_red,
+.tekst_koreografije_red {
+  font-family: 'Sedan SC';
+  font-size: clamp(14px, 2vw, 20px);
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tekst_koreografije_red {
+  flex: 1;
+  min-width: 0;
 }
 
 .nema_koreografija,
@@ -186,6 +210,30 @@ body {
   font-style: italic;
   opacity: 0.7;
 }
+
+.gumb_uredi,
+.gumb_glasaj,
+.gumb_detalji {
+  background-color: #2CDE32;
+  color: black;
+  border: 2px solid #2CDE32;
+  border-radius: 6px;
+  padding: 6px 20px;
+  margin-right: 10px;
+  font-family: 'Sedan SC';
+  font-size: 14px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.gumb_uredi:hover,
+.gumb_detalji:hover,
+.gumb_glasaj:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 8px rgba(44, 222, 50, 0.6);
+}
+
 
 @media (max-width: 700px) {
   .informacije {
@@ -292,6 +340,31 @@ body {
   .red_prijave,
   .nema_prijava {
     font-size: clamp(14px, 3vw, 18px);
+  }
+
+  .gumb_prijava,
+  .gumb_uredi,
+  .gumb_detalji,
+  .gumb_glasaj {
+    transition: none !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  .gumb_uredi,
+  .gumb_detalji,
+  .gumb_glasaj {
+    padding: 4px 12px;
+    font-size: 12px;
+    border-radius: 4px;
+  }
+
+  .gumb_prijava:hover,
+  .gumb_uredi:hover,
+  .gumb_detalji:hover,
+  .gumb_glasaj:hover {
+    transform: none !important;
+    box-shadow: none !important;
   }
 }
 

@@ -32,8 +32,7 @@ export default function pojedinoNatjecanje(){
         setPokaziSucelje(true);
     }
 
-    useEffect(() => {
-        const fetchPrijave = async () => {
+    const fetchPrijave = async () => {
             try {
                 const res = await fetch(`${BACKEND_IP}/prijave/natjecanje/${id}`, {credentials: "include"});
                 const data_prijava = await res.json();
@@ -42,6 +41,8 @@ export default function pojedinoNatjecanje(){
                 console.error("Greška kod dohvaćanja prijava:", err);
             }
         };
+
+    useEffect(() => {
         fetchPrijave();
     }, [id])
 
@@ -149,9 +150,10 @@ export default function pojedinoNatjecanje(){
                             <p className="nema_prijava">Nema prijava.</p>
                         )}
                         {prijave.map((nastup) => (
-                            <p key={nastup.id} className="red_prijave">
-                                {nastup.klubId?.ime} ; {nastup.imekoreografije}
-                            </p>
+                            <div key={nastup.id} className="red_prijave">
+                                <span className="tekst_prijave_red">{nastup.klubId?.ime} ; {nastup.imekoreografije}</span>
+                                <button className="gumb_uredi">Uredi</button>
+                            </div>
                         ))}
                     </div>
                 </div>
@@ -164,9 +166,11 @@ export default function pojedinoNatjecanje(){
                             <p className="nema_koreografija">Nema koreografija.</p>
                         )}
                         {prijave.map((nastup) => (
-                            <p key={nastup.id} className="red_koreografije">
-                                {nastup.imekoreografije} ; {nastup.imekoreografa}
-                            </p>
+                            <div key={nastup.id} className="red_koreografije">
+                                <span className="tekst_koreografije_red">{nastup.imekoreografije} ; {nastup.imekoreografa}</span>
+                                <button className="gumb_detalji">Detalji</button>
+                                <button className="gumb_glasaj">Glasaj</button>
+                            </div>
                         ))}
                     </div>
                 </div>
@@ -176,6 +180,7 @@ export default function pojedinoNatjecanje(){
                     setPokaziSucelje(false)
                 }}
                 prijavaPodaci={prijavaPodaci}
+                onSuccess={fetchPrijave}
                 />
             )}
         </>

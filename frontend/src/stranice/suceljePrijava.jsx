@@ -5,7 +5,7 @@ import '../izgled/suceljePrijava.css';
 import { BACKEND_IP } from "../config";
 import { useAuth } from "../kontekst/AuthContext";
 
-export default function PrijavaNaNatjecanje({onClose, prijavaPodaci}){
+export default function PrijavaNaNatjecanje({onClose, prijavaPodaci, onSuccess}){
     const{ korisnik } = useAuth();
 
     const dobneKategorije = [...new Set(prijavaPodaci.kategorije.map(k => k.godiste))];
@@ -92,6 +92,7 @@ export default function PrijavaNaNatjecanje({onClose, prijavaPodaci}){
                 throw new Error(`${res.status}: ${text}`);
             }
 
+            if (onSuccess) await onSuccess();
 
             onClose();
         } catch (err){
