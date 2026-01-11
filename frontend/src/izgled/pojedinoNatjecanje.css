@@ -9,7 +9,7 @@ body {
 
 .boja {
   background-color: black;
-  min-height: 190vh;
+  min-height: 100vh;
 }
 
 .naslov-sekcija {
@@ -169,15 +169,7 @@ body {
 .red_prijave {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 16px;
-  font-family: 'Sedan SC';
-  font-size: clamp(14px, 2vw, 20px);
-  color: white;
-  margin: 0;
-  white-space: nowrap; 
-  overflow: hidden;      
-  text-overflow: ellipsis;
 }
 
 .red_koreografije {
@@ -201,6 +193,11 @@ body {
   min-width: 0;
 }
 
+.tekst_prijave_red {
+  flex: 1;
+  min-width: 0;
+}
+
 .nema_koreografija,
 .nema_prijava {
   font-family: 'Sedan SC';
@@ -213,7 +210,8 @@ body {
 
 .gumb_uredi,
 .gumb_glasaj,
-.gumb_detalji {
+.gumb_detalji,
+.gumb_ponisti {
   background-color: #2CDE32;
   color: black;
   border: 2px solid #2CDE32;
@@ -229,9 +227,14 @@ body {
 
 .gumb_uredi:hover,
 .gumb_detalji:hover,
-.gumb_glasaj:hover {
+.gumb_glasaj:hover,
+.gumb_ponisti:hover {
   transform: scale(1.05);
   box-shadow: 0 0 8px rgba(44, 222, 50, 0.6);
+}
+
+.koreografije:last-child {
+  margin-bottom: 0;
 }
 
 
@@ -335,6 +338,11 @@ body {
     text-align: center;
   }
 
+  .red_prijave,
+  .red_koreografije {
+    gap: 3px;
+  }
+
   .red_koreografije,
   .nema_koreografija,
   .red_prijave,
@@ -345,7 +353,8 @@ body {
   .gumb_prijava,
   .gumb_uredi,
   .gumb_detalji,
-  .gumb_glasaj {
+  .gumb_glasaj,
+  .gumb_ponisti {
     transition: none !important;
     transform: none !important;
     box-shadow: none !important;
@@ -353,7 +362,8 @@ body {
 
   .gumb_uredi,
   .gumb_detalji,
-  .gumb_glasaj {
+  .gumb_glasaj,
+  .gumb_ponisti {
     padding: 4px 12px;
     font-size: 12px;
     border-radius: 4px;
@@ -362,7 +372,8 @@ body {
   .gumb_prijava:hover,
   .gumb_uredi:hover,
   .gumb_detalji:hover,
-  .gumb_glasaj:hover {
+  .gumb_glasaj:hover,
+  .gumb_ponisti:hover {
     transform: none !important;
     box-shadow: none !important;
   }

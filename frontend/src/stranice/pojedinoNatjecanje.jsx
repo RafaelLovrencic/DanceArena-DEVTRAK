@@ -13,6 +13,7 @@ export default function pojedinoNatjecanje(){
     const [pokaziSucelje, setPokaziSucelje] = useState(false);
     const [prijavaPodaci, setPrijavaPodaci] = useState(null);
     const [prijave, setPrijave] = useState([]);
+    const [urediPrijavu, setUrediPrijavu] = useState(null);
 
     const otvoriPrijavu = () => {
         setPrijavaPodaci({
@@ -41,6 +42,27 @@ export default function pojedinoNatjecanje(){
                 console.error("Greška kod dohvaćanja prijava:", err);
             }
         };
+    
+    const ponistiPrijavu = async (id) => {
+        if(!window.confirm("Jeste li sigurni da želite poništiti ovu prijavu?")) return;
+
+        try {
+            const res = await fetch(`${BACKEND_IP}/prijave/application/del/${id}`, {
+                method: "DELETE",
+                credentials: "include"
+            });
+
+            if(!res.ok){
+                const text = await res.text();
+                throw new Error(`${res.status}: ${text}`);
+            }
+            alert("Prijava uspješno poništena!");
+            fetchPrijave();
+        } catch(err){
+            console.error(err);
+            alert("Došlo je do greške pri poništavanju prijave!")
+        }
+    }
 
     useEffect(() => {
         fetchPrijave();
@@ -152,7 +174,16 @@ export default function pojedinoNatjecanje(){
                         {prijave.map((nastup) => (
                             <div key={nastup.id} className="red_prijave">
                                 <span className="tekst_prijave_red">{nastup.klubId?.ime} ; {nastup.imekoreografije}</span>
-                                <button className="gumb_uredi">Uredi</button>
+                                <button className="gumb_uredi" onClick={() => {
+                                    setUrediPrijavu(nastup);
+                                    setPrijavaPodaci({natjecanjeId: natjecanje._id, kotizacija: natjecanje.kotizacija,
+                                                     kategorije: natjecanje.kategorije, nazivKoreografije: nastup.imekoreografije,
+                                                     trajanje: nastup.trajanje, koreograf: nastup.imekoreografa,
+                                                     dob: nastup.kategorijaId?.godiste || "", stil: nastup.kategorijaId?.stil || "",
+                                                     velicina: nastup.kategorijaId?.velicina || "", glazba: nastup.glazbaUrl || "" })
+                                    setPokaziSucelje(true);
+                                }}>Uredi</button>
+                                <button className="gumb_ponisti" onClick={() => ponistiPrijavu(nastup.id)}>Poništi</button>
                             </div>
                         ))}
                     </div>
@@ -178,8 +209,10 @@ export default function pojedinoNatjecanje(){
             {pokaziSucelje && (
                 <PrijavaNaNatjecanje onClose={() => {
                     setPokaziSucelje(false)
+                    setUrediPrijavu(null)
                 }}
                 prijavaPodaci={prijavaPodaci}
+                urediPrijavu={urediPrijavu}
                 onSuccess={fetchPrijave}
                 />
             )}

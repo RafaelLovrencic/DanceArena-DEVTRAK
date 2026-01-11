@@ -5,7 +5,7 @@ import '../izgled/suceljePrijava.css';
 import { BACKEND_IP } from "../config";
 import { useAuth } from "../kontekst/AuthContext";
 
-export default function PrijavaNaNatjecanje({onClose, prijavaPodaci, onSuccess}){
+export default function PrijavaNaNatjecanje({onClose, prijavaPodaci, urediPrijavu, onSuccess}){
     const{ korisnik } = useAuth();
 
     const dobneKategorije = [...new Set(prijavaPodaci.kategorije.map(k => k.godiste))];
@@ -26,15 +26,15 @@ export default function PrijavaNaNatjecanje({onClose, prijavaPodaci, onSuccess})
         if (!prijavaPodaci) return;
 
         setForma({
-            nazivKor: prijavaPodaci.nazivKoreografije || "",
-            trajanje: prijavaPodaci.trajanje || "",
-            imeKor: prijavaPodaci.koreograf || "",
-            dob: prijavaPodaci.dob || "",
-            stil: prijavaPodaci.stil || "",
-            velicina: prijavaPodaci.velicina || "",
+            nazivKor: urediPrijavu ? urediPrijavu.imekoreografije || "" : prijavaPodaci.nazivKoreografije || "",
+            trajanje: urediPrijavu ? urediPrijavu.trajanje || "" : prijavaPodaci.trajanje || "",
+            imeKor: urediPrijavu ? urediPrijavu.imekoreografa || "" : prijavaPodaci.koreograf || "",
+            dob: urediPrijavu ? urediPrijavu.kategorijaId?.godiste || "" : prijavaPodaci.dob || "",
+            stil: urediPrijavu ? urediPrijavu.kategorijaId?.stil || "" : prijavaPodaci.stil || "",
+            velicina: urediPrijavu ? urediPrijavu.kategorijaId?.velicina || "" : prijavaPodaci.velicina || "",
             glazba: ""
         });
-    }, [prijavaPodaci]);
+    }, [urediPrijavu, prijavaPodaci]);
 
     const obaviPromjenu = (e) => {
         const {name, value, files} = e.target;
@@ -78,8 +78,15 @@ export default function PrijavaNaNatjecanje({onClose, prijavaPodaci, onSuccess})
         };
 
         try {
-            const res = await fetch(`${BACKEND_IP}/prijave/application`, {
-                method: "POST",
+            let url = `${BACKEND_IP}/prijave/application`;
+            let method = "POST";
+
+            if(urediPrijavu){
+                url = `${BACKEND_IP}/prijave/application/edit/${urediPrijavu._id}`;
+                method = "PUT";
+            }
+            const res = await fetch(url, {
+                method: method,
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -88,7 +95,10 @@ export default function PrijavaNaNatjecanje({onClose, prijavaPodaci, onSuccess})
             });
 
             if (!res.ok) {
-                const text = await res.text();
+                const text = await res.json();
+                if (res.status === 409) {
+                    return alert(text.poruka)
+                }
                 throw new Error(`${res.status}: ${text}`);
             }
 
