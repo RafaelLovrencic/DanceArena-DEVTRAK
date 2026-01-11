@@ -30,6 +30,7 @@ export default function Natjecanja() {
         const { natjecanje, pozvani_suci } = data;
 
         const organizatorId = natjecanje.organizatorId?._id || natjecanje.organizatorId;
+        console.log(organizatorId);
 
         if (organizatorId !== korisnik._id) {
             alert('Nemate dopuštenje uređivati ovo natjecanje.');
