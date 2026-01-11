@@ -28,7 +28,10 @@ export default function Natjecanja() {
         console.log(data);
         
         const { natjecanje, pozvani_suci } = data;
-        if (natjecanje.organizatorId?._id !== korisnik._id) {
+
+        const organizatorId = natjecanje.organizatorId?._id || natjecanje.organizatorId;
+
+        if (organizatorId !== korisnik._id) {
             alert('Nemate dopuštenje uređivati ovo natjecanje.');
             return;
         }
@@ -86,10 +89,12 @@ export default function Natjecanja() {
         if (!(await provjeriClanarinuSvjeze())) return;
         const response = await fetch(`${BACKEND_IP}/natjecanja/${odabranoNatjecanje._id}`, {credentials: "include"});
         const data = await response.json();
-        console.log(data.organizatorId._id);
-        console.log(korisnik._id);
-        if (data.organizatorId._id !== korisnik._id) {
-            alert('Nemate dopuštenje brisati ovo natjecanje.');
+        const { natjecanje } = data;
+
+        const organizatorId = natjecanje.organizatorId?._id || natjecanje.organizatorId;
+
+        if (organizatorId !== korisnik._id) {
+            alert('Nemate dopuštenje uređivati ovo natjecanje.');
             return;
         }
 
