@@ -193,6 +193,9 @@ export default function DodajNatjecanje({onClose, natjecanjeZaUredi}) {
                             className="my-select"      
                             classNamePrefix="my-select"
                             placeholder="Odaberi"
+                            components={{
+                                MultiValue: () => null       
+                            }}
                         />
                         <textarea name="noviSuci" type='text' placeholder={'Ako sudac nema račun:\nmarko.horvat@gmail.com\nivo.ivic@gmail.com...'} value={podaciNatjecanje.noviSuci} onChange={napraviPromjenu}/>
                     </div>
