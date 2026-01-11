@@ -9,7 +9,12 @@ import Select from "react-select";
 export default function DodajNatjecanje({onClose, natjecanjeZaUredi}) {
     const { korisnik } = useAuth();
     const [suciOpcije, setSuciOpcije] = useState([]);
-    const [odabraniSuci, setOdabraniSuci] = useState([]);
+    const [odabraniSuci, setOdabraniSuci] = useState(() => {
+                                    if (natjecanjeZaUredi && natjecanjeZaUredi.suci) {
+                                        return natjecanjeZaUredi.suci.map(s => s._id);
+                                    }
+                                    return [];
+                                });
     const [podaciNatjecanje, setPodaciNatjecanje] = useState(() => {
         if (natjecanjeZaUredi) {
             return {
@@ -21,7 +26,7 @@ export default function DodajNatjecanje({onClose, natjecanjeZaUredi}) {
                 dobnaKategorija: natjecanjeZaUredi.kategorije?.[0]?.godiste || '',
                 stilPlesa: natjecanjeZaUredi.kategorije?.[0]?.stil || '',
                 velicinaGrupa: natjecanjeZaUredi.kategorije?.[0]?.velicina.replace('_', ' ') || '',
-                suci: (natjecanjeZaUredi.suci || []).map(s => s.ime).join('\n'),
+                suci: '',
                 noviSuci: ''
             };
         }
