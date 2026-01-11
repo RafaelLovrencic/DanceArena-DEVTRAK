@@ -43,14 +43,11 @@ export default function pojedinoNatjecanje(){
             }
         };
     
-    const ponistiPrijavu = async (id) => {
+    const ponistiPrijavu = async (idNastupa) => {
         if(!window.confirm("Jeste li sigurni da želite poništiti ovu prijavu?")) return;
-
+    
         try {
-            const res = await fetch(`${BACKEND_IP}/prijave/application/del/${id}`, {
-                method: "DELETE",
-                credentials: "include"
-            });
+            const res = await fetch(`${BACKEND_IP}/prijave/application/del/${idNastupa}`, {method: "DELETE", credentials: "include"});
 
             if(!res.ok){
                 const text = await res.text();
@@ -172,7 +169,7 @@ export default function pojedinoNatjecanje(){
                             <p className="nema_prijava">Nema prijava.</p>
                         )}
                         {prijave.map((nastup) => (
-                            <div key={nastup.id} className="red_prijave">
+                            <div key={nastup._id} className="red_prijave">
                                 <span className="tekst_prijave_red">{nastup.klubId?.ime} ; {nastup.imekoreografije}</span>
                                 <button className="gumb_uredi" onClick={() => {
                                     setUrediPrijavu(nastup);
@@ -183,7 +180,7 @@ export default function pojedinoNatjecanje(){
                                                      velicina: nastup.kategorijaId?.velicina || "", glazba: nastup.glazbaUrl || "" })
                                     setPokaziSucelje(true);
                                 }}>Uredi</button>
-                                <button className="gumb_ponisti" onClick={() => ponistiPrijavu(nastup.id)}>Poništi</button>
+                                <button type="button" className="gumb_ponisti" onClick={() => ponistiPrijavu(nastup._id)}>Poništi</button>
                             </div>
                         ))}
                     </div>
@@ -197,7 +194,7 @@ export default function pojedinoNatjecanje(){
                             <p className="nema_koreografija">Nema koreografija.</p>
                         )}
                         {prijave.map((nastup) => (
-                            <div key={nastup.id} className="red_koreografije">
+                            <div key={nastup._id} className="red_koreografije">
                                 <span className="tekst_koreografije_red">{nastup.imekoreografije} ; {nastup.imekoreografa}</span>
                                 <button className="gumb_detalji">Detalji</button>
                                 <button className="gumb_glasaj">Glasaj</button>

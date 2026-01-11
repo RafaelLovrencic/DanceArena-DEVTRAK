@@ -175,9 +175,15 @@ router.put("/application/edit/:id", authMiddleware, async (req, res) => {
 });
 
 router.delete("/application/del/:id", authMiddleware, async (req, res) => {
+    const { id } = req.params;
     try {
-        const nastup = Nastup.findByIdAndDelete(req.params.id);
+        const nastup = await Nastup.findByIdAndDelete(id);
+        if (!nastup){
+            return res.status(404).json({ "error": "Nastup nije pronađen" });
+        }
+        res.status(200).json({ "message": "Nastup uspješno obrisan", nastup });
     } catch (err) {
+        console.error("Greška pri brisanju:", err);
         res.status(500).json({ "error": "Greška pri brisanju nastupa" });
     }
 });
