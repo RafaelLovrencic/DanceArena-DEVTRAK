@@ -12,7 +12,9 @@ export default function Natjecanja() {
     const [pokaziSucelje, setPokaziSucelje] = useState(false);
     const [odabranoNatjecanje, setOdabranoNatjecanje] = useState(null);
     const [podaciZaUredi, setPodaciZaUredi] = useState(null);
+    const [pozvaniSuci, setPozvaniSuci] = useState(null);
     const [kotizacijaPlacena, setKotizacijaPlacena] = useState(false);
+    const [urediMod, setUrediMod] = useState(false);
 
     const [clanarinaAktivna, setClanarinaAktivna] = useState(false);
     const [vrijediDo, setVrijediDo] = useState(null);
@@ -24,13 +26,16 @@ export default function Natjecanja() {
         const response = await fetch(`${BACKEND_IP}/natjecanja/${odabranoNatjecanje._id}`, {credentials: "include"});
         const data = await response.json();
         console.log(data);
-
-        if (data.organizatorId._id !== korisnik._id) {
+        
+        const { natjecanje, pozvani_suci } = data;
+        if (natjecanje.organizatorId._id !== korisnik._id) {
             alert('Nemate dopuštenje uređivati ovo natjecanje.');
             return;
         }
 
-        setPodaciZaUredi(data);
+        setPodaciZaUredi(natjecanje);
+        setPozvaniSuci(pozvani_suci);
+        setUrediMod(true);
         setPokaziSucelje(true);
     };
     useEffect(() => {
@@ -71,6 +76,7 @@ export default function Natjecanja() {
 
     const dodajNatjecanje = async () => {
         if (!(await provjeriClanarinuSvjeze())) return;
+        setUrediMod(false);
         setPokaziSucelje(true);
     };
 
@@ -266,6 +272,8 @@ export default function Natjecanja() {
                     osvjeziNatjecanja();
                 }}
                 natjecanjeZaUredi={podaciZaUredi}
+                pozvaniSuci={pozvaniSuci}
+                urediMod={urediMod}
             />
         )}
         

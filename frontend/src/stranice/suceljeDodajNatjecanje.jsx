@@ -6,7 +6,7 @@ import { BACKEND_IP } from "../config";
 import { useAuth } from "../kontekst/AuthContext";
 import Select from "react-select";
 
-export default function DodajNatjecanje({onClose, natjecanjeZaUredi}) {
+export default function DodajNatjecanje({onClose, natjecanjeZaUredi, pozvaniSuci, urediMod}) {
     const { korisnik } = useAuth();
     const [suciOpcije, setSuciOpcije] = useState([]);
     const [odabraniSuci, setOdabraniSuci] = useState(() => {
@@ -42,6 +42,10 @@ export default function DodajNatjecanje({onClose, natjecanjeZaUredi}) {
     
     const pohraniPromjene = async (e) => {
         e.preventDefault();
+
+        let brojNeregistriranih = pozvaniSuci.length;
+        if (urediMod) brojNeregistriranih = 0;
+
         const suciPolje = odabraniSuci.map(s => s.value);
         const noviSuciMailovi = podaciNatjecanje.noviSuci
             .split('\n')
@@ -61,8 +65,8 @@ export default function DodajNatjecanje({onClose, natjecanjeZaUredi}) {
             return alert(`Sljedeći emailovi nisu valjani: ${nevaljani.join(', ')}`);
         }
 
-        if (suciPolje.length + noviSuciMailovi.length < 3) return alert('Morate unijeti najmanje 3 suca.');
-        if ((suciPolje.length + noviSuciMailovi.length) % 2 === 0) return alert('Broj sudaca mora biti neparan.');
+        if ((suciPolje.length + noviSuciMailovi.length + brojNeregistriranih) < 3) return alert('Morate unijeti najmanje 3 suca.');
+        if ((suciPolje.length + noviSuciMailovi.length + brojNeregistriranih) % 2 === 0) return alert('Broj sudaca mora biti neparan.');
         if (podaciNatjecanje.kotizacija < 0) return alert('Kotizacija mora biti veća od 0.');
 
         const method = natjecanjeZaUredi ? 'PUT' : 'POST';
