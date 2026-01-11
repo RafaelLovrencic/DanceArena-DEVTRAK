@@ -65,8 +65,9 @@ passport.authenticate("google", { session: false }),
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const korisnik = await Korisnici.findById(decoded.id);
         if (!korisnik) return res.status(404).json({ greska: "Korisnik nije pronađen" });
+        const klub = await Klub.findOne({ ownerId: korisnik._id });
 
-        res.json({ korisnik });
+        res.json({ korisnik, klub });
     } catch (err) {
         console.error("Greška pri provjeri autentifikacije:", err);
         res.status(401).json({ greska: "Neuspjela autentifikacija" });
