@@ -3,7 +3,7 @@ const User = require("../models/user");
 const Kategorije = require("../models/kategorije");
 const Natjecanje = require("../models/natjecanje");
 const Nastup = require("../models/nastup");
-const authMiddleware = require("../middleware/authMiddleware");
+const authMiddleware = require("../services/authMiddleware");
 
 const router = express.Router();
 

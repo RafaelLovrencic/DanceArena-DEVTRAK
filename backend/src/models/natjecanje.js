@@ -33,7 +33,11 @@ const natjecanjeSchema = new mongoose.Schema({
   kotizacija: {
     type: Number, 
     required: false // može ostati prazno
-  }
+  },
+  platitelji: [{ 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User' // referenca na voditelje (User)
+  }],
 }, { timestamps: true });
 
 module.exports = mongoose.model('Natjecanje', natjecanjeSchema, 'natjecanje');

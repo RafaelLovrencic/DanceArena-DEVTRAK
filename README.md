@@ -31,6 +31,18 @@ Administracija sustava (F-011): Administrator ima najviše ovlasti, upravlja kor
 
 # Tehnologije
 
+Aplikacija je razvijena koristeći JavaScript (ES2023) na klijentskoj i poslužiteljskoj strani, što omogućuje jednostavnu integraciju frontenda i backenda.
+
+Korisničko sučelje izrađeno je u Reactu v18 koji omogućuje razvoj modularnih i ponovno iskoristivih komponenti. Serverski dio aplikacije razvijen je pomoću Node.js i Express.js koji se koriste za izradu REST API-ja i obradu HTTP zahtjeva.
+
+Za pohranu podataka koristi se MongoDB NoSQL baza podataka, hostana putem MongoDB Atlas servisa. Autentifikacija korisnika implementirana je pomoću OAuth 2.0. Za online plaćanja korišten je Stripe.
+
+Razvoj aplikacije proveden je u alatu Visual Studio Code, uz verzioniranje izvornog koda pomoću Gita i repozitorija na GitHubu. Dizajn korisničkog sučelja izrađen je u alatu Figma.
+
+Generiranje PDF-a sa startnom listom obavlja se s pomoću PDFkita.
+
+Aplikacija je deployana u oblaku. Frontend je hostan na platformi Vercel, a backend na platformi Render. Testiranje aplikacije provedeno je ručno tijekom razvoja.
+
 # Članovi tima
 
 - Dorijan Gučin 

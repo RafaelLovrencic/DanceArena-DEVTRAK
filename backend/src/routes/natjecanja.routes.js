@@ -3,9 +3,62 @@ const User = require("../models/user");
 const Kategorije = require("../models/kategorije");
 const Natjecanje = require("../models/natjecanje");
 const Nastup = require("../models/nastup");
+const PozivSucu = require("../models/poziv_sucu");
+const { posaljiPozivNaEmail } = require("../services/email.service");
+const authMiddleware = require("../services/authMiddleware");
 
 const router = express.Router();
 
+router.get("/user", authMiddleware, async (req, res) => {
+    try {
+        const uId = req.user._id;
+        const kId = req.user.klubId;
+        const uloga = req.user.role;
+
+        let natjecanja = [];
+
+        if (uloga === "voditelj") {
+
+            const nastupi = await Nastup.find({ klubId: kId });
+
+            const natjecanjeIds = [
+                ...new Set(nastupi.map(n => n.natjecanjeId.toString()))
+            ];
+
+            natjecanja = await Natjecanje.find({_id: { $in: natjecanjeIds }})
+                .populate("organizatorId")
+                .populate("kategorije")
+                .populate("suci");
+
+        } else if (uloga === "organizator") {
+
+            natjecanja = await Natjecanje.find({ organizatorId: uId })
+                .populate("organizatorId")
+                .populate("kategorije")
+                .populate("suci");
+
+        } else if (uloga === "sudac") {
+
+            natjecanja = await Natjecanje.find({ suci: uId })
+                .populate("organizatorId")
+                .populate("kategorije")
+                .populate("suci");
+        }
+
+        if (!natjecanja.length) {
+            return res.status(404).json({
+                poruka: "Za ovog korisnika nije pronađeno nijedno natjecanje"
+            });
+        }
+        res.status(200).json(natjecanja);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            poruka: "Greška pri dohvaćanju korisnikovih natjecanja"
+        });
+    }
+});
 
 router.get("/", async (req, res) => {
     try {
@@ -43,7 +96,7 @@ router.get("/:id", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
     try {
-        const { ime, opis, datum, lokacija, suci, kategorije, kotizacija } = req.body;
+        const { ime, opis, datum, lokacija, organizatorId, kategorije, suci, kotizacija, noviSuci } = req.body;
 
         const updateData = {};
 
@@ -53,25 +106,37 @@ router.put("/:id", async (req, res) => {
         if (lokacija) updateData.lokacija = lokacija;
         if (kotizacija) updateData.kotizacija = kotizacija;
 
-        if (Array.isArray(suci) && suci.length > 0) {
-            const suciIds = [];
-            for (const imeSuca of suci) {
-                let sudac = await User.findOne({ ime: imeSuca });
-                if (!sudac) {
-                    sudac = new User({ 
-                    role: "sudac",
-                    ime: imeSuca,
-                    email: imeSuca + "@gmail.com",
-                    oauthProvider: {
-                        type: "testni provider",
-                        providerId: "test"
-                    }
-                });
-                    await sudac.save();
-                }
-                suciIds.push(sudac._id);
+        const vecRegistriran = [];
+
+        for (const noviSudac of noviSuci) {
+            const sudac = await User.find({ email: noviSudac });
+            const pozvanSudac = await PozivSucu.find({ email: noviSudac, natjecanjeId: req.params.id });
+            if (sudac.length > 0 || pozvanSudac.length > 0) {
+                vecRegistriran.push(noviSudac);
             }
-            updateData.suci = suciIds;
+        }
+
+        // ako su pronađeni korisnici čiji mail već postoji u bazi, vrati error
+        if (vecRegistriran.length > 0) {
+            console.error( "Ovi korisnici već postoje");
+            return res.status(400).json({
+                poruka: "Ovi korisnici već postoje",
+                emails: vecRegistriran 
+            });
+        }
+
+        for (const noviSudac of noviSuci) {
+            const noviPozivSucu = new PozivSucu({
+                email: noviSudac,
+                natjecanjeId: req.params.id,
+            });
+
+            await noviPozivSucu.save();
+            await posaljiPozivNaEmail(noviSudac, ime);
+        }
+
+        if (Array.isArray(suci) && suci.length > 0) {
+            updateData.suci = suci;
         }
 
         if (Array.isArray(kategorije) && kategorije.length === 3) {
@@ -124,26 +189,7 @@ router.delete("/:id", async (req, res) => {
 
 router.post("/add", async (req, res) => {
     try {
-
-        const { ime, opis, datum, lokacija, organizatorId, kategorije, suci, kotizacija } = req.body;
-
-        const suciIds = [];
-        for (const imeSuca of suci) {
-            let sudac = await User.findOne({ ime: imeSuca });
-            if (!sudac) {
-                sudac = new User({ 
-                    role: "sudac",
-                    ime: imeSuca,
-                    email: imeSuca + "@gmail.com",
-                    oauthProvider: {
-                        type: "testni provider",
-                        providerId: "test"
-                    }
-                });
-                await sudac.save();
-            }
-            suciIds.push(sudac._id);
-        }
+        const { ime, opis, datum, lokacija, organizatorId, kategorije, suci, kotizacija, noviSuci } = req.body;
 
         let kategorijaDoc = await Kategorije.findOne({
             godiste: kategorije[0],
@@ -166,17 +212,47 @@ router.post("/add", async (req, res) => {
             lokacija,
             organizatorId,
             kategorije: [kategorijaDoc._id],
-            suci: suciIds,
+            suci: suci,
             kotizacija: kotizacija    
         });
 
+        const vecRegistriran = [];
+
+        for (const noviSudac of noviSuci) {
+            const sudac = await User.find({ email: noviSudac });
+            if (sudac.length > 0) {
+                vecRegistriran.push(noviSudac);
+            }
+        }
+
+        // ako su pronađeni korisnici čiji mail već postoji u bazi, vrati error
+        if (vecRegistriran.length > 0) {
+            console.error( "Ovi korisnici već postoje");
+            return res.status(400).json({
+                poruka: "Ovi korisnici već postoje",
+                emails: vecRegistriran 
+            });
+        }
+
+        for (const noviSudac of noviSuci) {
+            const noviPozivSucu = new PozivSucu({
+                email: noviSudac,
+                natjecanjeId: novoNatjecanje._id
+            });
+
+            await noviPozivSucu.save();
+            await posaljiPozivNaEmail(noviSudac, ime);
+        }
+
         await novoNatjecanje.save();
-        res.status(201).json({ poruka: "Natjecanje uspješno dodano", natjecanje: novoNatjecanje });
+
+        return res.status(201).json({ poruka: "Natjecanje uspješno dodano", natjecanje: novoNatjecanje });
     
     } catch (err) {
         console.error("Greška pri dodavanju natjecanja:", err);
-        res.status(500).json({ poruka: "Greška pri dodavanju natjecanja" });
+        return res.status(500).json({ poruka: "Greška pri dodavanju natjecanja" });
     }
 });
+
 
 module.exports = router;

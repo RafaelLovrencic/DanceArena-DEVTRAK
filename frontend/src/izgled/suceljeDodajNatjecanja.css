@@ -32,6 +32,7 @@
     height: 80px;
     max-height: 200px;
     min-height: 40px;
+    border: none;
 }
 
 .formaZaNatjecanja>div {
@@ -79,6 +80,7 @@
     height: 25px;
     background: #E3C1EE;
     border-radius: 0;
+    border: none;
 }
 
 .formaZaNatjecanja .opisNatj {
@@ -93,6 +95,7 @@
     height: 80px;
     background: #E3C1EE;
     resize: vertical;
+    border: none;
 }
 
 .submitOdustani>:nth-child(2) {
@@ -111,6 +114,31 @@
     opacity: 1;       
     font-style: italic; 
 }
+
+.my-select__control {
+    background-color: #E3C1EE !important;
+    font-family: 'Sedan SC';
+    font-style: normal;
+    height: 25px;
+    width: 120px;
+    font-size: 15px;
+}
+
+.my-select__placeholder {
+    color: #AB58C7 !important;
+}
+
+.my-select__dropdown-indicator {
+    color: #AB58C7 !important;
+    cursor: pointer;
+}
+
+.my-select__clear-indicator {
+    color: #AB58C7 !important;
+    cursor: pointer;
+}
+
+
 @media (max-width: 700px){
     .formaZaNatjecanja>div {
         flex-direction: column;
