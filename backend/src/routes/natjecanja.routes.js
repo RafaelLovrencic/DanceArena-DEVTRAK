@@ -213,7 +213,8 @@ router.post("/add", async (req, res) => {
             organizatorId,
             kategorije: [kategorijaDoc._id],
             suci: suci,
-            kotizacija: kotizacija    
+            kotizacija: kotizacija,
+            stanje: "otvoreno",
         });
 
         const vecRegistriran = [];
