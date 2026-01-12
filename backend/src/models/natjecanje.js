@@ -17,6 +17,12 @@ const natjecanjeSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  stanje: {
+      type: String,
+      enum: ["otvoreno", "zaključano", "zatvoreno"],
+      required: true,
+      default: "otvoreno"
+  },
   organizatorId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User', // referenca na organizatora
