@@ -14,6 +14,7 @@ export default function Natjecanja() {
     const [odabranoNatjecanje, setOdabranoNatjecanje] = useState(null);
     const [podaciZaUredi, setPodaciZaUredi] = useState(null);
     const [kotizacijaPlacena, setKotizacijaPlacena] = useState(false);
+    const jeZakljucano = odabranoNatjecanje && odabranoNatjecanje.stanje !== "otvoreno";
 
     const [clanarinaAktivna, setClanarinaAktivna] = useState(false);
     const [vrijediDo, setVrijediDo] = useState(null);
@@ -21,6 +22,10 @@ export default function Natjecanja() {
 
     const dohvatiPodatkeONatjecanju = async () => {
         if (!odabranoNatjecanje) return;
+        if (odabranoNatjecanje.stanje !== "otvoreno") {
+            alert("Natjecanje se ne može uređivati u ovom stanju.");
+            return;
+        }
         if (!(await provjeriClanarinuSvjeze())) return;
         const response = await fetch(`${BACKEND_IP}/natjecanja/${odabranoNatjecanje._id}`, {credentials: "include"});
         const data = await response.json();
@@ -210,6 +215,7 @@ export default function Natjecanja() {
                     <table className="tablica">
                     <thead>
                         <tr>
+                            <th></th>
                             <th>Naziv</th>
                             <th>Datum</th>
                             <th>Mjesto</th>
@@ -225,6 +231,7 @@ export default function Natjecanja() {
                             } else {
                             setOdabranoNatjecanje(comp); 
                             }}} className={odabranoNatjecanje?._id === comp._id ? 'selected' : ''}>
+                                <td>{comp.stanje === "zaključano" ? "🔒" : null}</td>
                                 <td>{comp.ime}</td>
                                 <td>{new Date(comp.datum).toLocaleDateString('hr-HR')}</td>
                                 <td>{comp.lokacija}</td>
@@ -243,7 +250,7 @@ export default function Natjecanja() {
                 {korisnik?.role === "organizator" && (
                 <>
                     <button className="dodaj" onClick={dodajNatjecanje}>Dodaj natjecanje</button>
-                    <button className="uredi" onClick={dohvatiPodatkeONatjecanju} style={{backgroundColor: odabranoNatjecanje ? '#2CDE32' : 'rgba(23, 101, 25, 1)', cursor: odabranoNatjecanje ? 'pointer' : 'not-allowed'}}>Uredi natjecanje</button>
+                    <button className="uredi" onClick={dohvatiPodatkeONatjecanju} style={{backgroundColor: (!odabranoNatjecanje || jeZakljucano) ? 'rgba(23, 101, 25, 1)' : '#2CDE32', cursor: (!odabranoNatjecanje || jeZakljucano) ? 'not-allowed' : 'pointer'}}>Uredi natjecanje</button>
                     <button className="obrisi" onClick={obrisiNatjecanje} style={{backgroundColor: odabranoNatjecanje ? '#2CDE32' : 'rgba(23, 101, 25, 1)', cursor: odabranoNatjecanje ? 'pointer' : 'not-allowed'}}>Obriši natjecanje</button>
                 </>
                 )}

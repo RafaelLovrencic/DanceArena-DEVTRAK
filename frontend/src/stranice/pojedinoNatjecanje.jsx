@@ -80,33 +80,60 @@ export default function pojedinoNatjecanje(){
 
 
     const glasaj = async (nastupId) => {
-    const unos = prompt("Unesite ocjenu (0 – 30):");
+        
+        const unos = prompt("Unesite ocjenu (0 – 30):");
 
-    if (unos === null) return; 
+        if (unos === null) return; 
 
-    const broj = Number(unos);
+        const broj = Number(unos);
 
-    if (isNaN(broj) || broj < 0 || broj > 30) {
-        alert("Ocjena mora biti broj između 0 i 30.");
-        return;
-    }
+        if (isNaN(broj) || broj < 0 || broj > 30) {
+            alert("Ocjena mora biti broj između 0 i 30.");
+            return;
+        }
 
-    try {
-        const res = await fetch(`${BACKEND_IP}/nastup/slanjeocjene/${nastupId}/${broj}`,
-            {
+        try {
+            const res = await fetch(`${BACKEND_IP}/nastup/slanjeocjene/${nastupId}/${broj}`,
+                {
+                    method: "PUT",
+                    credentials: "include"
+                }
+            );
+
+            if (!res.ok) throw new Error("Greška pri slanju ocjene");
+
+            alert("Nastup uspješno ocijenjen!");
+        } catch (err) {
+            console.error(err);
+            alert("Došlo je do greške pri glasanju.");
+        }
+    };
+
+    const zakljucaj = async () => {
+        if (!natjecanje) return;
+        if (!window.confirm("Jeste li sigurni da želite zaključati natjecanje?")) return;
+
+        try {
+            const res = await fetch(`${BACKEND_IP}/natjecanja/stanje/${natjecanje._id}/zaključano`, {
                 method: "PUT",
-                credentials: "include"
+                credentials: "include",
+            });
+
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error(text || "Greška pri zaključavanju natjecanja");
             }
-        );
 
-        if (!res.ok) throw new Error("Greška pri slanju ocjene");
+            const data = await res.json();
 
-        alert("Nastup uspješno ocijenjen!");
-    } catch (err) {
-        console.error(err);
-        alert("Došlo je do greške pri glasanju.");
-    }
-};
+            setNatjecanje((prev) => ({ ...prev, stanje: "zaključano" }));
+
+            alert("Natjecanje je zaključano!");
+        } catch (err) {
+            console.error(err);
+            alert("Došlo je do greške pri zaključavanju natjecanja.");
+        }
+    };
 
     return (
         <>
@@ -188,7 +215,17 @@ export default function pojedinoNatjecanje(){
                     </div>
                 </div>
                 <div className="prijava_box">
-                <button className="gumb_prijava" onClick={otvoriPrijavu}>Prijavi se!</button>                 
+                    {korisnik?.role === "organizator" && natjecanje?.stanje !== "zaključano" && (
+                        <button className="gumb_zakljucaj" onClick={zakljucaj}>
+                            Zaključaj!
+                        </button>
+                    )}
+
+                    {korisnik?.role === "voditelj" && natjecanje?.stanje === "otvoreno" && (
+                        <button className="gumb_prijava" onClick={otvoriPrijavu}>
+                            Prijavi se!
+                        </button>
+                    )}
                 </div>
                 <div className="prijave">
                     <div className="naslov_prijava">

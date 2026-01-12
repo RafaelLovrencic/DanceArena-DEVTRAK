@@ -123,6 +123,7 @@ body {
   border-radius: 12px;
   border: 0;
   padding: 10px 20px;
+  height: 46px;
   min-width: 140px;
   white-space: nowrap;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
