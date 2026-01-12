@@ -238,16 +238,21 @@ export default function pojedinoNatjecanje(){
                         {prijave.map((nastup) => (
                             <div key={nastup._id} className="red_prijave">
                                 <span className="tekst_prijave_red">{nastup.klubId?.ime} ; {nastup.imekoreografije}</span>
-                                <button className="gumb_uredi" onClick={() => {
-                                    setUrediPrijavu(nastup);
-                                    setPrijavaPodaci({natjecanjeId: natjecanje._id, kotizacija: natjecanje.kotizacija,
-                                                     kategorije: natjecanje.kategorije, nazivKoreografije: nastup.imekoreografije,
-                                                     trajanje: nastup.trajanje, koreograf: nastup.imekoreografa,
-                                                     dob: nastup.kategorijaId?.godiste || "", stil: nastup.kategorijaId?.stil || "",
-                                                     velicina: nastup.kategorijaId?.velicina || "", glazba: nastup.glazbaUrl || "" })
-                                    setPokaziSucelje(true);
-                                }}>Uredi</button>
-                                <button type="button" className="gumb_ponisti" onClick={() => ponistiPrijavu(nastup._id)}>Poništi</button>
+                                {natjecanje?.stanje === "otvoreno" && korisnik?.role !== "sudac" && (
+                                    <>
+                                        <button className="gumb_uredi" onClick={() => {
+                                            setUrediPrijavu(nastup);
+                                            setPrijavaPodaci({natjecanjeId: natjecanje._id, kotizacija: natjecanje.kotizacija,
+                                                            kategorije: natjecanje.kategorije, nazivKoreografije: nastup.imekoreografije,
+                                                            trajanje: nastup.trajanje, koreograf: nastup.imekoreografa,
+                                                            dob: nastup.kategorijaId?.godiste || "", stil: nastup.kategorijaId?.stil || "",
+                                                            velicina: nastup.kategorijaId?.velicina || "", glazba: nastup.glazbaUrl || "" })
+                                            setPokaziSucelje(true);
+                                        }}>Uredi</button>
+                                        <button type="button" className="gumb_ponisti" onClick={() => ponistiPrijavu(nastup._id)}>Poništi</button> 
+                                    </>
+                                )
+                                }
                             </div>
                         ))}
                     </div>
