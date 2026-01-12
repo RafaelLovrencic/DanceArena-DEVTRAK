@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom";
 import PrijavaNaNatjecanje from './suceljePrijava.jsx';
 
 export default function pojedinoNatjecanje(){
-    const { korisnik } = useAuth();
+    const { korisnik, klub } = useAuth();
     const { id } = useParams();
     const [natjecanje, setNatjecanje] = useState(null);
     const [pokaziSucelje, setPokaziSucelje] = useState(false);
@@ -101,6 +101,8 @@ export default function pojedinoNatjecanje(){
             );
 
             if (!res.ok) throw new Error("Greška pri slanju ocjene");
+
+            console.log(natjecanje, korisnik);
 
             alert("Nastup uspješno ocijenjen!");
         } catch (err) {
@@ -238,7 +240,10 @@ export default function pojedinoNatjecanje(){
                         {prijave.map((nastup) => (
                             <div key={nastup._id} className="red_prijave">
                                 <span className="tekst_prijave_red">{nastup.klubId?.ime} ; {nastup.imekoreografije}</span>
-                                {natjecanje?.stanje === "otvoreno" && korisnik?.role !== "sudac" && (
+                                {natjecanje?.stanje === "otvoreno" && (
+                                    (korisnik?.role === "organizator" && korisnik._id === natjecanje.organizatorId?._id) ||
+                                    (korisnik?.role === "voditelj" && nastup.klubId?._id === klub?._id)
+                                ) && (
                                     <>
                                         <button className="gumb_uredi" onClick={() => {
                                             setUrediPrijavu(nastup);
