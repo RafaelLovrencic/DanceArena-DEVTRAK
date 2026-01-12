@@ -20,7 +20,7 @@ router.put("/slanjeocjene/:id/:ocjena", async (req, res) => {
     }
     catch (err) {
         console.error("Greška pri ažuriranju nastupa:", err);
-        return sres.status(500).json({ poruka: "Greška pri ažuriranju nastupa" });
+        return res.status(500).json({ poruka: "Greška pri ažuriranju nastupa" });
     }
 });
 

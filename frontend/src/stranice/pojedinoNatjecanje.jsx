@@ -94,7 +94,7 @@ export default function pojedinoNatjecanje(){
     try {
         const res = await fetch(`${BACKEND_IP}/nastup/slanjeocjene/${nastupId}/${broj}`,
             {
-                method: "POST",
+                method: "PUT",
                 credentials: "include"
             }
         );
