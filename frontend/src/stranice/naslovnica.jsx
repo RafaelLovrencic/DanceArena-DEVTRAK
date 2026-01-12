@@ -24,6 +24,25 @@ export default function Naslovnica() {
       };
       fetchData();
   }, [competitions]);
+
+  const otvoriPDF = async (competitionId) => {
+        try {
+            const response = await fetch(`${BACKEND_IP}/export/${competitionId}`, {
+                credentials: "include"
+            });
+
+            if (!response.ok) throw new Error("Greška pri dohvaćanju PDF-a");
+
+            const blob = await response.blob();
+
+            const url = window.URL.createObjectURL(blob);
+
+            window.open(url, "_blank");
+
+        } catch (err) {
+            console.error("Greška kod dohvaćanja PDF-a:", err);
+        }
+    };
   return (
     <>
       <nav>
@@ -52,6 +71,7 @@ export default function Naslovnica() {
                               <th>Datum</th>
                               <th>Mjesto</th>
                               <th>Stil plesa</th>
+                              <th></th>
                           </tr>
                       </thead>
                       <tbody>
@@ -61,6 +81,7 @@ export default function Naslovnica() {
                                   <td>{new Date(comp.datum).toLocaleDateString('hr-HR')}</td>
                                   <td>{comp.lokacija}</td>
                                   <td>{comp.kategorije?.[0]?.stil || '-'}</td>
+                                  <td><button className="pdfButton" onClick={() => otvoriPDF(comp._id)}>PDF</button></td>
                               </tr>
                           ))}
                       </tbody>
