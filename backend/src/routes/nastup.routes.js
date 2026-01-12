@@ -14,9 +14,9 @@ router.put("/slanjeocjene/:id/:ocjena", async (req, res) => {
         );
 
         if (!azurirano)
-            return res.status(404).json({ poruka: "Natjecanje nije pronađeno" });
+            return res.status(404).json({ poruka: "Nastup nije pronađen" });
 
-        return res.json({ poruka: "Natjecanje uspješno ažurirano", natjecanje: azurirano });
+        return res.json({ poruka: "Nastup uspješno ažuriran", natjecanje: azurirano });
     }
     catch (err) {
         console.error("Greška pri ažuriranju nastupa:", err);

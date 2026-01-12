@@ -254,4 +254,43 @@ router.post("/add", async (req, res) => {
     }
 });
 
+router.put("/stanje/:id/:stanje", async (req, res) => {
+    const id = req.params.id;
+    const stanje = req.params.stanje;
+
+    try {
+        const azurirano = await Natjecanje.findByIdAndUpdate(
+            req.params.id,
+            { stanje: stanje },
+            {new: true }
+        );
+
+        if (!azurirano)
+            return res.status(404).json({ poruka: "Natjecanje nije pronađeno" });
+
+        return res.json({ poruka: "Stanje natjecanje uspješno ažurirano", natjecanje: azurirano });
+    }
+    catch (err) {
+        console.error("Greška pri ažuriranju stanja natjecanja:", err);
+        return res.status(500).json({ poruka: "Greška pri ažuriranju stanja natjecanja" });
+    }
+});
+
+router.get("stanje/:id", async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        const stanje = await Natjecanje.find({ _id : id })
+            .populate("stanje");
+
+        return res.json(stanje);
+    } catch(err) {
+        console.error("Greška pri dohvaćanju stanja natjecanja:", err);
+        return res.status(500).json({ poruka: "Greška pri dohvaćanju stanja natjecanja" });
+    }
+
+    
+
+});
+
 module.exports = router;
