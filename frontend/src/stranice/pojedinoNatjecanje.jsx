@@ -78,6 +78,36 @@ export default function pojedinoNatjecanje(){
         fetchData();
     }, [id])
 
+
+    const glasaj = async (nastupId) => {
+    const unos = prompt("Unesite ocjenu (0 – 30):");
+
+    if (unos === null) return; 
+
+    const broj = Number(unos);
+
+    if (isNaN(broj) || broj < 0 || broj > 30) {
+        alert("Ocjena mora biti broj između 0 i 30.");
+        return;
+    }
+
+    try {
+        const res = await fetch(`${BACKEND_IP}/nastup/slanjeocjene/${nastupId}/${broj}`,
+            {
+                method: "POST",
+                credentials: "include"
+            }
+        );
+
+        if (!res.ok) throw new Error("Greška pri slanju ocjene");
+
+        alert("Nastup uspješno ocijenjen!");
+    } catch (err) {
+        console.error(err);
+        alert("Došlo je do greške pri glasanju.");
+    }
+};
+
     return (
         <>
             <nav>
@@ -197,7 +227,7 @@ export default function pojedinoNatjecanje(){
                             <div key={nastup._id} className="red_koreografije">
                                 <span className="tekst_koreografije_red">{nastup.imekoreografije} ; {nastup.imekoreografa}</span>
                                 <button className="gumb_detalji">Detalji</button>
-                                <button className="gumb_glasaj">Glasaj</button>
+                                <button className="gumb_glasaj" onClick={() => glasaj(nastup._id)}>Glasaj</button>
                             </div>
                         ))}
                     </div>
