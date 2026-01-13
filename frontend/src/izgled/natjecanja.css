@@ -123,6 +123,7 @@ body {
   border-radius: 12px;
   border: 0;
   padding: 10px 20px;
+  height: 46px;
   min-width: 140px;
   white-space: nowrap;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -160,6 +161,26 @@ body {
 
 .tablica tbody tr {
   cursor: pointer;
+}
+
+.link {
+  display: inline-flex;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #2CDE32;
+  cursor: pointer;
+  font-size: 1.625rem;
+  text-decoration: none;
+  font-weight: bold;
+  color: rgb(255, 255, 255);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.link:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
 
 @media (max-width: 700px){
@@ -210,6 +231,19 @@ body {
     }
 
     .gumbovi > button:hover{
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    .link:hover {
+      transform: none !important;
+    }
+    .link {
+      box-shadow: none;
+      transition: none; 
+    }
+
+    .link:hover {
       transform: none !important;
       box-shadow: none !important;
     }

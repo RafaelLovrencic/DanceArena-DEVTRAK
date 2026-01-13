@@ -4,11 +4,15 @@ const Nastup = require("../models/nastup");
 const Natjecanje = require("../models/natjecanje");
 const path = require("path");
 
-var doc = new pdfkit({ margin: 50, size: 'A4' });
 const router = express.Router();
 
 router.get('/:id', async (req, res) => {
     try {
+
+        const doc = new pdfkit({ margin: 50, size: 'A4' }); 
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `inline; filename="startna_lista.pdf"`);
 
         doc.registerFont('SedanSC', path.resolve(__dirname, '../fonts/SedanSC-Regular.ttf'));
         doc.font('SedanSC');
@@ -21,11 +25,10 @@ router.get('/:id', async (req, res) => {
             .populate('organizatorId', 'ime email')
             .lean();
 
-        const nastupi = await Nastup.find({
-            natjecanjeId: id
-        }).populate("kategorijaId", "godiste stil velicina")
-          .populate("klubId", "ime lokacija")
-          .lean();
+        const nastupi = await Nastup.find({ natjecanjeId: id })
+            .populate("kategorijaId", "godiste stil velicina")
+            .populate("klubId", "ime lokacija")
+            .lean();
        
         const grupiranoPoKat = nastupi.reduce((acc, nastup) => {
             const kat = nastup.kategorijaId;

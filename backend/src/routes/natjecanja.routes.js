@@ -2,11 +2,63 @@ const express = require("express");
 const User = require("../models/user");
 const Kategorije = require("../models/kategorije");
 const Natjecanje = require("../models/natjecanje");
+const Nastup = require("../models/nastup");
 const PozivSucu = require("../models/poziv_sucu");
 const { posaljiPozivNaEmail } = require("../services/email.service");
+const authMiddleware = require("../services/authMiddleware");
 
 const router = express.Router();
 
+router.get("/user", authMiddleware, async (req, res) => {
+    try {
+        const uId = req.user._id;
+        const kId = req.user.klubId;
+        const uloga = req.user.role;
+
+        let natjecanja = [];
+
+        if (uloga === "voditelj") {
+
+            const nastupi = await Nastup.find({ klubId: kId });
+
+            const natjecanjeIds = [
+                ...new Set(nastupi.map(n => n.natjecanjeId.toString()))
+            ];
+
+            natjecanja = await Natjecanje.find({_id: { $in: natjecanjeIds }})
+                .populate("organizatorId")
+                .populate("kategorije")
+                .populate("suci");
+
+        } else if (uloga === "organizator") {
+
+            natjecanja = await Natjecanje.find({ organizatorId: uId })
+                .populate("organizatorId")
+                .populate("kategorije")
+                .populate("suci");
+
+        } else if (uloga === "sudac") {
+
+            natjecanja = await Natjecanje.find({ suci: uId })
+                .populate("organizatorId")
+                .populate("kategorije")
+                .populate("suci");
+        }
+
+        if (!natjecanja.length) {
+            return res.status(404).json({
+                poruka: "Za ovog korisnika nije pronađeno nijedno natjecanje"
+            });
+        }
+        res.status(200).json(natjecanja);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            poruka: "Greška pri dohvaćanju korisnikovih natjecanja"
+        });
+    }
+});
 
 router.get("/", async (req, res) => {
     try {
@@ -167,7 +219,8 @@ router.post("/add", async (req, res) => {
             organizatorId,
             kategorije: [kategorijaDoc._id],
             suci: suci,
-            kotizacija: kotizacija    
+            kotizacija: kotizacija,
+            stanje: "otvoreno",
         });
 
         const vecRegistriran = [];
@@ -205,6 +258,42 @@ router.post("/add", async (req, res) => {
     } catch (err) {
         console.error("Greška pri dodavanju natjecanja:", err);
         return res.status(500).json({ poruka: "Greška pri dodavanju natjecanja" });
+    }
+});
+
+router.put("/stanje/:id/:stanje", async (req, res) => {
+    const id = req.params.id;
+    const stanje = req.params.stanje;
+
+    try {
+        const azurirano = await Natjecanje.findByIdAndUpdate(
+            req.params.id,
+            { stanje: stanje },
+            {new: true }
+        );
+
+        if (!azurirano)
+            return res.status(404).json({ poruka: "Natjecanje nije pronađeno" });
+
+        return res.json({ poruka: "Stanje natjecanje uspješno ažurirano", natjecanje: azurirano });
+    }
+    catch (err) {
+        console.error("Greška pri ažuriranju stanja natjecanja:", err);
+        return res.status(500).json({ poruka: "Greška pri ažuriranju stanja natjecanja" });
+    }
+});
+
+router.get("stanje/:id", async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        const stanje = await Natjecanje.find({ _id : id })
+            .populate("stanje");
+
+        return res.json(stanje);
+    } catch(err) {
+        console.error("Greška pri dohvaćanju stanja natjecanja:", err);
+        return res.status(500).json({ poruka: "Greška pri dohvaćanju stanja natjecanja" });
     }
 });
 

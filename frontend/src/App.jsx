@@ -4,7 +4,8 @@ import UnosPodataka from './stranice/unospodataka.jsx';
 import Profil from './stranice/profil.jsx';
 import ObavijestSucu from './stranice/obavijestSucu.jsx';
 import { AuthProvider } from "./kontekst/AuthContext";
-import Natjecanja from './stranice/natjecanja.jsx'
+import Natjecanja from './stranice/natjecanja.jsx';
+import PojedinoNatjecanje from './stranice/pojedinoNatjecanje.jsx';
 import UnosPodatakaSudac from './stranice/unospodatakaSudac.jsx'
 
 export default function App() {
@@ -17,6 +18,7 @@ export default function App() {
           <Route path="/unospodatakasuci" element={<UnosPodatakaSudac />} />
           <Route path="/profil" element={<Profil />} />
           <Route path="/natjecanja" element={<Natjecanja />} />
+          <Route path="/natjecanje/:id" element={<PojedinoNatjecanje />} />
           <Route path="/obavijestsucu" element={<ObavijestSucu />} />
       </Routes>
       </BrowserRouter>

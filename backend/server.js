@@ -10,7 +10,9 @@ const authRuter = require("./src/routes/auth.routes");
 const unosRuter = require("./src/routes/unos.routes");
 const usersRouter = require("./src/routes/users.routes");
 const natjecanjaRuter = require("./src/routes/natjecanja.routes");
+const prijaveRuter = require("./src/routes/prijave.routes");
 const transakcijeRouter = require("./src/routes/transakcije.routes");
+const nastupRouter = require("./src/routes/nastup.routes");
 const { FRONTEND_URL } = require("./config");
 const exportRuter = require("./src/routes/export.routes");
 
@@ -47,9 +49,11 @@ app.use('/', homeRuter)
 app.use("/auth", authRuter);
 app.use("/unospodataka", unosRuter);
 app.use("/natjecanja", natjecanjaRuter);
+app.use("/prijave", prijaveRuter);
 app.use("/napravi-transakciju", transakcijeRouter);
 app.use("/export", exportRuter);
 app.use("/users", usersRouter);
+app.use("/nastup", nastupRouter);
 
 const SERVER_PORT = process.env.PORT || 5001;
 

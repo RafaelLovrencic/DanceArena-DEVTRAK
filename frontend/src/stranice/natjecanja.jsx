@@ -2,6 +2,7 @@ import '../izgled/natjecanja.css'
 import NavigacijskaTraka from './navigacijskatraka.jsx'
 import DodajNatjecanje from "./suceljeDodajNatjecanje.jsx";
 import {useState, useEffect} from 'react'
+import {Link} from 'react-router-dom';
 import { BACKEND_IP } from "../config";
 import { useAuth } from "../kontekst/AuthContext";
 
@@ -15,6 +16,7 @@ export default function Natjecanja() {
     const [pozvaniSuci, setPozvaniSuci] = useState(null);
     const [kotizacijaPlacena, setKotizacijaPlacena] = useState(false);
     const [urediMod, setUrediMod] = useState(false);
+    const jeZakljucano = odabranoNatjecanje && odabranoNatjecanje.stanje !== "otvoreno";
 
     const [clanarinaAktivna, setClanarinaAktivna] = useState(false);
     const [vrijediDo, setVrijediDo] = useState(null);
@@ -22,6 +24,10 @@ export default function Natjecanja() {
 
     const dohvatiPodatkeONatjecanju = async () => {
         if (!odabranoNatjecanje) return;
+        if (odabranoNatjecanje.stanje !== "otvoreno") {
+            alert("Natjecanje se ne može uređivati u ovom stanju.");
+            return;
+        }
         if (!(await provjeriClanarinuSvjeze())) return;
         const response = await fetch(`${BACKEND_IP}/natjecanja/${odabranoNatjecanje._id}`, {credentials: "include"});
         const data = await response.json();
@@ -56,27 +62,6 @@ export default function Natjecanja() {
         };
         fetchData();
     }, [competitions]);
-
-    useEffect(() => {
-        if (!odabranoNatjecanje || korisnik?.role !== "voditelj") {
-            setKotizacijaPlacena(false);
-            return;
-        }
-
-        const provjeriKotizaciju = async () => {
-            try {
-                const res = await fetch(`${BACKEND_IP}/napravi-transakciju/status-kotizacije/${odabranoNatjecanje._id}`, {
-                    credentials: "include",
-                });
-                const data = await res.json();
-                setKotizacijaPlacena(data.placeno);
-            } catch (err) {
-                console.error("Greška pri dohvaćanju statusa kotizacije:", err);
-            }
-        };
-
-        provjeriKotizaciju();
-    }, [odabranoNatjecanje, korisnik]);
 
     const dodajNatjecanje = async () => {
         if (!(await provjeriClanarinuSvjeze())) return;
@@ -124,35 +109,6 @@ export default function Natjecanja() {
             setCompetitions(data);
         } catch (err) {
             console.error('Greška kod dohvaćanja natjecanja:', err);
-        }
-    };
-
-    const napraviTransakciju = async () => {
-        if (!odabranoNatjecanje) return;
-
-        try {
-            const res = await fetch(`${BACKEND_IP}/napravi-transakciju/kotizacija`, {
-                method: "POST",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    natjecanjeId: odabranoNatjecanje._id,
-                    korisnikId: korisnik._id,
-                }),
-            });
-
-            const { url } = await res.json();
-            console.log(url);
-            if (url) {
-
-                window.location.href = url;
-            } else {
-                console.error("Nema URL-a za checkout");
-            }
-        } catch (err) {
-            console.error("Greška pri plaćanju:", err);
         }
     };
 
@@ -221,24 +177,32 @@ export default function Natjecanja() {
                     <table className="tablica">
                     <thead>
                         <tr>
+                            <th></th>
                             <th>Naziv</th>
                             <th>Datum</th>
                             <th>Mjesto</th>
                             <th>Stil plesa</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         {competitions.map((comp) => (
                             <tr key={comp._id} onClick={() => {
+                            if (korisnik?.role !== "organizator") return;
                             if (odabranoNatjecanje?._id === comp._id) {
                             setOdabranoNatjecanje(null); 
                             } else {
                             setOdabranoNatjecanje(comp); 
                             }}} className={odabranoNatjecanje?._id === comp._id ? 'selected' : ''}>
+                                <td>
+                                {comp.stanje === "zaključano" && "🔒"}
+                                {comp.stanje === "zatvoreno" && "🏁"}
+                                </td>
                                 <td>{comp.ime}</td>
                                 <td>{new Date(comp.datum).toLocaleDateString('hr-HR')}</td>
                                 <td>{comp.lokacija}</td>
                                 <td>{comp.kategorije?.[0]?.stil || '-'}</td>
+                                <td><Link to={`/natjecanje/${comp._id}`} className="link" title="Više informacija o natjecanju.">+</Link></td>
                             </tr>
                         ))}
                     </tbody>
@@ -252,20 +216,9 @@ export default function Natjecanja() {
                 {korisnik?.role === "organizator" && (
                 <>
                     <button className="dodaj" onClick={dodajNatjecanje}>Dodaj natjecanje</button>
-                    <button className="uredi" onClick={dohvatiPodatkeONatjecanju} style={{backgroundColor: odabranoNatjecanje ? '#2CDE32' : 'rgba(23, 101, 25, 1)', cursor: odabranoNatjecanje ? 'pointer' : 'not-allowed'}}>Uredi natjecanje</button>
+                    <button className="uredi" onClick={dohvatiPodatkeONatjecanju} style={{backgroundColor: (!odabranoNatjecanje || jeZakljucano) ? 'rgba(23, 101, 25, 1)' : '#2CDE32', cursor: (!odabranoNatjecanje || jeZakljucano) ? 'not-allowed' : 'pointer'}}>Uredi natjecanje</button>
                     <button className="obrisi" onClick={obrisiNatjecanje} style={{backgroundColor: odabranoNatjecanje ? '#2CDE32' : 'rgba(23, 101, 25, 1)', cursor: odabranoNatjecanje ? 'pointer' : 'not-allowed'}}>Obriši natjecanje</button>
                 </>
-                )}
-                {korisnik?.role === "voditelj" && odabranoNatjecanje && !kotizacijaPlacena && (
-                    <button className='prijava'
-                        onClick={napraviTransakciju}
-                        style={{ backgroundColor: '#2CDE32', cursor: 'pointer' }}
-                    >
-                        Plati kotizaciju
-                    </button>
-                )}
-                {korisnik?.role === "voditelj" && kotizacijaPlacena && (
-                    <p style={{ color: 'green', fontWeight: 'bold' }}>Kotizacija plaćena</p>
                 )}
             </div>
         </section>

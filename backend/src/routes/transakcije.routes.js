@@ -130,8 +130,8 @@ router.post("/kotizacija", authMiddleware, async (req, res) => {
                 korisnikId: korisnik._id.toString(),
                 natjecanjeId: natjecanje._id.toString(),
             },
-            success_url: `${FRONTEND_URL}/natjecanja`,
-            cancel_url: `${FRONTEND_URL}/natjecanja`,
+            success_url: `${FRONTEND_URL}/natjecanje/${natjecanjeId}`,
+            cancel_url: `${FRONTEND_URL}/natjecanje/${natjecanjeId}`,
         });
 
         res.json({ url: session.url });

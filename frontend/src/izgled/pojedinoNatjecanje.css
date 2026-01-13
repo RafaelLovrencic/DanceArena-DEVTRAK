@@ -1,0 +1,424 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter';
+}
+
+.boja {
+  background-color: black;
+  min-height: 100vh;
+}
+
+.naslov-sekcija {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 350px;
+  background-image: url("./pozadine/pozadinadobrodoslice.png");
+  background-size: cover;
+  background-position: center;
+}
+
+.naslov {
+  font-family: 'Sedan SC';
+  font-size: clamp(28px, 5vw, 60px);
+  text-align: center;
+  color: #AB58C7;
+  margin: 0;
+}
+.stanje {
+  font-family: 'Sedan SC';
+  font-size: clamp(20px, 1vw, 60px);
+  text-align: center;
+  color: #AB58C7;
+  margin: 0;
+}
+
+.prvi_blok {
+  display: flex;
+  flex-direction: column;
+  padding: 20px clamp(20px, 6vw, 50px);
+  gap: 12px;
+}
+
+.opis,
+.kotizacija {
+  margin: 0;
+  font-family: 'Sedan SC';
+  font-size: clamp(18px, 2.5vw, 32px);
+  line-height: 145%;
+  color: white;
+  text-align: right;
+}
+
+.informacije {
+  width: 100%;
+  padding: 20px clamp(20px, 6vw, 50px);
+}
+
+.osnovne_info, 
+.kategorije_info {
+  display: flex;
+  gap: 32px;
+  background: rgba(44, 222, 50, 0.1);
+  padding: 24px;
+  border-radius: 8px;
+  border: 2px solid #2CDE32;
+  margin-bottom: 20px;
+}
+
+.prvi {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.drugi {
+  border-bottom: 2px solid #2CDE32;
+  padding-bottom: 8px;
+}
+
+.treci {
+  font-family: 'Sedan SC';
+  font-size: clamp(20px, 2.5vw, 36px);
+  color: white;
+  margin: 0;
+}
+
+.ime_mjesta,
+.vrijeme_dog,
+.popis_sud,
+.popis {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ime_mjesta2,
+.vrijeme2,
+.ime_sud,
+.kat {
+  font-family: 'Sedan SC';
+  font-size: clamp(14px, 2vw, 24px);
+  color: white;
+  text-align: right;
+  margin: 0;
+}
+
+.ime_mjesta,
+.vrijeme_dog {
+  margin-top: auto;
+  padding-top: 24px;
+}
+
+.prijava_box {
+  display: flex;
+  justify-content: flex-end;
+  gap: 20px;
+  padding: 40px;
+}
+
+.gumb_prijava, .gumb_zakljucaj, .gumb_zatvori {
+  background-color: #AB58C7;
+  color: white;
+  border-width: 0px 4px 4px 0px;
+  border-style: solid;
+  border-color: #E3C1EE;
+  border-radius: 48px;
+  padding: 12px 32px;
+  font-size: 20px;
+  font-family: 'Sedan SC';
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.gumb_prijava:hover, .gumb_zakljucaj:hover, .gumb_zatvori:hover {
+  transform: scale(1.1);
+}
+
+.koreografije, 
+.prijave,
+.poredak {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: #2C242F;
+  padding: 24px;
+  border-radius: 8px;
+  border: 2px solid #983db6;
+  margin: 0 auto 20px auto;
+  max-width: 1200px;
+}
+.poredak {
+  margin-bottom: 0;
+}
+
+.naslov_koreografija,
+.naslov_prijava,
+.naslov_poredak {
+  border-bottom: 2px solid #983db6;
+  padding-bottom: 8px;
+}
+
+.tekst_koreografija,
+.tekst_prijava,
+.tekst_poredak {
+  font-family: 'Sedan SC';
+  font-size: clamp(20px, 2.5vw, 36px);
+  color: white;
+  margin: 0;
+}
+
+.lista_koreografija,
+.lista_prijava,
+.lista_poredak {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.red_prijave,
+.red_poredak {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.red_koreografije {
+  display:flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.tekst_prijave_red,
+.tekst_koreografije_red,
+.tekst_poredak_red {
+  font-family: 'Sedan SC';
+  font-size: clamp(14px, 2vw, 20px);
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tekst_koreografije_red {
+  flex: 1;
+  min-width: 0;
+}
+
+.tekst_prijave_red,
+.tekst_poredak_red {
+  flex: 1;
+  min-width: 0;
+}
+
+.nema_koreografija,
+.nema_prijava {
+  font-family: 'Sedan SC';
+  font-size: clamp(14px, 2vw, 20px);
+  color: white;
+  margin: 0;
+  font-style: italic;
+  opacity: 0.7;
+}
+
+.gumb_uredi,
+.gumb_glasaj,
+.gumb_detalji,
+.gumb_ponisti,
+.gumb_glasajUredi,
+.gumb_kotizacija {
+  background-color: #2CDE32;
+  color: black;
+  border: 2px solid #2CDE32;
+  border-radius: 6px;
+  padding: 6px 20px;
+  margin-right: 10px;
+  font-family: 'Sedan SC';
+  font-size: 14px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.gumb_kotizacija {
+  border-radius: 48px;
+  font-size: 20px;
+}
+
+.gumb_uredi:hover,
+.gumb_detalji:hover,
+.gumb_glasaj:hover,
+.gumb_ponisti:hover,
+.gumb_glasajUredi:hover,
+.gumb_kotizacija:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 8px rgba(44, 222, 50, 0.6);
+}
+
+.koreografije:last-child {
+  margin-bottom: 0;
+}
+
+
+@media (max-width: 700px) {
+  .informacije {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+  }
+
+  .naslov {
+    font-size: clamp(40px, 7vw, 80px);
+  }
+
+  .osnovne_info,
+  .kategorije_info {
+    flex-direction: column;
+    gap: 60px;
+    padding: 0;
+    border: none;
+    background: none;
+    width: 100%;
+    align-items: center;
+  }
+
+  .prvi {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    text-align: center;
+  }
+
+  .drugi {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+
+  .treci {
+    font-size: clamp(30px, 3vw, 48px);
+  }
+
+  .ime_mjesta2,
+  .vrijeme2,
+  .ime_sud,
+  .kat {
+    text-align: center;
+    font-size: clamp(18px, 4vw, 28px);
+    margin: 0;
+  }
+
+  .ime_mjesta,
+  .vrijeme_dog,
+  .popis_sud,
+  .popis {
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    gap: 6px;
+    width: 100%;
+  }
+
+  .osnovne_info .prvi:nth-child(odd),
+  .kategorije_info .prvi:nth-child(even) {
+    background-color: rgba(44, 222, 50, 0.2);
+    border-bottom: 2px solid #f8f6f6;
+    border-top: 2px solid #f8f6f6;
+    border-radius: 8px;
+    padding: 12px;
+    width: 100%;
+  }
+
+  .kategorije_info .prvi:last-child {
+    border-bottom: 2px solid #f8f6f6;
+    padding: 12px;
+    padding-bottom: 40px;
+    width: 100%;
+  }
+
+  .prijava_box {
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .opis,
+  .kotizacija {
+    font-size: clamp(22px, 4vw, 36px);
+  }
+
+  .koreografije,
+  .prijave,
+  .poredak {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .tekst_koreografija,
+  .tekst_prijava,
+  .tekst_poredak {
+    font-size: clamp(18px, 4vw, 28px);
+    text-align: center;
+  }
+
+  .red_prijave,
+  .red_koreografije,
+  .red_poredak {
+    gap: 3px;
+  }
+
+  .red_koreografije,
+  .nema_koreografija,
+  .red_prijave,
+  .nema_prijava,
+  .red_poredak {
+    font-size: clamp(14px, 3vw, 18px);
+  }
+
+  .gumb_prijava,
+  .gumb_uredi,
+  .gumb_detalji,
+  .gumb_glasaj,
+  .gumb_ponisti,
+  .gumb_zakljucaj,
+  .gumb_glasajUredi,
+  .gumb_zatvori,
+  .gumb_kotizacija {
+    transition: none !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  .gumb_uredi,
+  .gumb_detalji,
+  .gumb_glasaj,
+  .gumb_ponisti,
+  .gumb_glasajUredi {
+    padding: 4px 12px;
+    font-size: 12px;
+    border-radius: 4px;
+  }
+
+  .gumb_prijava:hover,
+  .gumb_uredi:hover,
+  .gumb_detalji:hover,
+  .gumb_glasaj:hover,
+  .gumb_ponisti:hover,
+  .gumb_zakljucaj:hover,
+  .gumb_glasajUredi:hover,
+  .gumb_zatvori:hover,
+  .gumb_kotizacija:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
+
+
+
