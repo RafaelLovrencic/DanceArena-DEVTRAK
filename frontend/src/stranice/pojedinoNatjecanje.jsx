@@ -398,7 +398,10 @@ export default function pojedinoNatjecanje(){
                                 .sort((a, b) => b.ukupno - a.ukupno)
                                 .map((nastup, index) => (
                                     <div className='red_poredak' key={nastup._id}>
-                                        <span className='tekst_poredak_red'>{index + 1}. {nastup.imekoreografije} ({nastup.imekoreografa}) - {nastup.ukupno} bodova</span>
+                                        <span className='tekst_poredak_red'>{index + 1}. {nastup.imekoreografije} ({nastup.imekoreografa})
+                                            {korisnik?.role === "voditelj" && nastup.klubId?._id === klub?._id
+                                                ? ` - ${nastup.ukupno} bodova`
+                                                : ""}</span>
                                     </div>
                                 ))
                             }
