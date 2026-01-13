@@ -37,7 +37,18 @@ export default function pojedinoNatjecanje(){
             try {
                 const res = await fetch(`${BACKEND_IP}/prijave/natjecanje/${id}`, {credentials: "include"});
                 const data_prijava = await res.json();
-                setPrijave(data_prijava);
+
+                const dodanaOcjena = data_prijava.map(nastup => {
+                const jeOcijenio = Array.isArray(nastup.bodovi) 
+                    ? nastup.bodovi.some(b => b.sudacId?.toString() === korisnik?._id)
+                    : false;
+
+                return {
+                    ...nastup,
+                    ocijenio: jeOcijenio
+                };
+            });
+                setPrijave(dodanaOcjena);
             } catch(err){
                 console.error("Greška kod dohvaćanja prijava:", err);
             }
@@ -63,7 +74,7 @@ export default function pojedinoNatjecanje(){
 
     useEffect(() => {
         fetchPrijave();
-    }, [id])
+    }, [id, natjecanje])
 
     useEffect(() => {
         const fetchData = async () => {
@@ -79,9 +90,13 @@ export default function pojedinoNatjecanje(){
     }, [id])
 
 
-    const glasaj = async (nastupId) => {
-        
-        const unos = prompt("Unesite ocjenu (0 – 30):");
+    const glasaj = async (nastupId, nastup) => {
+        const postojeca = Array.isArray(nastup.bodovi) 
+            ? nastup.bodovi.find(b => b.sudacId?.toString() === korisnik._id)
+            : undefined;
+
+        const staraOcjena = postojeca?.ocjena ?? "";
+        const unos = prompt("Unesite ocjenu (0 – 30):", staraOcjena);
 
         if (unos === null) return; 
 
@@ -93,30 +108,43 @@ export default function pojedinoNatjecanje(){
         }
 
         try {
-            const res = await fetch(`${BACKEND_IP}/nastup/slanjeocjene/${nastupId}/${broj}`,
+            const res = await fetch(`${BACKEND_IP}/nastup/slanjeocjene/${nastupId}`,
                 {
                     method: "PUT",
-                    credentials: "include"
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        ocjena: broj,
+                        sudacId: korisnik._id,
+                    }),
                 }
             );
 
             if (!res.ok) throw new Error("Greška pri slanju ocjene");
 
-            console.log(natjecanje, korisnik);
-
             alert("Nastup uspješno ocijenjen!");
+            await fetchPrijave();
+            console.log(natjecanje, korisnik, nastup);
         } catch (err) {
             console.error(err);
             alert("Došlo je do greške pri glasanju.");
         }
     };
 
-    const zakljucaj = async () => {
+    const promijeniStanje = async (novoStanje) => {
         if (!natjecanje) return;
-        if (!window.confirm("Jeste li sigurni da želite zaključati natjecanje?")) return;
-
+        if(novoStanje === "zaključano") if (!window.confirm("Jeste li sigurni da želite zaključati natjecanje?")) return;
+        if (novoStanje === "zatvoreno") {
+            if (!sviSuciGlasali()) {
+                alert("Nije moguće zatvoriti natjecanje jer svi suci još nisu ocijenili sve prijave!");
+                return;
+            }
+            if (!window.confirm("Jeste li sigurni da želite zatvoriti natjecanje? Ovo će onemogućiti glasanje i prikazati poredak.")) return;
+        }
         try {
-            const res = await fetch(`${BACKEND_IP}/natjecanja/stanje/${natjecanje._id}/zaključano`, {
+            const res = await fetch(`${BACKEND_IP}/natjecanja/stanje/${natjecanje._id}/${novoStanje}`, {
                 method: "PUT",
                 credentials: "include",
             });
@@ -128,13 +156,26 @@ export default function pojedinoNatjecanje(){
 
             const data = await res.json();
 
-            setNatjecanje((prev) => ({ ...prev, stanje: "zaključano" }));
+            setNatjecanje((prev) => ({ ...prev, stanje: novoStanje }));
 
-            alert("Natjecanje je zaključano!");
+            if (novoStanje === "zaključano") alert("Natjecanje je zaključano!");
+            if (novoStanje === "zatvoreno") alert("Natjecanje je zatvoreno!");
         } catch (err) {
             console.error(err);
             alert("Došlo je do greške pri zaključavanju natjecanja.");
         }
+    };
+
+    const sviSuciGlasali = () => {
+        if(prijave.lenght == 0) return true;
+        if (!natjecanje || !Array.isArray(natjecanje.suci)) return false;
+
+        return natjecanje.suci.every(sudac => 
+            prijave.every(nastup =>
+                Array.isArray(nastup.bodovi) &&
+                nastup.bodovi.some(b => b.sudacId?.toString() === sudac._id)
+            )
+        );
     };
 
     return (
@@ -145,6 +186,9 @@ export default function pojedinoNatjecanje(){
             <div className="boja">
                 <section className="naslov-sekcija">
                     <h1 className = "naslov">{natjecanje?.ime}</h1>
+                    {natjecanje?.stanje !== "otvoreno" &&
+                        <h3 className='stanje'>Natjecanje je {natjecanje?.stanje}!</h3>
+                    }
                 </section>
                 <div className="prvi_blok">
                     <p className="opis">{natjecanje?.opis}</p>
@@ -217,9 +261,14 @@ export default function pojedinoNatjecanje(){
                     </div>
                 </div>
                 <div className="prijava_box">
-                    {korisnik?.role === "organizator" && natjecanje?.stanje !== "zaključano" && (
-                        <button className="gumb_zakljucaj" onClick={zakljucaj}>
+                    {korisnik?.role === "organizator" && natjecanje?.stanje === "otvoreno" && (
+                        <button className="gumb_zakljucaj" onClick={() => promijeniStanje("zaključano")}>
                             Zaključaj!
+                        </button>
+                    )}
+                    {korisnik?.role === "organizator" && natjecanje?.stanje === "zaključano" && (
+                        <button className="gumb_zatvori" onClick={() => promijeniStanje("zatvoreno")}>
+                            Zatvori!
                         </button>
                     )}
 
@@ -274,11 +323,52 @@ export default function pojedinoNatjecanje(){
                             <div key={nastup._id} className="red_koreografije">
                                 <span className="tekst_koreografije_red">{nastup.imekoreografije} ; {nastup.imekoreografa}</span>
                                 <button className="gumb_detalji">Detalji</button>
-                                <button className="gumb_glasaj" onClick={() => glasaj(nastup._id)}>Glasaj</button>
+                                {korisnik?.role === "sudac" && natjecanje?.suci?.some(s => s._id === korisnik._id) && natjecanje?.stanje === "zaključano" && (
+                                    nastup.ocijenio ? (
+                                        <button
+                                            className="gumb_glasajUredi"
+                                            onClick={() => glasaj(nastup._id, nastup)}
+                                        >
+                                            Uredi ocjenu
+                                        </button>
+                                    ) : (
+                                        <button
+                                            className="gumb_glasaj"
+                                            onClick={() => glasaj(nastup._id, nastup)}
+                                        >
+                                            Ocijeni
+                                        </button>
+                                    )
+                                )
+                                }
                             </div>
                         ))}
                     </div>
                 </div>
+                {natjecanje?.stanje === "zatvoreno" && (
+                    <div className='poredak'>
+                        <div className="naslov_poredak">
+                            <p className="tekst_poredak">Rezultati:</p>
+                        </div>
+                        <div className='lista_poredak'>
+                            {prijave
+                                .map(nastup => ({
+                                    ...nastup,
+                                    ukupno: Array.isArray(nastup.bodovi)
+                                        ? nastup.bodovi.reduce((sum, b) => sum + (b.ocjena || 0), 0)
+                                        : 0
+                                }))
+                                .sort((a, b) => b.ukupno - a.ukupno)
+                                .map((nastup, index) => (
+                                    <div className='red_poredak' key={nastup._id}>
+                                        <span className='tekst_poredak_red'>{index + 1}. {nastup.imekoreografije} ({nastup.imekoreografa}) - {nastup.ukupno} bodova</span>
+                                    </div>
+                                ))
+                            }
+                        </div>
+                    </div>
+                )
+                }
             </div>
             {pokaziSucelje && (
                 <PrijavaNaNatjecanje onClose={() => {

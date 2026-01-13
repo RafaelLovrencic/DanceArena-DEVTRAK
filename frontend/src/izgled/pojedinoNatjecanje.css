@@ -29,6 +29,13 @@ body {
   color: #AB58C7;
   margin: 0;
 }
+.stanje {
+  font-family: 'Sedan SC';
+  font-size: clamp(20px, 1vw, 60px);
+  text-align: center;
+  color: #AB58C7;
+  margin: 0;
+}
 
 .prvi_blok {
   display: flex;
@@ -114,7 +121,7 @@ body {
   padding: 40px;
 }
 
-.gumb_prijava, .gumb_zakljucaj {
+.gumb_prijava, .gumb_zakljucaj, .gumb_zatvori {
   background-color: #AB58C7;
   color: white;
   border-width: 0px 4px 4px 0px;
@@ -128,12 +135,13 @@ body {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.gumb_prijava:hover, .gumb_zakljucaj:hover {
+.gumb_prijava:hover, .gumb_zakljucaj:hover, .gumb_zatvori:hover {
   transform: scale(1.1);
 }
 
 .koreografije, 
-.prijave {
+.prijave,
+.poredak {
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -144,15 +152,20 @@ body {
   margin: 0 auto 20px auto;
   max-width: 1200px;
 }
+.poredak {
+  margin-bottom: 0;
+}
 
 .naslov_koreografija,
-.naslov_prijava {
+.naslov_prijava,
+.naslov_poredak {
   border-bottom: 2px solid #983db6;
   padding-bottom: 8px;
 }
 
 .tekst_koreografija,
-.tekst_prijava {
+.tekst_prijava,
+.tekst_poredak {
   font-family: 'Sedan SC';
   font-size: clamp(20px, 2.5vw, 36px);
   color: white;
@@ -160,13 +173,15 @@ body {
 }
 
 .lista_koreografija,
-.lista_prijava {
+.lista_prijava,
+.lista_poredak {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.red_prijave {
+.red_prijave,
+.red_poredak {
   display: flex;
   align-items: center;
   gap: 16px;
@@ -179,7 +194,8 @@ body {
 }
 
 .tekst_prijave_red,
-.tekst_koreografije_red {
+.tekst_koreografije_red,
+.tekst_poredak_red {
   font-family: 'Sedan SC';
   font-size: clamp(14px, 2vw, 20px);
   color: white;
@@ -193,7 +209,8 @@ body {
   min-width: 0;
 }
 
-.tekst_prijave_red {
+.tekst_prijave_red,
+.tekst_poredak_red {
   flex: 1;
   min-width: 0;
 }
@@ -211,7 +228,8 @@ body {
 .gumb_uredi,
 .gumb_glasaj,
 .gumb_detalji,
-.gumb_ponisti {
+.gumb_ponisti,
+.gumb_glasajUredi {
   background-color: #2CDE32;
   color: black;
   border: 2px solid #2CDE32;
@@ -228,7 +246,8 @@ body {
 .gumb_uredi:hover,
 .gumb_detalji:hover,
 .gumb_glasaj:hover,
-.gumb_ponisti:hover {
+.gumb_ponisti:hover,
+.gumb_glasajUredi:hover {
   transform: scale(1.05);
   box-shadow: 0 0 8px rgba(44, 222, 50, 0.6);
 }
@@ -327,26 +346,30 @@ body {
   }
 
   .koreografije,
-  .prijave {
+  .prijave,
+  .poredak {
     padding: 16px;
     gap: 12px;
   }
 
   .tekst_koreografija,
-  .tekst_prijava {
+  .tekst_prijava,
+  .tekst_poredak {
     font-size: clamp(18px, 4vw, 28px);
     text-align: center;
   }
 
   .red_prijave,
-  .red_koreografije {
+  .red_koreografije,
+  .red_poredak {
     gap: 3px;
   }
 
   .red_koreografije,
   .nema_koreografija,
   .red_prijave,
-  .nema_prijava {
+  .nema_prijava,
+  .red_poredak {
     font-size: clamp(14px, 3vw, 18px);
   }
 
@@ -355,7 +378,9 @@ body {
   .gumb_detalji,
   .gumb_glasaj,
   .gumb_ponisti,
-  .gumb_zakljucaj {
+  .gumb_zakljucaj,
+  .gumb_glasajUredi,
+  .gumb_zatvori {
     transition: none !important;
     transform: none !important;
     box-shadow: none !important;
@@ -364,7 +389,8 @@ body {
   .gumb_uredi,
   .gumb_detalji,
   .gumb_glasaj,
-  .gumb_ponisti {
+  .gumb_ponisti,
+  .gumb_glasajUredi {
     padding: 4px 12px;
     font-size: 12px;
     border-radius: 4px;
@@ -375,7 +401,9 @@ body {
   .gumb_detalji:hover,
   .gumb_glasaj:hover,
   .gumb_ponisti:hover,
-  .gumb_zakljucaj:hover {
+  .gumb_zakljucaj:hover,
+  .gumb_glasajUredi:hover,
+  .gumb_zatvori:hover {
     transform: none !important;
     box-shadow: none !important;
   }

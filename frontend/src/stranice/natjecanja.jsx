@@ -231,7 +231,10 @@ export default function Natjecanja() {
                             } else {
                             setOdabranoNatjecanje(comp); 
                             }}} className={odabranoNatjecanje?._id === comp._id ? 'selected' : ''}>
-                                <td>{comp.stanje === "zaključano" ? "🔒" : null}</td>
+                                <td>
+                                {comp.stanje === "zaključano" && "🔒"}
+                                {comp.stanje === "zatvoreno" && "🏁"}
+                                </td>
                                 <td>{comp.ime}</td>
                                 <td>{new Date(comp.datum).toLocaleDateString('hr-HR')}</td>
                                 <td>{comp.lokacija}</td>

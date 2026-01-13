@@ -12,7 +12,7 @@ router.put("/slanjeocjene/:id", async (req, res) => {
             return res.status(404).json({ poruka: "Nastup nije pronađen" });
 
         const postojecaOcjena = nastup.bodovi.find(
-            b => b.sudacId.toString() === sudacId
+            b => b.sudacId && b.sudacId.toString() === sudacId
         );
 
         if (postojecaOcjena) {
@@ -23,7 +23,9 @@ router.put("/slanjeocjene/:id", async (req, res) => {
                 ocjena
             });
         }
-
+        nastup.bodovi = nastup.bodovi.filter(
+            b => b.sudacId && b.ocjena !== undefined
+        );
         await nastup.save();
 
         return res.json({
