@@ -177,6 +177,11 @@ router.put("/application/edit/:id", authMiddleware, async (req, res) => {
 router.delete("/application/del/:id", authMiddleware, async (req, res) => {
     const { id } = req.params;
     try {
+        const postojeci = await Nastup.findById(id);
+        if (req.user.role === "sudac" || 
+            (postojeci.klubId.toString() !== req.user.klubId.toString() && req.user.role === "voditelj")) {
+            return res.status(400).json({ "error": "Nije moguće obrisati tuđi nastup" });
+        }
         const nastup = await Nastup.findByIdAndDelete(id);
         if (!nastup){
             return res.status(404).json({ "error": "Nastup nije pronađen" });
