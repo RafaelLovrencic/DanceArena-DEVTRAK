@@ -55,6 +55,13 @@ app.use("/export", exportRuter);
 app.use("/users", usersRouter);
 app.use("/nastup", nastupRouter);
 
+const path = require("path");
+app.use(express.static(path.join(__dirname, "frontend/dist")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend/dist", "index.html"));
+});
+
 const SERVER_PORT = process.env.PORT || 5001;
 
 mongoose.connect(process.env.MONGODB_URI)
