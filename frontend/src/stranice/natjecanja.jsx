@@ -54,27 +54,6 @@ export default function Natjecanja() {
         fetchData();
     }, [competitions]);
 
-    useEffect(() => {
-        if (!odabranoNatjecanje || korisnik?.role !== "voditelj") {
-            setKotizacijaPlacena(false);
-            return;
-        }
-
-        const provjeriKotizaciju = async () => {
-            try {
-                const res = await fetch(`${BACKEND_IP}/napravi-transakciju/status-kotizacije/${odabranoNatjecanje._id}`, {
-                    credentials: "include",
-                });
-                const data = await res.json();
-                setKotizacijaPlacena(data.placeno);
-            } catch (err) {
-                console.error("Greška pri dohvaćanju statusa kotizacije:", err);
-            }
-        };
-
-        provjeriKotizaciju();
-    }, [odabranoNatjecanje, korisnik]);
-
     const dodajNatjecanje = async () => {
         if (!(await provjeriClanarinuSvjeze())) return;
         setPokaziSucelje(true);
@@ -118,35 +97,6 @@ export default function Natjecanja() {
             setCompetitions(data);
         } catch (err) {
             console.error('Greška kod dohvaćanja natjecanja:', err);
-        }
-    };
-
-    const napraviTransakciju = async () => {
-        if (!odabranoNatjecanje) return;
-
-        try {
-            const res = await fetch(`${BACKEND_IP}/napravi-transakciju/kotizacija`, {
-                method: "POST",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    natjecanjeId: odabranoNatjecanje._id,
-                    korisnikId: korisnik._id,
-                }),
-            });
-
-            const { url } = await res.json();
-            console.log(url);
-            if (url) {
-
-                window.location.href = url;
-            } else {
-                console.error("Nema URL-a za checkout");
-            }
-        } catch (err) {
-            console.error("Greška pri plaćanju:", err);
         }
     };
 
@@ -226,6 +176,7 @@ export default function Natjecanja() {
                     <tbody>
                         {competitions.map((comp) => (
                             <tr key={comp._id} onClick={() => {
+                            if (korisnik?.role !== "organizator") return;
                             if (odabranoNatjecanje?._id === comp._id) {
                             setOdabranoNatjecanje(null); 
                             } else {
@@ -256,17 +207,6 @@ export default function Natjecanja() {
                     <button className="uredi" onClick={dohvatiPodatkeONatjecanju} style={{backgroundColor: (!odabranoNatjecanje || jeZakljucano) ? 'rgba(23, 101, 25, 1)' : '#2CDE32', cursor: (!odabranoNatjecanje || jeZakljucano) ? 'not-allowed' : 'pointer'}}>Uredi natjecanje</button>
                     <button className="obrisi" onClick={obrisiNatjecanje} style={{backgroundColor: odabranoNatjecanje ? '#2CDE32' : 'rgba(23, 101, 25, 1)', cursor: odabranoNatjecanje ? 'pointer' : 'not-allowed'}}>Obriši natjecanje</button>
                 </>
-                )}
-                {korisnik?.role === "voditelj" && odabranoNatjecanje && !kotizacijaPlacena && (
-                    <button className='prijava'
-                        onClick={napraviTransakciju}
-                        style={{ backgroundColor: '#2CDE32', cursor: 'pointer' }}
-                    >
-                        Plati kotizaciju
-                    </button>
-                )}
-                {korisnik?.role === "voditelj" && kotizacijaPlacena && (
-                    <p style={{ color: 'green', fontWeight: 'bold' }}>Kotizacija plaćena</p>
                 )}
             </div>
         </section>

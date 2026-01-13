@@ -118,6 +118,7 @@ body {
 .prijava_box {
   display: flex;
   justify-content: flex-end;
+  gap: 20px;
   padding: 40px;
 }
 
@@ -229,7 +230,8 @@ body {
 .gumb_glasaj,
 .gumb_detalji,
 .gumb_ponisti,
-.gumb_glasajUredi {
+.gumb_glasajUredi,
+.gumb_kotizacija {
   background-color: #2CDE32;
   color: black;
   border: 2px solid #2CDE32;
@@ -243,11 +245,17 @@ body {
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
+.gumb_kotizacija {
+  border-radius: 48px;
+  font-size: 20px;
+}
+
 .gumb_uredi:hover,
 .gumb_detalji:hover,
 .gumb_glasaj:hover,
 .gumb_ponisti:hover,
-.gumb_glasajUredi:hover {
+.gumb_glasajUredi:hover,
+.gumb_kotizacija:hover {
   transform: scale(1.05);
   box-shadow: 0 0 8px rgba(44, 222, 50, 0.6);
 }
@@ -380,7 +388,8 @@ body {
   .gumb_ponisti,
   .gumb_zakljucaj,
   .gumb_glasajUredi,
-  .gumb_zatvori {
+  .gumb_zatvori,
+  .gumb_kotizacija {
     transition: none !important;
     transform: none !important;
     box-shadow: none !important;
@@ -403,7 +412,8 @@ body {
   .gumb_ponisti:hover,
   .gumb_zakljucaj:hover,
   .gumb_glasajUredi:hover,
-  .gumb_zatvori:hover {
+  .gumb_zatvori:hover,
+  .gumb_kotizacija:hover {
     transform: none !important;
     box-shadow: none !important;
   }

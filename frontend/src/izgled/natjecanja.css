@@ -175,10 +175,12 @@ body {
   text-decoration: none;
   font-weight: bold;
   color: rgb(255, 255, 255);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .link:hover {
   transform: scale(1.1);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
 
 @media (max-width: 700px){
@@ -235,6 +237,15 @@ body {
 
     .link:hover {
       transform: none !important;
+    }
+    .link {
+      box-shadow: none;
+      transition: none; 
+    }
+
+    .link:hover {
+      transform: none !important;
+      box-shadow: none !important;
     }
 
     .naslov-sekcija {

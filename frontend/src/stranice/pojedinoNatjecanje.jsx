@@ -15,6 +15,7 @@ export default function pojedinoNatjecanje(){
     const [prijave, setPrijave] = useState([]);
     const [urediPrijavu, setUrediPrijavu] = useState(null);
     const [clanarinaAktivna, setClanarinaAktivna] = useState(false);
+    const [kotizacijaPlacena, setKotizacijaPlacena] = useState(false);
 
 
     const otvoriPrijavu = () => {
@@ -202,6 +203,59 @@ export default function pojedinoNatjecanje(){
         }
     };
 
+    const napraviTransakciju = async () => {
+        if (!natjecanje._id) return;
+
+        try {
+            const res = await fetch(`${BACKEND_IP}/napravi-transakciju/kotizacija`, {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    natjecanjeId: natjecanje._id,
+                    korisnikId: korisnik._id,
+                }),
+            });
+
+            const { url } = await res.json();
+            console.log(url);
+            if (url) {
+                window.location.href = url;
+            } else {
+                console.error("Nema URL-a za checkout");
+            }
+        } catch (err) {
+            console.error("Greška pri plaćanju:", err);
+        }
+    };
+    useEffect(() => {
+        if (!natjecanje?._id || korisnik?.role !== "voditelj") {
+            setKotizacijaPlacena(false);
+            return;
+        }
+
+        const provjeriKotizaciju = async () => {
+            try {
+                const res = await fetch(`${BACKEND_IP}/napravi-transakciju/status-kotizacije/${natjecanje._id}`, {
+                    credentials: "include",
+                });
+                const data = await res.json();
+                setKotizacijaPlacena(data.placeno);
+            } catch (err) {
+                console.error("Greška pri dohvaćanju statusa kotizacije:", err);
+            }
+        };
+
+        provjeriKotizaciju();
+    }, [natjecanje, korisnik]);
+
+    const imamSvojNastup =
+        Array.isArray(prijave) &&
+        prijave.length > 0 &&
+        !!klub?._id &&
+        prijave.some(p => String(p.klubId?._id) === String(klub._id));
 
     return (
         <>
@@ -286,21 +340,38 @@ export default function pojedinoNatjecanje(){
                     </div>
                 </div>
                 <div className="prijava_box">
-                    {korisnik?.role === "organizator" && natjecanje?.stanje === "otvoreno" && (
+                    {korisnik?.role === "organizator" && natjecanje?.stanje === "otvoreno" && korisnik._id === natjecanje.organizatorId?._id && (
                         <button className="gumb_zakljucaj" onClick={() => promijeniStanje("zaključano")}>
                             Zaključaj!
                         </button>
                     )}
-                    {korisnik?.role === "organizator" && natjecanje?.stanje === "zaključano" && (
+                    {korisnik?.role === "organizator" && natjecanje?.stanje === "zaključano" && korisnik._id === natjecanje.organizatorId?._id && (
                         <button className="gumb_zatvori" onClick={() => promijeniStanje("zatvoreno")}>
                             Zatvori!
                         </button>
                     )}
 
                     {korisnik?.role === "voditelj" && natjecanje?.stanje === "otvoreno" && (
-                        <button className="gumb_prijava" onClick={otvoriPrijavu}>
-                            Prijavi se!
-                        </button>
+                        <>
+                            {imamSvojNastup && !kotizacijaPlacena && (
+                                <button
+                                    className='gumb_kotizacija'
+                                    onClick={napraviTransakciju}
+                                    style={{ backgroundColor: '#2CDE32', cursor: 'pointer' }}
+                                >
+                                    Plati kotizaciju!
+                                </button>
+                            )}
+
+                            {imamSvojNastup && kotizacijaPlacena && (
+                                <p style={{ color: 'green', fontWeight: 'bold' }}>
+                                    Kotizacija plaćena
+                                </p>
+                            )}
+                            <button className="gumb_prijava" onClick={otvoriPrijavu}>
+                                Prijavi se!
+                            </button>
+                        </>
                     )}
                 </div>
                 <div className="prijave">
