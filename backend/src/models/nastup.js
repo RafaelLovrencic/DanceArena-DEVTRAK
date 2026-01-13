@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bodoviSchema = require("./bodovi");
 
 const nastupSchema = new mongoose.Schema({
   natjecanjeId: {
@@ -37,8 +38,8 @@ const nastupSchema = new mongoose.Schema({
     required: true
   },
   bodovi: {
-    type: Number,
-    default: 0
+    type: [bodoviSchema],
+    default: []
   },
   ranking: {
     type: Number

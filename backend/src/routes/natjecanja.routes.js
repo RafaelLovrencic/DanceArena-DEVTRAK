@@ -289,9 +289,7 @@ router.get("stanje/:id", async (req, res) => {
         console.error("Greška pri dohvaćanju stanja natjecanja:", err);
         return res.status(500).json({ poruka: "Greška pri dohvaćanju stanja natjecanja" });
     }
-
-    
-
 });
+
 
 module.exports = router;
