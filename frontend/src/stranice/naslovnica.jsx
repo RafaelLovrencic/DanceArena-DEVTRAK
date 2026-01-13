@@ -25,7 +25,7 @@ export default function Naslovnica() {
             }
         };
         fetchData();
-    }, [competitions]);
+    }, [competitions, korisnik]);
 
     const otvoriPDF = async (competitionId) => {
         try {
