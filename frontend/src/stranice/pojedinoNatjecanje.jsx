@@ -14,6 +14,8 @@ export default function pojedinoNatjecanje(){
     const [prijavaPodaci, setPrijavaPodaci] = useState(null);
     const [prijave, setPrijave] = useState([]);
     const [urediPrijavu, setUrediPrijavu] = useState(null);
+    const [clanarinaAktivna, setClanarinaAktivna] = useState(false);
+
 
     const otvoriPrijavu = () => {
         setPrijavaPodaci({
@@ -135,6 +137,7 @@ export default function pojedinoNatjecanje(){
 
     const promijeniStanje = async (novoStanje) => {
         if (!natjecanje) return;
+        if (!(await provjeriClanarinuSvjeze())) return;
         if(novoStanje === "zaključano") if (!window.confirm("Jeste li sigurni da želite zaključati natjecanje?")) return;
         if (novoStanje === "zatvoreno") {
             if (!sviSuciGlasali()) {
@@ -177,6 +180,28 @@ export default function pojedinoNatjecanje(){
             )
         );
     };
+
+    const provjeriClanarinuSvjeze = async () => {
+        try {
+            const res = await fetch(`${BACKEND_IP}/napravi-transakciju/status-clanarine`, {
+                credentials: "include",
+            });
+            const data = await res.json();
+
+            setClanarinaAktivna(data.active);
+
+            if (!data.active) {
+                alert("Nemate aktivnu članarinu!");
+                return false;
+            }
+
+            return true;
+        } catch (err) {
+            alert("Greška pri provjeri članarine");
+            return false;
+        }
+    };
+
 
     return (
         <>
@@ -294,7 +319,12 @@ export default function pojedinoNatjecanje(){
                                     (korisnik?.role === "voditelj" && nastup.klubId?._id === klub?._id)
                                 ) && (
                                     <>
-                                        <button className="gumb_uredi" onClick={() => {
+                                        <button className="gumb_uredi" onClick={async () => {
+                                            if (korisnik?.role === "organizator") {
+                                                const clanarinaOk = await provjeriClanarinuSvjeze();
+                                                if (!clanarinaOk) return;
+                                            }
+
                                             setUrediPrijavu(nastup);
                                             setPrijavaPodaci({natjecanjeId: natjecanje._id, kotizacija: natjecanje.kotizacija,
                                                             kategorije: natjecanje.kategorije, nazivKoreografije: nastup.imekoreografije,
@@ -303,7 +333,14 @@ export default function pojedinoNatjecanje(){
                                                             velicina: nastup.kategorijaId?.velicina || "", glazba: nastup.glazbaUrl || "" })
                                             setPokaziSucelje(true);
                                         }}>Uredi</button>
-                                        <button type="button" className="gumb_ponisti" onClick={() => ponistiPrijavu(nastup._id)}>Poništi</button> 
+                                        <button type="button" className="gumb_ponisti" onClick={async () => {
+                                            if (korisnik?.role === "organizator") {
+                                                const clanarinaOk = await provjeriClanarinuSvjeze();
+                                                if (!clanarinaOk) return;
+                                            }
+                                            ponistiPrijavu(nastup._id)
+                                        }
+                                        }>Poništi</button> 
                                     </>
                                 )
                                 }
