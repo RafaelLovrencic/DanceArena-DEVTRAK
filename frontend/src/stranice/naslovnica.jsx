@@ -90,7 +90,7 @@ export default function Naslovnica() {
                                   <td>{comp.lokacija}</td>
                                   <td>{comp.kategorije?.[0]?.stil || '-'}</td>
                                   <td><Link to={`/natjecanje/${comp._id}`} className="link" title="Više informacija o natjecanju.">+</Link></td>
-                                  <td>{comp.stanje === "otvoreno" || comp.stanje === "zaključano" ?
+                                  <td>{comp.stanje === "otvoreno" ?
                                     "" :
                                     <button className="pdfButton" onClick={() => otvoriPDF(comp._id)}>PDF</button>
                                   }
