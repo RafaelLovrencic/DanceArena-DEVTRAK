@@ -43,7 +43,7 @@ export default function DodajNatjecanje({onClose, natjecanjeZaUredi, pozvaniSuci
     const pohraniPromjene = async (e) => {
         e.preventDefault();
 
-        let brojNeregistriranih = pozvaniSuci.length;
+        let brojNeregistriranih = (pozvaniSuci?.length) || 0;
         if (!urediMod) brojNeregistriranih = 0;
 
         console.log(urediMod);
