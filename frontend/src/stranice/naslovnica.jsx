@@ -12,6 +12,7 @@ export default function Naslovnica() {
     const [loadingNat, setLoadingNat] = useState(true);
     const [competitions, setCompetitions] = useState([]);
     useEffect(() => {
+        if (!korisnik) return;
         const fetchData = async () => {
             try {
                 const response = await fetch(`${BACKEND_IP}/natjecanja/user`, {credentials: "include"});
