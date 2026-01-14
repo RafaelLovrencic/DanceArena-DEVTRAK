@@ -7,6 +7,8 @@ import { AuthProvider } from "./kontekst/AuthContext";
 import Natjecanja from './stranice/natjecanja.jsx';
 import PojedinoNatjecanje from './stranice/pojedinoNatjecanje.jsx';
 import UnosPodatakaSudac from './stranice/unospodatakaSudac.jsx'
+import OAuthCallback from "./stranice/OAuthCallback";
+
 
 export default function App() {
   return (
@@ -20,7 +22,8 @@ export default function App() {
           <Route path="/natjecanja" element={<Natjecanja />} />
           <Route path="/natjecanje/:id" element={<PojedinoNatjecanje />} />
           <Route path="/obavijestsucu" element={<ObavijestSucu />} />
-      </Routes>
+          <Route path="/oauth-callback" element={<OAuthCallback />} />
+        </Routes>
       </BrowserRouter>
     </AuthProvider>
   );
