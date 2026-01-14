@@ -57,7 +57,7 @@ router.get("/nabaviocjene/:id", async (req, res) => {
 
 router.get("/", async (req, res) => {
     try {
-        const nastupi = await Nastup.fin();
+        const nastupi = await Nastup.find();
         res.json(nastupi);
     }
     catch (err) {
