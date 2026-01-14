@@ -283,7 +283,7 @@ router.put("/stanje/:id/:stanje", async (req, res) => {
     }
 });
 
-router.get("stanje/:id", async (req, res) => {
+router.get("/stanje/:id", async (req, res) => {
     const id = req.params.id;
 
     try {
