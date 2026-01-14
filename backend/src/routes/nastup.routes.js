@@ -55,6 +55,18 @@ router.get("/nabaviocjene/:id", async (req, res) => {
 });
 
 
+router.get("/", async (req, res) => {
+    try {
+        const nastupi = await Nastup.fin();
+        res.json(nastupi);
+    }
+    catch (err) {
+        console.error("Greška pri dohvaćanju nastupa:", err);
+        res.status(500).json({ poruka: "Greška pri dohvaćanju nastupa" });
+    }
+});
+
+
 router.delete("/brisanjeocjene/:id", async (req, res) => {
     const id = req.params.id;
     const { sudacId } = req.body;
