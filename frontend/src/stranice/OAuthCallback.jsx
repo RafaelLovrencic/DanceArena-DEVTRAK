@@ -6,7 +6,10 @@ export default function OAuthCallback() {
     const hash = window.location.hash; // "#token=..."
     const token = new URLSearchParams(hash.slice(1)).get("token");
 
+    console.log("OAuthCallback: token iz URL-a =", token);
+
     if (!token) {
+      console.log("Nema tokena, redirect na /");
       window.location.href = "/";
       return;
     }
@@ -22,6 +25,7 @@ export default function OAuthCallback() {
       body: JSON.stringify({ token }),
     })
       .then(async (res) => {
+        console.log("POST /store-token status =", res.status);
         if (!res.ok) throw new Error("Neuspjelo spremanje tokena");
 
         // 2️⃣ Provjeri korisnika i klub
@@ -29,19 +33,23 @@ export default function OAuthCallback() {
           credentials: "include",
         });
 
+        console.log("GET /provjera-autentifikacije status =", check.status);
+
         if (!check.ok) {
-          // Ako korisnik još nije u bazi, redirect na unos podataka
+          console.log("Korisnik nije u bazi, redirect na /unospodataka");
           window.location.href = "/unospodataka";
           return;
         }
 
         const data = await check.json();
+        console.log("Provjera korisnika:", data);
 
-        // 3️⃣ Ako korisnik postoji i ima role/klub → redirect na glavni
+        // 3️⃣ Redirect logika
         if (data.korisnik.role) {
+          console.log("Korisnik postoji i ima role, redirect na /");
           window.location.href = "/";
         } else {
-          // Korisnik postoji, ali još nema rolu/klub → unospodataka
+          console.log("Korisnik postoji, ali nema role/klub, redirect na /unospodataka");
           window.location.href = "/unospodataka";
         }
       })

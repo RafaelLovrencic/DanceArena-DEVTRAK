@@ -18,18 +18,18 @@ router.get("/google", (req, res, next) => {
   })(req, res, next);
 });
 
-// ---------------- Google callback ----------------
-// PROMJENA: NE postavljamo cookie direktno, nego redirect s tokenom
+// /google/callback
 router.get("/google/callback",
   passport.authenticate("google", { session: false }),
   (req, res) => {
     try {
+      console.log("Google callback, req.user =", req.user);
+
       if (!req.user) return res.redirect(FRONTEND_URL);
 
-      // Generiramo JWT
       const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+      console.log("JWT generiran:", token);
 
-      // PROMJENA: redirect na frontend s tokenom u #hashu
       res.redirect(`${FRONTEND_URL}/oauth-callback#token=${token}`);
     } catch (err) {
       console.error("Greška u callback-u:", err);
@@ -38,22 +38,22 @@ router.get("/google/callback",
   }
 );
 
-// ----------------- Novi endpoint -----------------
-// PROMJENA: backend postavlja cookie tek nakon što frontend pošalje token
+// /store-token
 router.post("/store-token", express.json(), (req, res) => {
   const { token } = req.body;
+  console.log("POST /store-token, primljen token =", token);
 
   try {
-    // Provjera valjanosti tokena
     jwt.verify(token, process.env.JWT_SECRET);
+    console.log("Token je validan");
 
-    // Postavljanje cookieja (first-party)
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "Lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
+    console.log("Cookie postavljen");
 
     res.json({ ok: true });
   } catch (err) {
@@ -62,18 +62,22 @@ router.post("/store-token", express.json(), (req, res) => {
   }
 });
 
-// Provjera autentifikacije
+// /provjera-autentifikacije
 router.get("/provjera-autentifikacije", async (req, res) => {
   try {
+    console.log("Provjera autentifikacije, req.cookies =", req.cookies);
     const token = req.cookies?.token;
     if (!token) return res.status(401).json({ greska: "Nema tokena" });
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("Decoded token =", decoded);
+
     const korisnik = await Korisnici.findById(decoded.id);
     if (!korisnik) return res.status(404).json({ greska: "Korisnik nije pronađen" });
 
     const klub = await Klub.findOne({ ownerId: korisnik._id });
 
+    console.log("Korisnik i klub dohvaćeni:", { korisnik, klub });
     res.json({ korisnik, klub });
   } catch (err) {
     console.error("Greška pri provjeri autentifikacije:", err);
