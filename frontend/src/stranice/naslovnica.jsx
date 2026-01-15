@@ -15,7 +15,17 @@ export default function Naslovnica() {
         if (!korisnik || loading) return;
         const fetchData = async () => {
             try {
-                const response = await fetch(`${BACKEND_IP}/natjecanja/user`, {credentials: "include"});
+                const token = localStorage.getItem("token"); // JWT token koji je frontend spremio
+                const response = await fetch(`${BACKEND_IP}/natjecanja/user`, {
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error("Nema pristupa natjecanjima");
+                }
                 const data = await response.json();
                 setCompetitions(data);
             } catch (err) {

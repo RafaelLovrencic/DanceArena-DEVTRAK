@@ -79,7 +79,10 @@ export default function Profil({ onClose }) {
         const statusClanarine = async () => {
             try {
                 const res = await fetch(`${BACKEND_IP}/napravi-transakciju/status-clanarine`, {
-                    credentials: "include",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
                 });
                 const data = await res.json();
                 setClanarinaAktivna(data.active);
