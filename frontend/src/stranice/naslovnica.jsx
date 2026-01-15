@@ -15,7 +15,6 @@ export default function Naslovnica() {
         if (!korisnik || loading) return;
         const fetchData = async () => {
             try {
-                const token = localStorage.getItem("token"); 
                 const response = await fetch(`${BACKEND_IP}/natjecanja/user`, {
                     headers: {
                         "Authorization": `Bearer ${token}`,
@@ -23,15 +22,18 @@ export default function Naslovnica() {
                     },
                 });
 
-                if (!response.ok) {
-                    throw new Error("Nema pristupa natjecanjima");
+                if (response.status === 404) {
+                    setCompetitions([]); 
+                } else if (!response.ok) {
+                    const errData = await response.json();
+                    throw new Error(errData.poruka || "Greška kod dohvaćanja natjecanja");
+                } else {
+                    const data = await response.json();
+                    setCompetitions(data);
                 }
-                const data = await response.json();
-                setCompetitions(data);
+
             } catch (err) {
                 console.error('Greška kod dohvaćanja natjecanja:', err);
-            } finally {
-                setLoadingNat(false);
             }
         };
         fetchData();
