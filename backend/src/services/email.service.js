@@ -1,5 +1,5 @@
 const fetch = (...args) =>
-    import("node-fetch").then(({ default: fetch }) => fetch(...args));const { generirajPozivToken } = require("./token.service");
+    import("node-fetch").then(({ default: fetch }) => fetch(...args));
 const { generirajPozivToken } = require("./token.service");
 
 async function posaljiPozivNaEmail(email, imeNatjecanja) {
