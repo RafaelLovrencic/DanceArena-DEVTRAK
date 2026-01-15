@@ -12,7 +12,7 @@ export default function Naslovnica() {
     const [loadingNat, setLoadingNat] = useState(true);
     const [competitions, setCompetitions] = useState([]);
     useEffect(() => {
-        if (!korisnik) return;
+        if (!korisnik || loading) return;
         const fetchData = async () => {
             try {
                 const response = await fetch(`${BACKEND_IP}/natjecanja/user`, {credentials: "include"});
@@ -25,7 +25,7 @@ export default function Naslovnica() {
             }
         };
         fetchData();
-    }, [competitions, korisnik]);
+    }, [competitions, korisnik, loading]);
 
     const otvoriPDF = async (competitionId) => {
         try {
