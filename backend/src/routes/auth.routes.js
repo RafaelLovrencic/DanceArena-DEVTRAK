@@ -38,27 +38,36 @@ router.get("/google/callback",
   }
 );
 
-// /store-token
-router.post("/store-token", express.json(), (req, res) => {
-  const { token } = req.body;
-  console.log("POST /store-token, primljen token =", token);
+// /store-token (GET verzija)
+router.get("/store-token", async (req, res) => {
+  const { token } = req.query;
+  console.log("GET /store-token, token =", token);
 
   try {
-    jwt.verify(token, process.env.JWT_SECRET);
-    console.log("Token je validan");
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("Token je validan, decoded =", decoded);
 
+    // postavi cookie
     res.cookie("token", token, {
       httpOnly: true,
       secure: true,
       sameSite: "None",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    console.log("Cookie postavljen");
 
-    res.json({ ok: true });
+    // provjeri postoji li korisnik u bazi
+    const korisnik = await Korisnici.findById(decoded.id);
+
+    if (!korisnik) {
+      console.log("Korisnik ne postoji → /unospodataka");
+      return res.redirect(`${FRONTEND_URL}/unospodataka`);
+    }
+
+    console.log("Korisnik postoji → /");
+    return res.redirect(`${FRONTEND_URL}/`);
   } catch (err) {
     console.error("Neispravan token:", err);
-    res.status(400).json({ error: "Neispravan token" });
+    return res.redirect(`${FRONTEND_URL}/login`);
   }
 });
 
