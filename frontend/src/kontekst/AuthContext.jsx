@@ -11,7 +11,6 @@ export function AuthProvider({ children }) {
   const azurirajKorisnika = (noviPodaci) => setKorisnik(prev => ({ ...prev, ...noviPodaci }));
   const azurirajKlub = (noviPodaci) => setKlub(prev => ({ ...prev, ...noviPodaci }));
 
-  // provjeri korisnika po tokenu iz localStorage
   const provjeriKorisnika = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -48,7 +47,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   const odjava = () => {
-    localStorage.removeItem("token"); // token se briše
+    localStorage.removeItem("token"); 
     setKorisnik(null);
     setKlub(null);
     window.location.href = "/";

@@ -10,23 +10,32 @@ export default function Profil({ onClose }) {
     const [ucitavanje, setUcitavanje] = useState(true);
     const [greska, setGreska] = useState(null);
     const [editiranje, setEditiranje] = useState(false);
+
+    if (!korisnik) return null; 
+
     const [ime, prezime] = korisnik.ime.split(" ");
     const [podaciOKorisniku, setPodaciOKorisniku] = useState({
         ime: ime,
         prezime: prezime,
         email: korisnik.email,
         role: korisnik.role,
-        imeKluba: korisnik.role === "voditelj" ? klub.ime || "" : "",
-        lokacijaKluba: korisnik.role === "voditelj" ? klub.lokacija || "" : "",
+        imeKluba: klub?.ime || "",
+        lokacijaKluba: klub?.lokacija || "",
     });
+
+    const token = localStorage.getItem("token");
 
     const promijeniPodatke = (e) => {
         const { name, value } = e.target;
         setPodaciOKorisniku(prev => ({ ...prev, [name]: value }));
-        console.log(korisnik._id);
     };
 
     const pohraniProfil = async () => {
+        if (!token) {
+            alert("Niste prijavljeni");
+            return;
+        }
+
         if (!podaciOKorisniku.imeKluba.trim() && podaciOKorisniku.role === "voditelj") {
             alert("Ime kluba je obavezno!");
             return;
@@ -35,6 +44,7 @@ export default function Profil({ onClose }) {
             alert("Lokacija kluba je obavezna!");
             return;
         }
+
         const punoIme = `${podaciOKorisniku.ime} ${podaciOKorisniku.prezime}`.trim();
         const noviPodaci = {
             ime: punoIme,
@@ -51,9 +61,10 @@ export default function Profil({ onClose }) {
         }
 
         try {
-            await fetch(`${BACKEND_IP}/unospodataka/${korisnik._id}/${klub._id}`, {
-                method: "PUT", 
+            await fetch(`${BACKEND_IP}/unospodataka/${korisnik._id}/${klub?._id || ""}`, {
+                method: "PUT",
                 headers: {
+                    "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(noviPodaci),
@@ -63,15 +74,14 @@ export default function Profil({ onClose }) {
             console.error("Greška pri spremanju:", error);
             alert("Greška pri spremanju podataka.");
         }
+
         azurirajKorisnika(noviPodaci);
         azurirajKlub(noviPodaciKlub);
         setEditiranje(false);
     };
 
     useEffect(() => {
-        if (!korisnik) return;
-
-        if (korisnik.role !== "organizator") {
+        if (!korisnik || korisnik.role !== "organizator" || !token) {
             setUcitavanje(false);
             return;
         }
@@ -96,13 +106,21 @@ export default function Profil({ onClose }) {
         };
 
         statusClanarine();
-    }, [korisnik]);
+    }, [korisnik, token]);
 
     const napraviTransakciju = async () => {
+        if (!token) {
+            alert("Niste prijavljeni");
+            return;
+        }
+
         try {
             const res = await fetch(`${BACKEND_IP}/napravi-transakciju/clanarina`, {
                 method: "POST",
-                credentials: "include",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
             });
             const data = await res.json();
 
@@ -118,10 +136,18 @@ export default function Profil({ onClose }) {
     };
 
     const otkaziClanarinu = async () => {
+        if (!token) {
+            alert("Niste prijavljeni");
+            return;
+        }
+
         try {
             const res = await fetch(`${BACKEND_IP}/napravi-transakciju/otkazi-clanarinu`, {
                 method: "POST",
-                credentials: "include",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
             });
             const data = await res.json();
 
@@ -138,81 +164,73 @@ export default function Profil({ onClose }) {
     };
 
     return (
-        <>
-            <div className="profilSucelje">
-                <div className="podaciKorisnik">
-                    <div>
-                        <span>Ime:</span>
-                        {editiranje ? (
-                            <input name="ime" value={podaciOKorisniku.ime} onChange={promijeniPodatke} />
-                        ) : (
-                            <span>{podaciOKorisniku.ime}</span>
-                        )}
-                    </div>
-
-                    <div>
-                        <span>Prezime:</span>
-                        {editiranje ? (
-                            <input name="prezime" value={podaciOKorisniku.prezime} onChange={promijeniPodatke} />
-                        ) : (
-                            <span>{podaciOKorisniku.prezime}</span>
-                        )}
-                    </div>
-
-                    <div>
-                        <span>Email:</span>
-                        <span>{podaciOKorisniku.email}</span>
-                    </div>
-
-                    <div>
-                        <span>Uloga:</span>
-                        <span>{podaciOKorisniku.role || "Nije odabrana"}</span>
-                    </div>
-
-                    {podaciOKorisniku.role === "voditelj" && (
-                        <>
-                            <div>
-                                <span>Ime kluba:</span>
-                                {editiranje ? (
-                                    <input name="imeKluba" value={podaciOKorisniku.imeKluba} onChange={promijeniPodatke}/>
-                                ) : (
-                                    <span>{podaciOKorisniku.imeKluba || "Nije uneseno"}</span>
-                                )}
-                            </div>
-                            <div>
-                                <span>Lokacija kluba:</span>
-                                {editiranje ? (
-                                    <input name="lokacijaKluba" value={podaciOKorisniku.lokacijaKluba} onChange={promijeniPodatke}/>
-                                ) : (
-                                    <span>{podaciOKorisniku.lokacijaKluba || "Nije uneseno"}</span>
-                                )}
-                            </div>
-                        </>
+        <div className="profilSucelje">
+            <div className="podaciKorisnik">
+                <div>
+                    <span>Ime:</span>
+                    {editiranje ? (
+                        <input name="ime" value={podaciOKorisniku.ime} onChange={promijeniPodatke} />
+                    ) : (
+                        <span>{podaciOKorisniku.ime}</span>
                     )}
                 </div>
 
-                {/* Samo za organizatore */}
-                {korisnik.role === "organizator" && (
-                <div className="clanarinaStatus">
-                    <h3>Godišnja članarina:</h3>
-                    <p>
+                <div>
+                    <span>Prezime:</span>
+                    {editiranje ? (
+                        <input name="prezime" value={podaciOKorisniku.prezime} onChange={promijeniPodatke} />
+                    ) : (
+                        <span>{podaciOKorisniku.prezime}</span>
+                    )}
+                </div>
+
+                <div>
+                    <span>Email:</span>
+                    <span>{podaciOKorisniku.email}</span>
+                </div>
+
+                <div>
+                    <span>Uloga:</span>
+                    <span>{podaciOKorisniku.role || "Nije odabrana"}</span>
+                </div>
+
+                {podaciOKorisniku.role === "voditelj" && (
+                    <>
+                        <div>
+                            <span>Ime kluba:</span>
+                            {editiranje ? (
+                                <input name="imeKluba" value={podaciOKorisniku.imeKluba} onChange={promijeniPodatke}/>
+                            ) : (
+                                <span>{podaciOKorisniku.imeKluba || "Nije uneseno"}</span>
+                            )}
+                        </div>
+                        <div>
+                            <span>Lokacija kluba:</span>
+                            {editiranje ? (
+                                <input name="lokacijaKluba" value={podaciOKorisniku.lokacijaKluba} onChange={promijeniPodatke}/>
+                            ) : (
+                                <span>{podaciOKorisniku.lokacijaKluba || "Nije uneseno"}</span>
+                            )}
+                        </div>
+                    </>
+                )}
+            </div>
+
+            {korisnik.role === "organizator" && (
+            <div className="clanarinaStatus">
+                <h3>Godišnja članarina:</h3>
+                <p>
                     {clanarinaAktivna && vrijediDo
                         ? `Plaćeno (vrijedi do ${new Date(vrijediDo).toLocaleDateString("hr-HR")})`
                         : "Nije plaćeno"}
-                    </p>
-                    {!clanarinaAktivna && (
-                        <button onClick={napraviTransakciju}>Plati članarinu</button>
-                    )}
+                </p>
+                {!clanarinaAktivna && <button onClick={napraviTransakciju}>Plati članarinu</button>}
+                {clanarinaAktivna && <button onClick={otkaziClanarinu}>Otkaži članarinu</button>}
+                {greska && <p style={{ color: "red" }}>{greska}</p>}
+            </div>
+            )}
 
-                    {clanarinaAktivna && (
-                        <button onClick={otkaziClanarinu}>Otkaži članarinu</button>
-                    )}
-
-                    {greska && <p style={{ color: "red" }}>{greska}</p>}
-                </div>
-                )}
-
-                <div className="profilTipke">
+            <div className="profilTipke">
                 {editiranje ? (
                     <>
                         <button onClick={pohraniProfil}>Spremi</button>
@@ -225,8 +243,7 @@ export default function Profil({ onClose }) {
                         <button onClick={odjava}>Odjava</button>
                     </>
                 )}
-                </div>
             </div>
-        </>
+        </div>
     );
 }

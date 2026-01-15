@@ -24,11 +24,7 @@ router.get("/google/callback",
   (req, res) => {
     try {
       if (!req.user) return res.redirect(FRONTEND_URL);
-
-      // Generiraj JWT
       const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
-
-      // Redirect na frontend s tokenom u hashu
       res.redirect(`${FRONTEND_URL}/oauth-callback#token=${token}`);
     } catch (err) {
       console.error("Greška u callback-u:", err);
@@ -37,13 +33,13 @@ router.get("/google/callback",
   }
 );
 
-// Provjera autentifikacije (Authorization header)
+// Provjera autentifikacije 
 router.get("/provjera-autentifikacije", async (req, res) => {
   try {
     const auth = req.headers.authorization;
     if (!auth) return res.status(401).json({ greska: "Nema tokena" });
 
-    const token = auth.split(" ")[1]; // Bearer <token>
+    const token = auth.split(" ")[1]; 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const korisnik = await Korisnici.findById(decoded.id);
@@ -60,7 +56,6 @@ router.get("/provjera-autentifikacije", async (req, res) => {
 
 // Logout
 router.post("/logout", (req, res) => {
-  // frontend samo briše token iz localStorage
   res.json({ poruka: "Uspješno odjavljen" });
 });
 
