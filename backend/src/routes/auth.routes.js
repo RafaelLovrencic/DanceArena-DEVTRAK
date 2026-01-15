@@ -98,9 +98,10 @@ router.get("/provjera-autentifikacije", async (req, res) => {
 router.post("/logout", (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
-    sameSite: "Lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: true,
+    sameSite: "None",
   });
+
   res.json({ poruka: "Uspješno odjavljen" });
 });
 
