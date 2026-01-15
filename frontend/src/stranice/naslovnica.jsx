@@ -15,6 +15,7 @@ export default function Naslovnica() {
         if (!korisnik || loading) return;
         const fetchData = async () => {
             try {
+                const token = localStorage.getItem("token");
                 const response = await fetch(`${BACKEND_IP}/natjecanja/user`, {
                     headers: {
                         "Authorization": `Bearer ${token}`,
