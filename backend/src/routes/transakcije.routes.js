@@ -11,14 +11,18 @@ const Natjecanje = require("../models/natjecanje");
 const GODISNJA_CLANARINA_PRICE_ID = process.env.STRIPE_GODISNJA_CLANARINA_PRICE_ID;
 
 function authMiddleware(req, res, next) {
-    const token = req.cookies.token;
-    if (!token) return res.status(401).json({ error: "Niste prijavljeni" });
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return res.status(401).json({ error: "Niste prijavljeni" });
+
+    const token = authHeader.split(" ")[1]; 
+    if (!token) return res.status(401).json({ error: "Nije poslan token" });
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.korisnik = decoded;
         next();
-    } catch {
+    } catch (err) {
+        console.error("JWT error:", err);
         res.status(401).json({ error: "Neispravan token" });
     }
 }

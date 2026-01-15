@@ -95,7 +95,7 @@ export default function Naslovnica() {
                                 {comp.stanje === "zaključano" && "🔒"}
                                 {comp.stanje === "zatvoreno" && "🏁"}
                                 </td>
-                                  <td>{comp.ime}</td>
+                                  <td>{comp?.ime}</td>
                                   <td>{new Date(comp.datum).toLocaleDateString('hr-HR')}</td>
                                   <td>{comp.lokacija}</td>
                                   <td>{comp.kategorije?.[0]?.stil || '-'}</td>
