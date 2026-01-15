@@ -246,7 +246,6 @@ router.post("/add", async (req, res) => {
                 email: noviSudac,
                 natjecanjeId: novoNatjecanje._id
             });
-
             await noviPozivSucu.save();
             await posaljiPozivNaEmail(noviSudac, ime);
         }
