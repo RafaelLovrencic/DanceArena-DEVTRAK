@@ -11,7 +11,14 @@ export default function Profil({ onClose }) {
     const [greska, setGreska] = useState(null);
     const [editiranje, setEditiranje] = useState(false);
 
-    const [ime, prezime] = korisnik?.ime.split(" ");
+    let ime = "";
+    let prezime = "";
+
+    if (korisnik?.ime) {
+        const parts = korisnik.ime.split(" ");
+        ime = parts[0] || "";
+        prezime = parts[1] || "";
+    }
     const [podaciOKorisniku, setPodaciOKorisniku] = useState({
         ime: ime,
         prezime: prezime,
