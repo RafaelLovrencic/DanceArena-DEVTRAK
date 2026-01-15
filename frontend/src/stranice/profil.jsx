@@ -78,7 +78,7 @@ export default function Profil({ onClose }) {
     };
 
     useEffect(() => {
-        if (!korisnik || korisnik.role !== "organizator" || !token) {
+        if (!korisnik || korisnik?.role !== "organizator" || !token) {
             setUcitavanje(false);
             return;
         }
@@ -213,7 +213,7 @@ export default function Profil({ onClose }) {
                 )}
             </div>
 
-            {korisnik.role === "organizator" && (
+            {korisnik?.role === "organizator" && (
             <div className="clanarinaStatus">
                 <h3>Godišnja članarina:</h3>
                 <p>
