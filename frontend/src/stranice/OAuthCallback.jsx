@@ -38,7 +38,7 @@ export default function OAuthCallback() {
           if(state === "normal-login")
             navigate("/unospodataka");
           else if (state === "judge-invite")
-            navigate("unospodatakasuci")
+            navigate("/unospodatakasuci")
         } else {
             navigate("/");
         }
