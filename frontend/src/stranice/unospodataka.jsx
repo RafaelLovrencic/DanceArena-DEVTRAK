@@ -38,10 +38,14 @@ export default function UnosPodataka() {
     }
 
     try {
+      const token = localStorage.getItem("token"); 
+
       const response = await fetch(`${BACKEND_IP}/unospodataka`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify({
           ime,
           uloga,

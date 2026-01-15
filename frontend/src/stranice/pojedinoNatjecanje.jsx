@@ -38,7 +38,12 @@ export default function pojedinoNatjecanje(){
 
     const fetchPrijave = async () => {
             try {
-                const res = await fetch(`${BACKEND_IP}/prijave/natjecanje/${id}`, {credentials: "include"});
+                const token = localStorage.getItem("token");
+                const res = await fetch(`${BACKEND_IP}/prijave/natjecanje/${id}`, {
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                    },
+                });
                 const data_prijava = await res.json();
 
                 const dodanaOcjena = data_prijava.map(nastup => {
@@ -61,7 +66,13 @@ export default function pojedinoNatjecanje(){
         if(!window.confirm("Jeste li sigurni da želite poništiti ovu prijavu?")) return;
     
         try {
-            const res = await fetch(`${BACKEND_IP}/prijave/application/del/${idNastupa}`, {method: "DELETE", credentials: "include"});
+            const token = localStorage.getItem("token");
+            const res = await fetch(`${BACKEND_IP}/prijave/application/del/${idNastupa}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                },
+            });
 
             if(!res.ok){
                 const text = await res.text();
@@ -82,7 +93,12 @@ export default function pojedinoNatjecanje(){
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch (`${BACKEND_IP}/natjecanja/${id}`, {credentials: "include"});
+                const token = localStorage.getItem("token");
+                const response = await fetch(`${BACKEND_IP}/natjecanja/${id}`, {
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                    },
+                });
                 const data = await response.json();
                 setNatjecanje(data.natjecanje);
             } catch (err){
@@ -111,19 +127,18 @@ export default function pojedinoNatjecanje(){
         }
 
         try {
-            const res = await fetch(`${BACKEND_IP}/nastup/slanjeocjene/${nastupId}`,
-                {
-                    method: "PUT",
-                    credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        ocjena: broj,
-                        sudacId: korisnik._id,
-                    }),
-                }
-            );
+            const token = localStorage.getItem("token");
+            const res = await fetch(`${BACKEND_IP}/nastup/slanjeocjene/${nastupId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    ocjena: broj,
+                    sudacId: korisnik._id,
+                }),
+            });
 
             if (!res.ok) throw new Error("Greška pri slanju ocjene");
 
@@ -148,9 +163,10 @@ export default function pojedinoNatjecanje(){
             if (!window.confirm("Jeste li sigurni da želite zatvoriti natjecanje? Ovo će onemogućiti glasanje i prikazati poredak.")) return;
         }
         try {
+            const token = localStorage.getItem("token");
             const res = await fetch(`${BACKEND_IP}/natjecanja/stanje/${natjecanje._id}/${novoStanje}`, {
                 method: "PUT",
-                credentials: "include",
+                headers: { "Authorization": `Bearer ${token}` },
             });
 
             if (!res.ok) {
@@ -184,8 +200,10 @@ export default function pojedinoNatjecanje(){
 
     const provjeriClanarinuSvjeze = async () => {
         try {
+            const token = localStorage.getItem("token");
+
             const res = await fetch(`${BACKEND_IP}/napravi-transakciju/status-clanarine`, {
-                credentials: "include",
+                headers: { "Authorization": `Bearer ${token}` },
             });
             const data = await res.json();
 
@@ -207,11 +225,12 @@ export default function pojedinoNatjecanje(){
         if (!natjecanje._id) return;
 
         try {
+            const token = localStorage.getItem("token");
             const res = await fetch(`${BACKEND_IP}/napravi-transakciju/kotizacija`, {
                 method: "POST",
-                credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
                 },
                 body: JSON.stringify({
                     natjecanjeId: natjecanje._id,
@@ -238,8 +257,9 @@ export default function pojedinoNatjecanje(){
 
         const provjeriKotizaciju = async () => {
             try {
+                const token = localStorage.getItem("token");
                 const res = await fetch(`${BACKEND_IP}/napravi-transakciju/status-kotizacije/${natjecanje._id}`, {
-                    credentials: "include",
+                    headers: { "Authorization": `Bearer ${token}` },
                 });
                 const data = await res.json();
                 setKotizacijaPlacena(data.placeno);

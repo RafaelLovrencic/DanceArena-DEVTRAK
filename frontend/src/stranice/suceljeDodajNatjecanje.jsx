@@ -96,14 +96,15 @@ export default function DodajNatjecanje({onClose, natjecanjeZaUredi, pozvaniSuci
         };
 
         try {
+            const token = localStorage.getItem("token"); 
             const response = await fetch(url, { 
                 method,
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify(podaci),
-                credentials: "include"
-            }); 
+                body: JSON.stringify(podaci)
+            });
             if (!response.ok) {
                 throw new Error('Greška pri slanju podataka');
             }
@@ -119,8 +120,12 @@ export default function DodajNatjecanje({onClose, natjecanjeZaUredi, pozvaniSuci
     useEffect(() => {
         const fetchSuci = async () => {
         try {
+            const token = localStorage.getItem("token");
             const res = await fetch(`${BACKEND_IP}/users/suci`, {
-            credentials: "include"
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
             });
             if (!res.ok) throw new Error("Greška pri dohvaćanju sudaca");
             const data = await res.json();

@@ -85,12 +85,14 @@ export default function PrijavaNaNatjecanje({onClose, prijavaPodaci, urediPrijav
                 url = `${BACKEND_IP}/prijave/application/edit/${urediPrijavu._id}`;
                 method = "PUT";
             }
+            const token = localStorage.getItem("token"); 
+
             const res = await fetch(url, {
                 method: method,
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
-                credentials: "include",
                 body: JSON.stringify(podaci)
             });
 

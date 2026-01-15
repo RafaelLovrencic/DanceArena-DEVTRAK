@@ -35,15 +35,19 @@ export default function UnosPodatakaSudac() {
     }
 
     try {
+      const token = localStorage.getItem("token"); 
+
       const response = await fetch(`${BACKEND_IP}/unospodataka`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify({
           ime,
-          uloga : "sudac"
+          uloga: "sudac",
+          iskljucivoSudac: true
         }),
-        iskljucivoSudac : true,
       });
 
       if (!response.ok) {
