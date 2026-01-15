@@ -39,20 +39,23 @@ export default function Naslovnica() {
 
     const otvoriPDF = async (competitionId) => {
         try {
+            const token = localStorage.getItem("token");
             const response = await fetch(`${BACKEND_IP}/export/${competitionId}`, {
-                credentials: "include"
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                }
             });
 
             if (!response.ok) throw new Error("Greška pri dohvaćanju PDF-a");
 
             const blob = await response.blob();
-
             const url = window.URL.createObjectURL(blob);
-
             window.open(url, "_blank");
 
         } catch (err) {
             console.error("Greška kod dohvaćanja PDF-a:", err);
+            alert("Greška pri dohvaćanju PDF-a");
         }
     };
   return (
@@ -89,29 +92,33 @@ export default function Naslovnica() {
                           </tr>
                       </thead>
                       <tbody>
-                          {competitions.map((comp) => (
-                              comp ? (  
-                                <tr key={comp._id}>
-                                    <td>
-                                        {comp.stanje === "zaključano" && "🔒"}
-                                        {comp.stanje === "zatvoreno" && "🏁"}
-                                    </td>
-                                    <td>{comp.ime || '-'}</td>
-                                    <td>{comp.datum ? new Date(comp.datum).toLocaleDateString('hr-HR') : '-'}</td>
-                                    <td>{comp.lokacija || '-'}</td>
-                                    <td>{comp.kategorije?.[0]?.stil || '-'}</td>
-                                    <td>
-                                        <Link to={`/natjecanje/${comp._id}`} className="link" title="Više informacija o natjecanju.">+</Link>
-                                    </td>
-                                    <td>
-                                        {comp.stanje === "otvoreno" ? "" :
-                                            <button className="pdfButton" onClick={() => otvoriPDF(comp._id)}>PDF</button>
-                                        }
-                                    </td>
-                                </tr>
-                                ) : null
-                          ))}
-                      </tbody>
+                        {competitions.map((comp) => {
+                            if (!comp) return null;
+
+                            const ime = comp.ime || "-";
+                            const datum = comp.datum ? new Date(comp.datum).toLocaleDateString('hr-HR') : "-";
+                            const lokacija = comp.lokacija || "-";
+                            const stil = comp.kategorije?.[0]?.stil || "-";
+
+                            return (
+                            <tr key={comp._id}>
+                                <td>{comp.stanje === "zaključano" ? "🔒" : comp.stanje === "zatvoreno" ? "🏁" : ""}</td>
+                                <td>{ime}</td>
+                                <td>{datum}</td>
+                                <td>{lokacija}</td>
+                                <td>{stil}</td>
+                                <td>
+                                <Link to={`/natjecanje/${comp._id}`} className="link" title="Više informacija o natjecanju.">+</Link>
+                                </td>
+                                <td>
+                                {comp.stanje !== "otvoreno" && (
+                                    <button className="pdfButton" onClick={() => otvoriPDF(comp._id)}>PDF</button>
+                                )}
+                                </td>
+                            </tr>
+                            )
+                        })}
+                        </tbody>
                   </table>
 
                   ) : (

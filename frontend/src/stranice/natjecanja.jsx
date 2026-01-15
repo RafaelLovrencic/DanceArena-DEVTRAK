@@ -29,7 +29,13 @@ export default function Natjecanja() {
             return;
         }
         if (!(await provjeriClanarinuSvjeze())) return;
-        const response = await fetch(`${BACKEND_IP}/natjecanja/${odabranoNatjecanje._id}`, {credentials: "include"});
+        const token = localStorage.getItem("token");
+        const response = await fetch(`${BACKEND_IP}/natjecanja/${odabranoNatjecanje._id}`, {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+            }
+        });
         const data = await response.json();
         console.log(data);
         
@@ -51,7 +57,13 @@ export default function Natjecanja() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`${BACKEND_IP}/natjecanja`, {credentials: "include"});
+                const token = localStorage.getItem("token");
+                const response = await fetch(`${BACKEND_IP}/natjecanja`, {
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    }
+                });
                 const data = await response.json();
                 setCompetitions(data);
             } catch (err) {
@@ -73,7 +85,14 @@ export default function Natjecanja() {
    const obrisiNatjecanje = async () => {
         if (!odabranoNatjecanje) return;
         if (!(await provjeriClanarinuSvjeze())) return;
-        const response = await fetch(`${BACKEND_IP}/natjecanja/${odabranoNatjecanje._id}`, {credentials: "include"});
+        const token = localStorage.getItem("token");
+        const response = await fetch(`${BACKEND_IP}/natjecanja/${odabranoNatjecanje._id}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+            }
+        });
         const data = await response.json();
         const { natjecanje } = data;
 
@@ -104,7 +123,13 @@ export default function Natjecanja() {
     };
     const osvjeziNatjecanja = async () => {
         try {
-            const response = await fetch(`${BACKEND_IP}/natjecanja`, {credentials: "include"}, {credentials: "include"});
+            const token = localStorage.getItem("token");
+            const response = await fetch(`${BACKEND_IP}/natjecanja`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                }
+            });
             const data = await response.json();
             setCompetitions(data);
         } catch (err) {
@@ -122,8 +147,12 @@ export default function Natjecanja() {
 
         const statusClanarine = async () => {
             try {
+                const token = localStorage.getItem("token");
                 const res = await fetch(`${BACKEND_IP}/napravi-transakciju/status-clanarine`, {
-                    credentials: "include",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    }
                 });
                 const data = await res.json();
                 setClanarinaAktivna(data.active);
@@ -141,8 +170,12 @@ export default function Natjecanja() {
 
     const provjeriClanarinuSvjeze = async () => {
         try {
+            const token = localStorage.getItem("token");
             const res = await fetch(`${BACKEND_IP}/napravi-transakciju/status-clanarine`, {
-                credentials: "include",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                }
             });
             const data = await res.json();
 
