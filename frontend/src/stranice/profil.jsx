@@ -22,8 +22,8 @@ export default function Profil({ onClose }) {
     const [podaciOKorisniku, setPodaciOKorisniku] = useState({
         ime: ime,
         prezime: prezime,
-        email: korisnik.email,
-        role: korisnik.role,
+        email: korisnik?.email || "",
+        role: korisnik?.role || "",
         imeKluba: klub?.ime || "",
         lokacijaKluba: klub?.lokacija || "",
     });
