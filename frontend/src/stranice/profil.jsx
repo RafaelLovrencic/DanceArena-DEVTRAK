@@ -5,30 +5,22 @@ import "../izgled/profil.css";
 
 export default function Profil({ onClose }) {
     const { korisnik, odjava, azurirajKorisnika, klub, azurirajKlub, loading } = useAuth();
+    const token = localStorage.getItem("token");
     const [clanarinaAktivna, setClanarinaAktivna] = useState(false);
     const [vrijediDo, setVrijediDo] = useState(null);
     const [ucitavanje, setUcitavanje] = useState(true);
     const [greska, setGreska] = useState(null);
     const [editiranje, setEditiranje] = useState(false);
 
-    let ime = "";
-    let prezime = "";
-
-    if (korisnik?.ime) {
-        const parts = korisnik.ime.split(" ");
-        ime = parts[0] || "";
-        prezime = parts[1] || "";
-    }
+    const imePrezime = korisnik?.ime?.split(" ") || ["", ""];
     const [podaciOKorisniku, setPodaciOKorisniku] = useState({
-        ime: ime,
-        prezime: prezime,
+        ime: imePrezime[0],
+        prezime: imePrezime[1],
         email: korisnik?.email || "",
         role: korisnik?.role || "",
         imeKluba: klub?.ime || "",
         lokacijaKluba: klub?.lokacija || "",
     });
-
-    const token = localStorage.getItem("token");
 
     const promijeniPodatke = (e) => {
         const { name, value } = e.target;
