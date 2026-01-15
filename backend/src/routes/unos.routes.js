@@ -7,27 +7,41 @@ const PozivSucu = require("../models/poziv_sucu");
 const Natjecanje = require("../models/natjecanje");
 
 var router = express.Router();
-
 var path = require('path');
 var fs = require('fs');
-const { type } = require("os");
 
+// Middleware za provjeru tokena iz Authorization headera
+function authMiddleware(req, res, next) {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader) return res.status(401).json({ greska: "Niste prijavljeni" });
 
+        const token = authHeader.split(" ")[1]; // Bearer <token>
+        if (!token) return res.status(401).json({ greska: "Token nedostaje" });
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.korisnik = decoded; // spremi podatke iz tokena
+        next();
+    } catch (err) {
+        console.error("JWT error:", err);
+        res.status(401).json({ greska: "Neispravan token" });
+    }
+}
+
+// Middleware za označavanje natjecanja sudcu
 async function oznaciNatjecanjaSucuMiddleware(req, res, next) {
     try {
         if (!req.body.iskljucivoSudac) {
-            next();
+            return next();
         }
 
-        const token = req.cookies?.token;
-        if (!token) return next();
+        const korisnikId = req.korisnik?.id;
+        if (!korisnikId) return next();
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const korisnik = await Korisnici.findById(decoded.id);
+        const korisnik = await Korisnici.findById(korisnikId);
         if (!korisnik) return next();
 
         const email = korisnik.email;
-
         const pozivi = await PozivSucu.find({ email: email, status: "pozvan" });
 
         for (const poziv of pozivi) {
@@ -43,59 +57,56 @@ async function oznaciNatjecanjaSucuMiddleware(req, res, next) {
         }
 
         next();
-    } catch(err) {
+    } catch (err) {
         console.log("Greška u middlewareu oznaciNatjecanjaSucu:", err);
         next(err);
     }
 }
 
-
+// Endpoint za dovršetak profila / odabir uloge
 router.post(
     "/",
-    oznaciNatjecanjaSucuMiddleware, 
+    authMiddleware,
+    oznaciNatjecanjaSucuMiddleware,
     async (req, res) => {
         try {
-            const token = req.cookies?.token;
-            if (!token) return res.status(401).json({ greska: "Nema tokena" });
-
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
             const { ime, uloga, imeKluba, lokacija } = req.body;
+            const korisnikId = req.korisnik.id;
 
-            const korisnik = await Korisnici.findById(decoded.id);
+            const korisnik = await Korisnici.findById(korisnikId);
             if (!korisnik) return res.status(404).json({ greska: "Korisnik nije pronađen" });
 
-            if (korisnik.uloga) {
-            return res.status(403).json({ greska: "Uloga je već odabrana i ne može se promijeniti" });
+            if (korisnik.role) {
+                return res.status(403).json({ greska: "Uloga je već odabrana i ne može se promijeniti" });
             }
 
             if (!ime || ime.trim() === "") return res.status(400).json({ greska: "Ime ne može biti prazno" });
             if (!uloga || !["sudac", "voditelj", "organizator"].includes(uloga))
-            return res.status(400).json({ greska: "Nevaljana uloga" });
+                return res.status(400).json({ greska: "Nevaljana uloga" });
 
-                let klub = null;
+            let klub = null;
 
-            //Ako je korisnik voditelj  stvori novi klub i poveži ga
             if (uloga === "voditelj") {
-            if (!imeKluba || !lokacija) {
-                return res.status(400).json({ greska: "Ime kluba i lokacija su obavezni za voditelja" });
-            }
+                if (!imeKluba || !lokacija) {
+                    return res.status(400).json({ greska: "Ime kluba i lokacija su obavezni za voditelja" });
+                }
 
-            klub = await Klub.create({
-                ime: imeKluba,
-                lokacija,
-                email: korisnik.email,
-                ownerId: korisnik._id,
-            });
+                klub = await Klub.create({
+                    ime: imeKluba,
+                    lokacija,
+                    email: korisnik.email,
+                    ownerId: korisnik._id,
+                });
             }
 
             const azuriranKorisnik = await Korisnici.findByIdAndUpdate(
-            decoded.id,
-            {
-                ime,
-                role: uloga,
-                imeKluba: uloga === "voditelj" ? imeKluba : null,
-            },
-            { new: true }
+                korisnikId,
+                {
+                    ime,
+                    role: uloga,
+                    imeKluba: uloga === "voditelj" ? imeKluba : null,
+                },
+                { new: true }
             );
 
             res.json({ poruka: "Profil uspješno ažuriran", korisnik: azuriranKorisnik });
@@ -106,21 +117,8 @@ router.post(
     }
 );
 
-// trenutno se ne koristi
-router.post('/registracija', function(req, res) {
-    console.log(req.body);
-
-    const putanja = path.join(__dirname, '..', 'repository', 'korisnici.repository.json');
-    const podaci = JSON.parse(fs.readFileSync(putanja, 'utf8'));
-
-    podaci.push(req.body);
-
-    fs.writeFileSync(putanja, JSON.stringify(podaci, null, 2));
-
-    res.status(200).send();
-})
-
-router.put('/:id/:idKlub', async function(req, res) {
+// Endpoint za uređivanje korisnika i kluba
+router.put('/:id/:idKlub', authMiddleware, async function(req, res) {
     try {
         const { id, idKlub } = req.params;
         const { ime, prezime, role, email, imeKluba, lokacija } = req.body;
@@ -135,62 +133,32 @@ router.put('/:id/:idKlub', async function(req, res) {
         if (imeKluba) updateDataKlub.ime = imeKluba;
         if (lokacija) updateDataKlub.lokacija = lokacija;
 
-        const azurirano = await Korisnici.findByIdAndUpdate(
-            id,
-            updateData,
-            { new: true }
-        );
-            //.populate("suci", "ime email")
-            //.populate("kategorije", "godiste stil velicina");
-        if (!azurirano)
-            return res.status(404).json({ poruka: "Korisnik nije pronađen" });
+        const azurirano = await Korisnici.findByIdAndUpdate(id, updateData, { new: true });
+        if (!azurirano) return res.status(404).json({ poruka: "Korisnik nije pronađen" });
 
-        const azuriranoKlub = await Klub.findByIdAndUpdate(
-            idKlub,
-            updateDataKlub,
-            { new: true }
-        );
-
-        if (!azuriranoKlub)
-            return res.status(404).json({ poruka: "Klub nije pronađen" });
+        const azuriranoKlub = await Klub.findByIdAndUpdate(idKlub, updateDataKlub, { new: true });
+        if (!azuriranoKlub) return res.status(404).json({ poruka: "Klub nije pronađen" });
 
         res.json({ poruka: "Korisnik i klub uspješno ažurirani" });
-    
     } catch (err) {
         console.error("Greška pri ažuriranju korisnika:", err);
         res.status(500).json({ poruka: "Greška pri ažuriranju korisnika" });
     }
 });
 
-
-router.get('/sudac', function(req, res) {
-
-});
-
-
-router.get('/prijaviSuca', function(req, res) {
-
+// Endpoint za sudce / prijavu sudca
+router.get('/prijaviSuca', async function(req, res) {
     const { token } = req.query;
 
-    if (!token) {
-        return res.redirect(FRONTEND_URL);
-    }
+    if (!token) return res.redirect(FRONTEND_URL);
 
     try {
         const payload = jwt.verify(token, process.env.INVITE_SECRET);
 
         res.cookie(
             "login_context",
-            JSON.stringify({
-                type: "judge-invite",
-                token
-            }),
-            {
-                httpOnly: true,
-                sameSite: "None",
-                secure: true,
-                maxAge: 10 * 60 * 1000
-            }
+            JSON.stringify({ type: "judge-invite", token }),
+            { httpOnly: true, sameSite: "None", secure: true, maxAge: 10 * 60 * 1000 }
         );
 
         res.redirect(`${FRONTEND_URL}/obavijestsucu`);
