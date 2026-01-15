@@ -13,6 +13,7 @@ export default function Naslovnica() {
     const [competitions, setCompetitions] = useState([]);
     useEffect(() => {
         if (!korisnik || loading) return;
+
         const fetchData = async () => {
             try {
                 const token = localStorage.getItem("token");
@@ -24,7 +25,7 @@ export default function Naslovnica() {
                 });
 
                 if (response.status === 404) {
-                    setCompetitions([]); 
+                    setCompetitions([]);
                 } else if (!response.ok) {
                     const errData = await response.json();
                     throw new Error(errData.poruka || "Greška kod dohvaćanja natjecanja");
@@ -35,8 +36,12 @@ export default function Naslovnica() {
 
             } catch (err) {
                 console.error('Greška kod dohvaćanja natjecanja:', err);
+                setCompetitions([]);
+            } finally {
+                setLoadingNat(false); 
             }
         };
+
         fetchData();
     }, [korisnik, loading]);
 
