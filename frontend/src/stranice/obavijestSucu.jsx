@@ -1,13 +1,20 @@
 import { BACKEND_IP } from '../config.js';
+import '../izgled/obavijestsucu.css'
+
 
 export default function ObavijestSucu(){
     return (
-        <>
-            <div>
-                Pozvani ste da sudjelujete u ocjenjivanju natjecanja. Kliknite gumb da biste nastavili dalje.
+        <div className='okvirPozivnice'>
+            <div className='pozivnica'>
+                <h2>
+                Pozvani ste na sudjelovanje u ocjenjivanju natjecanja! 
+                </h2>
+                <p>
+                Kliknite tipku da biste nastavili dalje.
+                </p>
             </div>
-            <button className="prijava" onClick={() => window.location.href=`${BACKEND_IP}/auth/google?state=judge-invite`}>Prijava</button>
-        </>
+            <button className="registracijaSuca" onClick={() => window.location.href=`${BACKEND_IP}/auth/google?state=judge-invite`}>Registriraj se!</button>
+        </div>
     )
 }
 

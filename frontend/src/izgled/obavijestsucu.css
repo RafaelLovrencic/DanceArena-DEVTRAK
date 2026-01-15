@@ -1,0 +1,63 @@
+.okvirPozivnice {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+    background: url("./pozadine/pozadinadobrodoslice.png");
+    background-size: cover;        
+    background-position: center;   
+    background-repeat: no-repeat; 
+}
+
+.pozivnica {
+    font-size: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pozivnica>* {
+    margin: 20px;
+}
+
+.registracijaSuca {
+    background: #2CDE32;
+    font-family: 'Sedan SC';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+    border-radius: 12px;
+    border: 0;
+    margin-top: 15px;
+    padding: 10px 10px;
+    white-space: nowrap;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    color: black;
+    text-decoration: none;
+    text-align: center;
+}
+
+.registracijaSuca:hover {
+    cursor: pointer;
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 700px){ 
+    .registracijaSuca {
+        box-shadow: none;   
+        transition: none; 
+    }
+
+    .pozivnica {
+        font-size: 15px;
+    }
+
+    .registracijaSuca:hover {
+        transform: none !important;
+        box-shadow: none !important;
+    }
+}

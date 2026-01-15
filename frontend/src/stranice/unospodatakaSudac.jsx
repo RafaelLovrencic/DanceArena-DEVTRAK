@@ -69,7 +69,7 @@ export default function UnosPodatakaSudac() {
     <nav>
       <NavigacijskaTraka />
     </nav>
-    <section className='okvirZaPocetakPrijave'>
+    <section className='okvirZaPocetakPrijaveSudac'>
         <h1 className='dovrsiPrijavu'>Dovrši prijavu!</h1>
         <p className='uputeZaPrijavu'>Za prijavu je potrebno popuniti podatke.</p>
       </section>
@@ -77,9 +77,9 @@ export default function UnosPodatakaSudac() {
         <form className="unosPodataka" onSubmit={posaljiPodatke}>
             {error && <div style={{ color: "red", marginBottom: "10px" }}>{error}</div>}
             
-            <div className="ulogaSudac">
-              <label>Uloga:</label>
-              <input type="text" value="Sudac" disabled />
+            <div className="odabirUlogeSudac">
+              <label className="odaberiUloguSudac">Uloga:</label>
+              <input type="text" value="Sudac" className='zakljucanaUloga' disabled />
             </div>
             <div className='tekstOpcije'>
                 <div className="ime">
