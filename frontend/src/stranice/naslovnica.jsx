@@ -75,7 +75,7 @@ export default function Naslovnica() {
               <div className="tablica-container">
                   {loadingNat ? (
                       <p className="loader">Učitavanje...</p>
-                  ) : competitions.length > 0 ? (
+                  ) : competitions.length > 0 && competitions ? (
                       <table className="tablica">
                       <thead>
                           <tr>
