@@ -108,24 +108,24 @@ export default function Naslovnica() {
                         {competitions.map((comp) => {
                             if (!comp) return null;
 
-                            const ime = comp.ime || "-";
-                            const datum = comp.datum ? new Date(comp.datum).toLocaleDateString('hr-HR') : "-";
-                            const lokacija = comp.lokacija || "-";
-                            const stil = comp.kategorije?.[0]?.stil || "-";
+                            const ime = comp?.ime || "-";
+                            const datum = comp?.datum ? new Date(comp?.datum).toLocaleDateString('hr-HR') : "-";
+                            const lokacija = comp?.lokacija || "-";
+                            const stil = comp?.kategorije?.[0]?.stil || "-";
 
                             return (
-                            <tr key={comp._id}>
-                                <td>{comp.stanje === "zaključano" ? "🔒" : comp.stanje === "zatvoreno" ? "🏁" : ""}</td>
+                            <tr key={comp?._id}>
+                                <td>{comp?.stanje === "zaključano" ? "🔒" : comp?.stanje === "zatvoreno" ? "🏁" : ""}</td>
                                 <td>{ime}</td>
                                 <td>{datum}</td>
                                 <td>{lokacija}</td>
                                 <td>{stil}</td>
                                 <td>
-                                <Link to={`/natjecanje/${comp._id}`} className="link" title="Više informacija o natjecanju.">+</Link>
+                                <Link to={`/natjecanje/${comp?._id}`} className="link" title="Više informacija o natjecanju.">+</Link>
                                 </td>
                                 <td>
-                                {comp.stanje !== "otvoreno" && (
-                                    <button className="pdfButton" onClick={() => otvoriPDF(comp._id)}>PDF</button>
+                                {comp?.stanje !== "otvoreno" && (
+                                    <button className="pdfButton" onClick={() => otvoriPDF(comp?._id)}>PDF</button>
                                 )}
                                 </td>
                             </tr>
