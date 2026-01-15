@@ -90,22 +90,26 @@ export default function Naslovnica() {
                       </thead>
                       <tbody>
                           {competitions.map((comp) => (
-                              <tr key={comp._id}>
-                                <td>
-                                {comp.stanje === "zaključano" && "🔒"}
-                                {comp.stanje === "zatvoreno" && "🏁"}
-                                </td>
-                                  <td>{comp?.ime}</td>
-                                  <td>{new Date(comp.datum).toLocaleDateString('hr-HR')}</td>
-                                  <td>{comp.lokacija}</td>
-                                  <td>{comp.kategorije?.[0]?.stil || '-'}</td>
-                                  <td><Link to={`/natjecanje/${comp._id}`} className="link" title="Više informacija o natjecanju.">+</Link></td>
-                                  <td>{comp.stanje === "otvoreno" ?
-                                    "" :
-                                    <button className="pdfButton" onClick={() => otvoriPDF(comp._id)}>PDF</button>
-                                  }
-                                  </td>
-                              </tr>
+                              comp ? (  
+                                <tr key={comp._id}>
+                                    <td>
+                                        {comp.stanje === "zaključano" && "🔒"}
+                                        {comp.stanje === "zatvoreno" && "🏁"}
+                                    </td>
+                                    <td>{comp.ime || '-'}</td>
+                                    <td>{comp.datum ? new Date(comp.datum).toLocaleDateString('hr-HR') : '-'}</td>
+                                    <td>{comp.lokacija || '-'}</td>
+                                    <td>{comp.kategorije?.[0]?.stil || '-'}</td>
+                                    <td>
+                                        <Link to={`/natjecanje/${comp._id}`} className="link" title="Više informacija o natjecanju.">+</Link>
+                                    </td>
+                                    <td>
+                                        {comp.stanje === "otvoreno" ? "" :
+                                            <button className="pdfButton" onClick={() => otvoriPDF(comp._id)}>PDF</button>
+                                        }
+                                    </td>
+                                </tr>
+                                ) : null
                           ))}
                       </tbody>
                   </table>
