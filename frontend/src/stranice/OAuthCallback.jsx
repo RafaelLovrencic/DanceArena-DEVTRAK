@@ -6,8 +6,11 @@ export default function OAuthCallback() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const hash = window.location.hash; 
-    const token = new URLSearchParams(hash.slice(1)).get("token");
+    const hash = window.location.hash.substring(1);
+    const params = new URLSearchParams(hash);
+
+    const token = params.get("token");
+    const state = params.get("state");
 
     if (!token) {
       window.location.href = "/";
@@ -32,7 +35,10 @@ export default function OAuthCallback() {
         const { korisnik} = data;
 
         if (!korisnik.role) {
+          if(state === "normal-login")
             navigate("/unospodataka");
+          else if (state === "judge-invite")
+            navigate("unospodatakasuci")
         } else {
             navigate("/");
         }

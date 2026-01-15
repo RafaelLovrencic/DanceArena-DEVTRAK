@@ -25,7 +25,7 @@ router.get("/google/callback",
     try {
       if (!req.user) return res.redirect(FRONTEND_URL);
       const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
-      res.redirect(`${FRONTEND_URL}/oauth-callback#token=${token}`);
+      res.redirect(`${FRONTEND_URL}/oauth-callback#token=${token}&state=${state}`);
     } catch (err) {
       console.error("Greška u callback-u:", err);
       res.redirect(FRONTEND_URL);
