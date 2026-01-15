@@ -1,9 +1,8 @@
 import { useEffect } from "react";
-import { BACKEND_IP } from "../config";
 
 export default function OAuthCallback() {
   useEffect(() => {
-    const hash = window.location.hash;
+    const hash = window.location.hash; // "#token=..."
     const token = new URLSearchParams(hash.slice(1)).get("token");
 
     if (!token) {
@@ -11,11 +10,14 @@ export default function OAuthCallback() {
       return;
     }
 
-    // očisti URL
-    window.history.replaceState({}, "", "/oauth-callback");
+    // Spremi token u localStorage
+    localStorage.setItem("token", token);
 
-    // prava navigacija prema backendu
-    window.location.href = `${BACKEND_IP}/auth/store-token?token=${token}`;
+    // očisti URL
+    window.history.replaceState({}, "", "/");
+
+    // Redirect na glavnu stranicu
+    window.location.href = "/";
   }, []);
 
   return <div>Prijava u tijeku...</div>;

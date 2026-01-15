@@ -8,58 +8,56 @@ export function AuthProvider({ children }) {
   const [klub, setKlub] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const azurirajKorisnika = (noviPodaci) => {
-    setKorisnik((prev) => ({ ...prev, ...noviPodaci }));
-  };
+  const azurirajKorisnika = (noviPodaci) => setKorisnik(prev => ({ ...prev, ...noviPodaci }));
+  const azurirajKlub = (noviPodaci) => setKlub(prev => ({ ...prev, ...noviPodaci }));
 
-  const azurirajKlub = (noviPodaciKlub) => {
-    setKlub((prev) => ({ ...prev, ...noviPodaciKlub }));
-  };
+  // provjeri korisnika po tokenu iz localStorage
+  const provjeriKorisnika = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setKorisnik(null);
+      setKlub(null);
+      setLoading(false);
+      return;
+    }
 
-  useEffect(() => {
-    const provjeriKorisnika = async () => {
-      try {
-        const response = await fetch(`${BACKEND_IP}/auth/provjera-autentifikacije`, {
-          credentials: "include", 
-        });
-
-        if (!response.ok) {
-          setKorisnik(null);
-        } else {
-          const data = await response.json();
-          setKorisnik(data.korisnik);
-          setKlub(data.klub);
-          console.log(data.korisnik);
-          console.log(data.klub);
-        }
-      } catch (err) {
-        console.error("Greška pri provjeri korisnika:", err);
-        setKorisnik(null);
-        setKlub(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    provjeriKorisnika();
-  }, []);
-
-  const odjava = async () => {
     try {
-      await fetch(`${BACKEND_IP}/auth/logout`, {
-        method: "POST",
-        credentials: "include",
-        cache: "no-store",
+      const res = await fetch(`${BACKEND_IP}/auth/provjera-autentifikacije`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      window.location.replace("/");
+      if (!res.ok) {
+        setKorisnik(null);
+        setKlub(null);
+      } else {
+        const data = await res.json();
+        setKorisnik(data.korisnik);
+        setKlub(data.klub);
+      }
     } catch (err) {
-      console.error("Greška pri odjavi:", err);
+      console.error("Greška pri provjeri korisnika:", err);
+      setKorisnik(null);
+      setKlub(null);
+    } finally {
+      setLoading(false);
     }
   };
 
+  useEffect(() => {
+    provjeriKorisnika();
+  }, []);
+
+  const odjava = () => {
+    localStorage.removeItem("token"); // token se briše
+    setKorisnik(null);
+    setKlub(null);
+    window.location.href = "/";
+  };
+
   return (
-    <AuthContext.Provider value={{ korisnik, setKorisnik, loading, odjava, azurirajKorisnika, klub, azurirajKlub }}>
+    <AuthContext.Provider
+      value={{ korisnik, setKorisnik, loading, odjava, azurirajKorisnika, klub, azurirajKlub }}
+    >
       {children}
     </AuthContext.Provider>
   );
