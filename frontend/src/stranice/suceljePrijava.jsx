@@ -5,12 +5,12 @@ import '../izgled/suceljePrijava.css';
 import { BACKEND_IP } from "../config";
 import { useAuth } from "../kontekst/AuthContext";
 
-export default function PrijavaNaNatjecanje({onClose, prijavaPodaci, urediPrijavu, onSuccess}){
+export default function PrijavaNaNatjecanje({onClose, prijavaPodaci, urediPrijavu, onSuccess, readOnly=false}){
     const{ korisnik } = useAuth();
 
-    const dobneKategorije = [...new Set(prijavaPodaci.kategorije.map(k => k.godiste))];
+    /*const dobneKategorije = [...new Set(prijavaPodaci.kategorije.map(k => k.godiste))];
     const stilovi = [...new Set(prijavaPodaci.kategorije.map(k => k.stil))];
-    const velicine = [...new Set(prijavaPodaci.kategorije.map(k => k.velicina))];
+    const velicine = [...new Set(prijavaPodaci.kategorije.map(k => k.velicina))];*/
 
     const [forma, setForma] = useState({
         nazivKor: '',
@@ -45,15 +45,13 @@ export default function PrijavaNaNatjecanje({onClose, prijavaPodaci, urediPrijav
     };
 
     const obaviSubmit = async (e) => {
+        if (!korisnik) return alert("Niste prijavljeni!");
+
         e.preventDefault();
 
         if (!prijavaPodaci) return alert("Nema podataka za prijavu!");
 
         if(!forma.nazivKor || !forma.imeKor) return alert("Nisu unešeni svi podaci o koreografiji!")
-
-        if(!forma.dob || !forma.stil || !forma.velicina){
-            return alert("Nisu odabrane sve kategorije!");
-        }
 
         if(!forma.glazba){
             return alert("Nije odabrana audio datoteka!")
@@ -114,58 +112,63 @@ export default function PrijavaNaNatjecanje({onClose, prijavaPodaci, urediPrijav
     return(
         <>
             <div className="sucelje">
-                <form className="formaZaPrijavu" onSubmit={obaviSubmit}>
+                <form className="formaZaPrijavu" onSubmit={readOnly ? e => e.preventDefault() : obaviSubmit}>
                     <div className="nazivKor">
                         <label>Naziv koreografije:</label>
-                        <input name="nazivKor" type="text" value={forma.nazivKor} onChange={obaviPromjenu}/>
+                        <input name="nazivKor" type="text" value={forma.nazivKor} onChange={obaviPromjenu} readOnly={readOnly}/>
                     </div>
                     <div className="trajanje">
                         <label>Duljina trajanja:</label>
-                        <input name="trajanje" type="text" placeholder="Unesite trajanje u minutama:" value={forma.trajanje} onChange={obaviPromjenu}/>
+                        <input name="trajanje" type="text" placeholder="Unesite trajanje u minutama:" value={forma.trajanje} onChange={obaviPromjenu} readOnly={readOnly}/>
                     </div>
                     <div className="imeKor">
                         <label>Ime koreografa:</label>
-                        <input name="imeKor" type="text" value={forma.imeKor} onChange={obaviPromjenu}/>
+                        <input name="imeKor" type="text" value={forma.imeKor} onChange={obaviPromjenu} readOnly={readOnly}/>
                     </div>
                     <div className="dobKat">
                         <label>Dobna kategorija:</label>
-                        <select name="dob" value={forma.dob} onChange={obaviPromjenu}>
-                            <option value=""></option>
-                            {dobneKategorije.map(d => (
-                            <option key={d} value={d}>{d}</option>
-                            ))}
-                        </select>
+                        <input type="text" name="dob" value={forma.dob} readOnly></input>
                     </div>
                     <div className="stilPlesa">
                         <label>Stil plesa:</label>
-                        <select name="stil" value={forma.stil} onChange={obaviPromjenu}>
-                            <option value=""></option>
-                            {stilovi.map(d => (
-                            <option key={d} value={d}>{d}</option>
-                            ))}
-                        </select>
+                        <input type="text" name="stil" value={forma.stil} readOnly></input>
                     </div>
                     <div className="velGrupe">
                         <label>Veličina grupe:</label>
-                        <select name="velicina" value={forma.velicina} onChange={obaviPromjenu}>
-                            <option value=""></option>
-                            {velicine.map(d => (
-                            <option key={d} value={d}>{d}</option>
-                            ))}
-                        </select>
+                        <input type="text" name="velicina" value={forma.velicina} readOnly></input>
                     </div>
-                    <div className="glazba">
-                        <label>Glazba:</label>
-                        <input type="file" name="glazba" accept="audio/*" onChange={obaviPromjenu}></input>
-                    </div>
-                    <div className="kotizacija">
-                        <label>Kotizacija:</label>
-                        <p className="kotizacija_iznos">
-                            {prijavaPodaci.kotizacija} €
-                        </p>
-                    </div>
+                    {!readOnly && (
+                        <div className="glazba">
+                            <label>Glazba:</label>
+                            <input type="file" name="glazba" accept="audio/*" onChange={obaviPromjenu} disabled={readOnly}></input>
+                        </div>
+                    )}
+                    {!readOnly && (
+                        <div className="kotizacija">
+                            <label>Kotizacija:</label>
+                            <p className="kotizacija_iznos">
+                                {prijavaPodaci.kotizacija} €
+                            </p>
+                        </div>
+                    )}
+                    {readOnly && (
+                        <div className="klub_podaci">
+                            <div className="imeKluba">
+                                <label>Ime kluba:</label>
+                                <input type="text" value={prijavaPodaci.imeKluba} readOnly></input>
+                            </div> 
+                            <div className="voditeljKluba">
+                                <label>Voditelj kluba:</label>
+                                <input type="text" value={urediPrijavu.klubId?.ownerId?.ime} readOnly></input>
+                            </div>
+                            <div className="imeKluba">
+                                <label>Kontakt kluba:</label>
+                                <input type="text" value={urediPrijavu.klubId?.ownerId?.email} readOnly></input>
+                            </div> 
+                        </div>
+                    )}
                     <div className="gumbovi">
-                        <button type="submit">Prijava</button>
+                        {!readOnly && <button type="submit">Prijava</button>}
                         <button type="button" onClick={onClose}>Zatvori</button>
                     </div>
                 </form>

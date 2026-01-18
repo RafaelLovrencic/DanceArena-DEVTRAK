@@ -12,7 +12,13 @@ router.get("/natjecanje/:id", async (req, res) => {
         const id = req.params.id;
         
         const nastupi = await Nastup.find({ natjecanjeId: id }).populate("kategorijaId", "godiste stil velicina")
-              .populate("klubId", "ime lokacija")
+              .populate({
+                path: "klubId",
+                select: "ime lokacija ownerId", 
+                populate: {
+                    path: "ownerId",
+                    select: "ime email"
+                }})
               .lean();
         
         res.json(nastupi);

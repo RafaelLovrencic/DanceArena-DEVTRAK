@@ -141,8 +141,7 @@ body {
 }
 
 .koreografije, 
-.prijave,
-.poredak {
+.prijave {
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -153,20 +152,15 @@ body {
   margin: 0 auto 20px auto;
   max-width: 1200px;
 }
-.poredak {
-  margin-bottom: 0;
-}
 
 .naslov_koreografija,
-.naslov_prijava,
-.naslov_poredak {
+.naslov_prijava {
   border-bottom: 2px solid #983db6;
   padding-bottom: 8px;
 }
 
 .tekst_koreografija,
-.tekst_prijava,
-.tekst_poredak {
+.tekst_prijava {
   font-family: 'Sedan SC';
   font-size: clamp(20px, 2.5vw, 36px);
   color: white;
@@ -174,15 +168,13 @@ body {
 }
 
 .lista_koreografija,
-.lista_prijava,
-.lista_poredak {
+.lista_prijava {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.red_prijave,
-.red_poredak {
+.red_prijave {
   display: flex;
   align-items: center;
   gap: 16px;
@@ -195,8 +187,7 @@ body {
 }
 
 .tekst_prijave_red,
-.tekst_koreografije_red,
-.tekst_poredak_red {
+.tekst_koreografije_red {
   font-family: 'Sedan SC';
   font-size: clamp(14px, 2vw, 20px);
   color: white;
@@ -210,8 +201,7 @@ body {
   min-width: 0;
 }
 
-.tekst_prijave_red,
-.tekst_poredak_red {
+.tekst_prijave_red {
   flex: 1;
   min-width: 0;
 }
@@ -262,6 +252,92 @@ body {
 
 .koreografije:last-child {
   margin-bottom: 0;
+}
+
+.poredak {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 100px;
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: 'Inter';
+  padding-bottom: 50px;
+}
+
+.naslov_poredak {
+  border: 2px solid #2CDE32;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-family: 'Sedan SC';
+  font-size: clamp(20px, 2.5vw, 36px);
+  color: white;
+  background: rgba(44, 222, 50, 0.1);
+}
+
+.dijelovi_poredak {
+  display: flex;
+  flex-direction: row;
+  padding: 8px 12px;
+  font-family: 'Sedan SC';
+  color: white;
+  font-size: clamp(20px, 2.5vw, 36px);
+  border-radius: 6px;
+  background: #AB58C7;
+  border-width: 2px 0px;
+  border-style: solid;
+  border-color: #E3C1EE;
+
+}
+
+.dijelovi_poredak .dio {
+  text-align: center;
+  flex: 1;
+}
+
+.lista_poredak {
+  display: flex;
+  flex-direction: column;
+}
+
+.red_poredak {
+  display: flex;
+  flex-direction: row;
+  padding: 8px 12px;
+  border-bottom: 2px solid #FFFFFF;
+  border-top: 2px solid #FFFFFF;
+  font-family: 'Inter';
+  font-size: clamp(18px, 1.4vw, 20px);
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+/*.red_poredak .tekst_poredak_red {
+  flex: 1;
+}*/
+
+.red_poredak .stupac {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 4px;
+  color: white;
+  font-family: 'Sedan SC';
+}
+
+.red_poredak .stupac:first-child {
+  width: 30px;
+  flex-shrink: 0;
+  text-align: center;
+  padding-right: 8px;
+  font-size: clamp(20px, 1.6vw, 25px);
+}
+
+.red_poredak .stupac:not(:first-child){
+  flex: 1;
+  text-align: center;
 }
 
 
@@ -360,10 +436,14 @@ body {
     gap: 12px;
   }
 
+  .poredak {
+    margin-top: 50px;
+  }
+
   .tekst_koreografija,
   .tekst_prijava,
   .tekst_poredak {
-    font-size: clamp(18px, 4vw, 28px);
+    font-size: clamp(30px, 5vw, 40px);
     text-align: center;
   }
 
@@ -417,8 +497,22 @@ body {
     transform: none !important;
     box-shadow: none !important;
   }
-}
 
+  .red_poredak {
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .red_poredak .stupac {
+      width: 100%;
+    }
+
+    .dijelovi_poredak {
+      display: none;
+    }
+
+}
 
 
 

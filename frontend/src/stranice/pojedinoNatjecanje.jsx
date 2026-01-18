@@ -12,6 +12,7 @@ export default function pojedinoNatjecanje(){
     const [natjecanje, setNatjecanje] = useState(null);
     const [pokaziSucelje, setPokaziSucelje] = useState(false);
     const [prijavaPodaci, setPrijavaPodaci] = useState(null);
+    const [detaljiPrijave, setDetaljiPrijave] = useState(null);
     const [prijave, setPrijave] = useState([]);
     const [urediPrijavu, setUrediPrijavu] = useState(null);
     const [clanarinaAktivna, setClanarinaAktivna] = useState(false);
@@ -19,6 +20,7 @@ export default function pojedinoNatjecanje(){
 
 
     const otvoriPrijavu = () => {
+        const kategorija = natjecanje.kategorije?.[0] || {};
         setPrijavaPodaci({
             natjecanjeId: natjecanje._id,
             kotizacija: natjecanje.kotizacija,
@@ -27,10 +29,14 @@ export default function pojedinoNatjecanje(){
             nazivKoreografije: "",
             trajanje: "",
             koreograf: "",
-            dob: "",
-            stil: "",
-            velicina: "",
-            glazba: ""
+            dob: kategorija.godiste || "",
+            stil: kategorija.stil || "",
+            velicina: kategorija.velicina || "",
+            glazba: "",
+
+            imeKluba: "",
+            voditeljKluba: "",
+            kontaktKluba: ""
         });
 
         setPokaziSucelje(true);
@@ -256,6 +262,10 @@ export default function pojedinoNatjecanje(){
         prijave.length > 0 &&
         !!klub?._id &&
         prijave.some(p => String(p.klubId?._id) === String(klub._id));
+    
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [id]);
 
     return (
         <>
@@ -430,7 +440,15 @@ export default function pojedinoNatjecanje(){
                         {prijave.map((nastup) => (
                             <div key={nastup._id} className="red_koreografije">
                                 <span className="tekst_koreografije_red">{nastup.imekoreografije} ; {nastup.imekoreografa}</span>
-                                <button className="gumb_detalji">Detalji</button>
+                                <button className="gumb_detalji" onClick={() => {
+                                    setUrediPrijavu(nastup);
+                                    setDetaljiPrijave({natjecanjeId: natjecanje._id, kotizacija: natjecanje.kotizacija,
+                                                       kategorije: natjecanje.kategorije, nazivKoreografije: nastup.imekoreografije,
+                                                       trajanje: nastup.trajanje, koreograf: nastup.imekoreografa,
+                                                       dob: nastup.kategorijaId?.godiste || "", stil: nastup.kategorijaId?.stil || "",
+                                                       velicina: nastup.kategorijaId?.velicina || "", glazba: nastup.glazbaUrl || "",
+                                                       imeKluba: nastup.klubId?.ime || ""});
+                                }}>Detalji</button>
                                 {korisnik?.role === "sudac" && natjecanje?.suci?.some(s => s._id === korisnik._id) && natjecanje?.stanje === "zaključano" && (
                                     nastup.ocijenio ? (
                                         <button
@@ -458,6 +476,11 @@ export default function pojedinoNatjecanje(){
                         <div className="naslov_poredak">
                             <p className="tekst_poredak">Rezultati:</p>
                         </div>
+                        <div className="dijelovi_poredak">
+                            <span className="dio">Klub</span>
+                            <span className="dio">Koreografija</span>
+                            <span className="dio">Ocjena</span>
+                        </div>
                         <div className='lista_poredak'>
                             {prijave
                                 .map(nastup => ({
@@ -469,10 +492,20 @@ export default function pojedinoNatjecanje(){
                                 .sort((a, b) => b.ukupno - a.ukupno)
                                 .map((nastup, index) => (
                                     <div className='red_poredak' key={nastup._id}>
-                                        <span className='tekst_poredak_red'>{index + 1}. {nastup.imekoreografije} ({nastup.imekoreografa})
+                                        <div className="stupac">
+                                            <p>{index + 1}.</p>
+                                        </div>
+                                        <div className="stupac">
+                                            <p>{nastup.klubId?.ime}</p>
+                                        </div>
+                                        <div className="stupac">
+                                            <p>{nastup.imekoreografa}:{nastup.imekoreografije}</p>
+                                        </div>
+                                        <div className="stupac">
                                             {korisnik?.role === "voditelj" && nastup.klubId?._id === klub?._id
-                                                ? ` - ${nastup.ukupno} bodova`
-                                                : ""}</span>
+                                                ? <p> {nastup.ukupno} bodova</p>
+                                                : <p>N/A</p>}
+                                        </div>
                                     </div>
                                 ))
                             }
@@ -489,6 +522,14 @@ export default function pojedinoNatjecanje(){
                 prijavaPodaci={prijavaPodaci}
                 urediPrijavu={urediPrijavu}
                 onSuccess={fetchPrijave}
+                />
+            )}
+            {detaljiPrijave && (
+                <PrijavaNaNatjecanje
+                    prijavaPodaci={detaljiPrijave}
+                    urediPrijavu={urediPrijavu}
+                    readOnly={true}
+                    onClose={() => setDetaljiPrijave(null)}
                 />
             )}
         </>
