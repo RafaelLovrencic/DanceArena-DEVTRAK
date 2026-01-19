@@ -26,8 +26,9 @@ export function AuthProvider({ children }) {
     }
 
     try {
+      const fp = generateFingerprint();
       const res = await fetch(`${BACKEND_IP}/auth/provjera-autentifikacije`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}`, "X-Fingerprint": fp, },
       });
 
       if (!res.ok) {

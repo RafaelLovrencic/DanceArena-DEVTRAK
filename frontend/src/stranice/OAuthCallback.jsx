@@ -7,7 +7,7 @@ import { generateFingerprint } from "../kontekst/fingerprint";
 
 export default function OAuthCallback() {
     const navigate = useNavigate();
-    const { postaviToken, token } = useAuth();
+    const { postaviToken } = useAuth();
 
     useEffect(() => {
         const hash = window.location.hash.substring(1);
