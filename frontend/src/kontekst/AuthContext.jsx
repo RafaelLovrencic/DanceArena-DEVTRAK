@@ -9,6 +9,7 @@ export function AuthProvider({ children }) {
   const [klub, setKlub] = useState(null);
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(localStorage.getItem("token") || null);
+  const [fp, setFingerprint] = useState(generateFingerprint());
 
   const azurirajKorisnika = (noviPodaci) => setKorisnik(prev => ({ ...prev, ...noviPodaci }));
   const azurirajKlub = (noviPodaci) => setKlub(prev => ({ ...prev, ...noviPodaci }));
@@ -27,7 +28,6 @@ export function AuthProvider({ children }) {
     }
 
     try {
-      const fp = generateFingerprint();
       const res = await fetch(`${BACKEND_IP}/auth/provjera-autentifikacije`, {
         headers: { Authorization: `Bearer ${token}`, "X-Fingerprint": fp, },
       });
@@ -62,7 +62,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ korisnik, setKorisnik, loading, odjava, azurirajKorisnika, klub, azurirajKlub, token, postaviToken }}
+      value={{ korisnik, setKorisnik, loading, odjava, azurirajKorisnika, klub, azurirajKlub, token, postaviToken, fp }}
     >
       {children}
     </AuthContext.Provider>

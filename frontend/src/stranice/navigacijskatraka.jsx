@@ -14,7 +14,7 @@ export default function NavigacijskaTraka() {
   const [meniKlasa, setMeniKlasa] = useState("meni skriven");
   const [meniAktivan, setMeniAktivan] = useState(false);
   const [pokaziProfil, setPokaziProfil] = useState(false);
-  const { korisnik } = useAuth();
+  const { korisnik, fp } = useAuth();
 
   const azurirajMeni = () => {
     if(!meniAktivan) {
@@ -38,8 +38,7 @@ export default function NavigacijskaTraka() {
     <div className='tipke'>
       {!korisnik && lokacija.pathname !== '/unospodataka' && (
         <button className="prijava" onClick={() => {
-          const fp = encodeURIComponent(generateFingerprint());
-          window.location.href=`${BACKEND_IP}/auth/google?fp=${fp}`
+          window.location.href=`${BACKEND_IP}/auth/google?fp=${encodeURIComponent(fp)}`
         }
         }>Prijava</button>
       )}

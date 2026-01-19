@@ -4,11 +4,10 @@ import {Link} from 'react-router-dom';
 import { useAuth } from "../kontekst/AuthContext";
 import {useState, useEffect} from 'react'
 import { BACKEND_IP } from "../config";
-import { generateFingerprint } from "../kontekst/fingerprint";
 
 export default function Naslovnica() {
     const { loading } = useAuth();
-    const { korisnik, token } = useAuth();
+    const { korisnik, token, fp } = useAuth();
     const [loadingNat, setLoadingNat] = useState(true);
     const [competitions, setCompetitions] = useState([]);
     useEffect(() => {
@@ -18,13 +17,13 @@ export default function Naslovnica() {
             return;
         }
         if (loading) return;
-
+        console.log("FP u naslovnici", fp);
         const fetchData = async () => {
             try {
                 const response = await fetch(`${BACKEND_IP}/natjecanja/user`, {
                     headers: {
                         "Authorization": `Bearer ${token}`,
-                        "X-Fingerprint": generateFingerprint(),
+                        "X-Fingerprint": fp,
                         "Content-Type": "application/json"
                     },
                 });
@@ -55,7 +54,7 @@ export default function Naslovnica() {
             const response = await fetch(`${BACKEND_IP}/export/${competitionId}`, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
-                    "X-Fingerprint": generateFingerprint(),
+                    "X-Fingerprint": fp,
                     "Content-Type": "application/json",
                 }
             });

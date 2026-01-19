@@ -7,7 +7,7 @@ import { generateFingerprint } from "../kontekst/fingerprint";
 
 export default function OAuthCallback() {
     const navigate = useNavigate();
-    const { postaviToken } = useAuth();
+    const { postaviToken, fp } = useAuth();
 
     useEffect(() => {
         const hash = window.location.hash.substring(1);
@@ -25,7 +25,6 @@ export default function OAuthCallback() {
 
         const provjeriKorisnika = async () => {
         try {
-            const fp = generateFingerprint();
             console.log("Fingerprint koji šaljemo:", fp);
             const res = await fetch(`${BACKEND_IP}/auth/provjera-autentifikacije`, {
             headers: {
