@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { BACKEND_IP } from "../config";
 import { useAuth } from "../kontekst/AuthContext";
+import { generateFingerprint } from "../kontekst/fingerprint";
 
 
 export default function OAuthCallback() {
