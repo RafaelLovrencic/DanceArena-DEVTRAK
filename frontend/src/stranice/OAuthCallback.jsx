@@ -11,6 +11,11 @@ export default function OAuthCallback() {
 
     useEffect(() => {
         const hash = window.location.hash.substring(1);
+        if (!hash) {
+            console.error("Hash nedostaje, nema tokena");
+            window.location.href = "/";
+            return;
+        }
         const params = new URLSearchParams(hash);
 
         const token = params.get("token");
