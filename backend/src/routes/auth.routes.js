@@ -24,7 +24,7 @@ router.get("/google/callback",
   (req, res) => {
     try {
       if (!req.user) return res.redirect(FRONTEND_URL);
-      const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+      const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, { expiresIn: "2d" });
       const state = req.query.state || "normal-login";
       res.redirect(`${FRONTEND_URL}/oauth-callback#token=${token}&state=${state}`);
     } catch (err) {

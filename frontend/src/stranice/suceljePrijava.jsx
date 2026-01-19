@@ -6,7 +6,7 @@ import { BACKEND_IP } from "../config";
 import { useAuth } from "../kontekst/AuthContext";
 
 export default function PrijavaNaNatjecanje({onClose, prijavaPodaci, urediPrijavu, onSuccess}){
-    const{ korisnik } = useAuth();
+    const{ korisnik, token } = useAuth();
 
     const dobneKategorije = [...new Set(prijavaPodaci.kategorije.map(k => k.godiste))];
     const stilovi = [...new Set(prijavaPodaci.kategorije.map(k => k.stil))];
@@ -85,8 +85,6 @@ export default function PrijavaNaNatjecanje({onClose, prijavaPodaci, urediPrijav
                 url = `${BACKEND_IP}/prijave/application/edit/${urediPrijavu._id}`;
                 method = "PUT";
             }
-            const token = localStorage.getItem("token"); 
-
             const res = await fetch(url, {
                 method: method,
                 headers: {

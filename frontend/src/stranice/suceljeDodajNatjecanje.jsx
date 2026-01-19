@@ -7,7 +7,7 @@ import { useAuth } from "../kontekst/AuthContext";
 import Select from "react-select";
 
 export default function DodajNatjecanje({onClose, natjecanjeZaUredi, pozvaniSuci, urediMod}) {
-    const { korisnik } = useAuth();
+    const { korisnik, token } = useAuth();
     const [suciOpcije, setSuciOpcije] = useState([]);
     const [odabraniSuci, setOdabraniSuci] = useState(() => {
                             if (natjecanjeZaUredi && natjecanjeZaUredi.suci) {
@@ -96,7 +96,6 @@ export default function DodajNatjecanje({onClose, natjecanjeZaUredi, pozvaniSuci
         };
 
         try {
-            const token = localStorage.getItem("token"); 
             const response = await fetch(url, { 
                 method,
                 headers: {
@@ -120,7 +119,6 @@ export default function DodajNatjecanje({onClose, natjecanjeZaUredi, pozvaniSuci
     useEffect(() => {
         const fetchSuci = async () => {
         try {
-            const token = localStorage.getItem("token");
             const res = await fetch(`${BACKEND_IP}/users/suci`, {
                 headers: {
                     "Authorization": `Bearer ${token}`,

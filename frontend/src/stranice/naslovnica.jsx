@@ -8,7 +8,7 @@ import { BACKEND_IP } from "../config";
 
 export default function Naslovnica() {
     const { loading } = useAuth();
-    const { korisnik } = useAuth();
+    const { korisnik, token } = useAuth();
     const [loadingNat, setLoadingNat] = useState(true);
     const [competitions, setCompetitions] = useState([]);
     useEffect(() => {
@@ -21,7 +21,6 @@ export default function Naslovnica() {
 
         const fetchData = async () => {
             try {
-                const token = localStorage.getItem("token");
                 const response = await fetch(`${BACKEND_IP}/natjecanja/user`, {
                     headers: {
                         "Authorization": `Bearer ${token}`,
@@ -52,7 +51,6 @@ export default function Naslovnica() {
 
     const otvoriPDF = async (competitionId) => {
         try {
-            const token = localStorage.getItem("token");
             const response = await fetch(`${BACKEND_IP}/export/${competitionId}`, {
                 headers: {
                     "Authorization": `Bearer ${token}`,

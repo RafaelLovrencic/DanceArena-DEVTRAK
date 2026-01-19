@@ -7,12 +7,17 @@ export function AuthProvider({ children }) {
   const [korisnik, setKorisnik] = useState(null);
   const [klub, setKlub] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState(localStorage.getItem("token") || null);
 
   const azurirajKorisnika = (noviPodaci) => setKorisnik(prev => ({ ...prev, ...noviPodaci }));
   const azurirajKlub = (noviPodaci) => setKlub(prev => ({ ...prev, ...noviPodaci }));
 
+  const postaviToken = (noviToken) => {
+    localStorage.setItem("token", noviToken);
+    setToken(noviToken);
+  };
+
   const provjeriKorisnika = async () => {
-    const token = localStorage.getItem("token");
     if (!token) {
       setKorisnik(null);
       setKlub(null);
@@ -55,7 +60,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ korisnik, setKorisnik, loading, odjava, azurirajKorisnika, klub, azurirajKlub }}
+      value={{ korisnik, setKorisnik, loading, odjava, azurirajKorisnika, klub, azurirajKlub, token, postaviToken }}
     >
       {children}
     </AuthContext.Provider>

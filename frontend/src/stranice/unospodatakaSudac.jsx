@@ -6,7 +6,7 @@ import { useAuth } from "../kontekst/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 export default function UnosPodatakaSudac() {
-  const { korisnik, loading } = useAuth();
+  const { korisnik, loading, token } = useAuth();
   const [ime, setIme] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -35,8 +35,6 @@ export default function UnosPodatakaSudac() {
     }
 
     try {
-      const token = localStorage.getItem("token"); 
-
       const response = await fetch(`${BACKEND_IP}/unospodataka`, {
         method: "POST",
         headers: { 

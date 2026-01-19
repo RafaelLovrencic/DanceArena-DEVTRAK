@@ -7,7 +7,7 @@ import { BACKEND_IP } from "../config";
 import { useAuth } from "../kontekst/AuthContext";
 
 export default function Natjecanja() {
-    const { korisnik } = useAuth();
+    const { korisnik, token } = useAuth();
     const [loading, setLoading] = useState(true);
     const [competitions, setCompetitions] = useState([]);
     const [pokaziSucelje, setPokaziSucelje] = useState(false);
@@ -29,7 +29,6 @@ export default function Natjecanja() {
             return;
         }
         if (!(await provjeriClanarinuSvjeze())) return;
-        const token = localStorage.getItem("token");
         const response = await fetch(`${BACKEND_IP}/natjecanja/${odabranoNatjecanje._id}`, {
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -57,7 +56,6 @@ export default function Natjecanja() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const token = localStorage.getItem("token");
                 const response = await fetch(`${BACKEND_IP}/natjecanja`, {
                     headers: {
                         "Authorization": `Bearer ${token}`,
@@ -85,7 +83,6 @@ export default function Natjecanja() {
    const obrisiNatjecanje = async () => {
         if (!odabranoNatjecanje) return;
         if (!(await provjeriClanarinuSvjeze())) return;
-        const token = localStorage.getItem("token");
         const response = await fetch(`${BACKEND_IP}/natjecanja/${odabranoNatjecanje._id}`, {
             method: "DELETE",
             headers: {
@@ -123,7 +120,6 @@ export default function Natjecanja() {
     };
     const osvjeziNatjecanja = async () => {
         try {
-            const token = localStorage.getItem("token");
             const response = await fetch(`${BACKEND_IP}/natjecanja`, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -147,7 +143,6 @@ export default function Natjecanja() {
 
         const statusClanarine = async () => {
             try {
-                const token = localStorage.getItem("token");
                 const res = await fetch(`${BACKEND_IP}/napravi-transakciju/status-clanarine`, {
                     headers: {
                         "Authorization": `Bearer ${token}`,
@@ -170,7 +165,6 @@ export default function Natjecanja() {
 
     const provjeriClanarinuSvjeze = async () => {
         try {
-            const token = localStorage.getItem("token");
             const res = await fetch(`${BACKEND_IP}/napravi-transakciju/status-clanarine`, {
                 headers: {
                     "Authorization": `Bearer ${token}`,

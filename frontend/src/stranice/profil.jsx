@@ -4,8 +4,7 @@ import { BACKEND_IP } from "../config";
 import "../izgled/profil.css";
 
 export default function Profil({ onClose }) {
-    const { korisnik, odjava, azurirajKorisnika, klub, azurirajKlub, loading } = useAuth();
-    const token = localStorage.getItem("token");
+    const { korisnik, odjava, azurirajKorisnika, klub, azurirajKlub, loading, token } = useAuth();
     const [clanarinaAktivna, setClanarinaAktivna] = useState(false);
     const [vrijediDo, setVrijediDo] = useState(null);
     const [ucitavanje, setUcitavanje] = useState(true);
