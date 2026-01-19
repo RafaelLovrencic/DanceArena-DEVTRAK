@@ -10,6 +10,8 @@ const router = express.Router();
 // ------------- Google OAuth ---------------
 router.get("/google", (req, res, next) => {
   const state = req.query.state || "normal-login";
+  const fp = req.query.fp;
+  req.session.fp = fp;
 
   passport.authenticate("google", {
     scope: ["profile", "email"],
@@ -24,7 +26,7 @@ router.get("/google/callback",
   (req, res) => {
     try {
       if (!req.user) return res.redirect(FRONTEND_URL);
-      const fingerprint = req.query.fp || "";
+      const fingerprint = req.session.fp || "";
       const token = jwt.sign({ id: req.user._id, fp: fingerprint }, process.env.JWT_SECRET, { expiresIn: "2d" });
       const state = req.query.state || "normal-login";
       res.redirect(`${FRONTEND_URL}/oauth-callback#token=${token}&state=${state}`);
