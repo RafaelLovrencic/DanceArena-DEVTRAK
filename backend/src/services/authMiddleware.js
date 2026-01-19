@@ -18,6 +18,11 @@ module.exports = async (req, res, next) => {
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
+        const clientFingerprint = req.headers["x-fingerprint"];
+        if (!clientFingerprint || clientFingerprint !== decoded.fp) {
+        return res.status(401).json({ poruka: "Nevažeći token (fingerprint mismatch)" });
+        }
+
         const korisnik = await User.findById(decoded.id);
         if (!korisnik) {
             return res.status(401).json({ poruka: "Korisnik ne postoji" });

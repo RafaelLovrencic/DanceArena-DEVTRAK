@@ -4,7 +4,7 @@ import {Link} from 'react-router-dom';
 import { useAuth } from "../kontekst/AuthContext";
 import {useState, useEffect} from 'react'
 import { BACKEND_IP } from "../config";
-
+import { generateFingerprint } from "../kontekst/fingerprint";
 
 export default function Naslovnica() {
     const { loading } = useAuth();
@@ -24,6 +24,7 @@ export default function Naslovnica() {
                 const response = await fetch(`${BACKEND_IP}/natjecanja/user`, {
                     headers: {
                         "Authorization": `Bearer ${token}`,
+                        "X-Fingerprint": generateFingerprint(),
                         "Content-Type": "application/json"
                     },
                 });
@@ -54,6 +55,7 @@ export default function Naslovnica() {
             const response = await fetch(`${BACKEND_IP}/export/${competitionId}`, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
+                    "X-Fingerprint": generateFingerprint(),
                     "Content-Type": "application/json",
                 }
             });

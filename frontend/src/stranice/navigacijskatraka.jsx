@@ -6,6 +6,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { BACKEND_IP } from '../config.js';
 import { useAuth } from "../kontekst/AuthContext";
+import { generateFingerprint } from "../kontekst/fingerprint";
+
 
 export default function NavigacijskaTraka() {
   const [burgerKlasa, setBurgerKlasa] = useState("burgerBar nekliknut");
@@ -35,7 +37,11 @@ export default function NavigacijskaTraka() {
     </div>
     <div className='tipke'>
       {!korisnik && lokacija.pathname !== '/unospodataka' && (
-        <button className="prijava" onClick={() => window.location.href=`${BACKEND_IP}/auth/google`}>Prijava</button>
+        <button className="prijava" onClick={() => {
+          const fp = generateFingerprint();
+          window.location.href=`${BACKEND_IP}/auth/google?state=${encodeURIComponent(fp)}`
+        }
+        }>Prijava</button>
       )}
       {korisnik && lokacija.pathname !== '/unospodataka' && (
         <button onClick={() => setPokaziProfil(true)} className='profil'><img src={profil} alt="Profil" className='profilImg'/></button>

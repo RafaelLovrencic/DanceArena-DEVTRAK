@@ -24,7 +24,8 @@ router.get("/google/callback",
   (req, res) => {
     try {
       if (!req.user) return res.redirect(FRONTEND_URL);
-      const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, { expiresIn: "2d" });
+      const fingerprint = req.query.fp || "";
+      const token = jwt.sign({ id: req.user._id, fp: fingerprint }, process.env.JWT_SECRET, { expiresIn: "2d" });
       const state = req.query.state || "normal-login";
       res.redirect(`${FRONTEND_URL}/oauth-callback#token=${token}&state=${state}`);
     } catch (err) {
@@ -42,6 +43,11 @@ router.get("/provjera-autentifikacije", async (req, res) => {
 
     const token = auth.split(" ")[1]; 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const clientFingerprint = req.headers["x-fingerprint"];
+    if (!clientFingerprint || clientFingerprint !== decoded.fp) {
+      return res.status(401).json({ poruka: "Nevažeći token (fingerprint mismatch)" });
+    }
 
     const korisnik = await Korisnici.findById(decoded.id);
     if (!korisnik) return res.status(404).json({ greska: "Korisnik nije pronađen" });
