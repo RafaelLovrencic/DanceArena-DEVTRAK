@@ -32,7 +32,7 @@ router.get("/google/callback",
       const fp = redirectState.fp || "";
       const originalState = redirectState.state || "normal-login";
       const token = jwt.sign({ id: req.user._id, fp }, process.env.JWT_SECRET, { expiresIn: "2d" });
-      res.redirect(`${FRONTEND_URL}/oauth-callback#token=${token}&state=${originalState}`);
+      res.redirect(`${FRONTEND_URL}/oauth-callback?token=${token}&state=${originalState}`);
     } catch (err) {
       console.error("Greška u callback-u:", err);
       res.redirect(FRONTEND_URL);

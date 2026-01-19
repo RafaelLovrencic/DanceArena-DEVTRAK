@@ -10,22 +10,16 @@ export default function OAuthCallback() {
     const { postaviToken, fp } = useAuth();
 
     useEffect(() => {
-        const hash = window.location.hash.substring(1);
-        if (!hash) {
-            console.error("Hash nedostaje, nema tokena");
-            window.location.href = "/";
-            return;
-        }
-        const params = new URLSearchParams(hash);
-
+        const params = new URLSearchParams(window.location.search);
         const token = params.get("token");
         const state = params.get("state");
         console.log("TOken", token);
         console.log("Stanje", state);
 
         if (!token) {
-        window.location.href = "/";
-        return;
+            console.error("Nema tokena u URL-u");
+            window.location.href = "/";
+            return;
         }
 
         window.history.replaceState({}, "", "/");
