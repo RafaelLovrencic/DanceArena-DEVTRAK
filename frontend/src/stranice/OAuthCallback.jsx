@@ -55,7 +55,7 @@ export default function OAuthCallback() {
 
         provjeriKorisnika();
 
-    }, [navigate, postaviToken, state]);
+    }, [navigate, postaviToken]);
 
     return <div>Prijava u tijeku...</div>;
 }
