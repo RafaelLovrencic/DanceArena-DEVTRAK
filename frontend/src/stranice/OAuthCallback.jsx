@@ -15,6 +15,8 @@ export default function OAuthCallback() {
 
         const token = params.get("token");
         const state = params.get("state");
+        console.log("TOken", token);
+        console.log("Stanje", state);
 
         if (!token) {
         window.location.href = "/";
