@@ -49,7 +49,7 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     provjeriKorisnika();
-  }, []);
+  }, [token]);
 
   const odjava = () => {
     localStorage.removeItem("token"); 
