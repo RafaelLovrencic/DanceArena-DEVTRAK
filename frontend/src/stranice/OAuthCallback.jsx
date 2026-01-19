@@ -29,6 +29,7 @@ export default function OAuthCallback() {
             const res = await fetch(`${BACKEND_IP}/auth/provjera-autentifikacije`, {
             headers: {
                 "Authorization": `Bearer ${token}`,
+                "X-Fingerprint": generateFingerprint(),
             },
             });
 
