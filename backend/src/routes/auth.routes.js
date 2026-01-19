@@ -10,9 +10,6 @@ const router = express.Router();
 // ------------- Google OAuth ---------------
 router.get("/google", (req, res, next) => {
   const state = req.query.state || "normal-login";
-  const fp = req.query.fp;
-  req.session.fp = fp;
-
   passport.authenticate("google", {
     scope: ["profile", "email"],
     prompt: "consent",
@@ -26,8 +23,7 @@ router.get("/google/callback",
   (req, res) => {
     try {
       if (!req.user) return res.redirect(FRONTEND_URL);
-      const fingerprint = req.session.fp || "";
-      const token = jwt.sign({ id: req.user._id, fp: fingerprint }, process.env.JWT_SECRET, { expiresIn: "2d" });
+      const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, { expiresIn: "2d" });
       const state = req.query.state || "normal-login";
       res.redirect(`${FRONTEND_URL}/oauth-callback#token=${token}&state=${state}`);
     } catch (err) {
@@ -47,6 +43,18 @@ router.get("/provjera-autentifikacije", async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const clientFingerprint = req.headers["x-fingerprint"];
+
+    if (!decoded.fp) {
+      if (!clientFingerprint) return res.status(401).json({ poruka: "Fingerprint obavezan" });
+
+      const noviToken = jwt.sign({ id: decoded.id, fp: clientFingerprint }, process.env.JWT_SECRET, { expiresIn: "2d" });
+
+      const korisnik = await Korisnici.findById(decoded.id);
+      const klub = await Klub.findOne({ ownerId: korisnik._id });
+
+      return res.json({ korisnik, klub, token: noviToken });
+    }
+    
     if (!clientFingerprint || clientFingerprint !== decoded.fp) {
       return res.status(401).json({ poruka: "Nevažeći token (fingerprint mismatch)" });
     }

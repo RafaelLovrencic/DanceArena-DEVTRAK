@@ -21,8 +21,6 @@ export default function OAuthCallback() {
         return;
         }
 
-        postaviToken(token);
-
         window.history.replaceState({}, "", "/");
 
         const provjeriKorisnika = async () => {
@@ -37,6 +35,7 @@ export default function OAuthCallback() {
             if (!res.ok) throw new Error("Neuspjela provjera");
 
             const data = await res.json();
+            postaviToken(data.token || token);
             const { korisnik} = data;
 
             if (!korisnik.role) {
@@ -56,7 +55,7 @@ export default function OAuthCallback() {
 
         provjeriKorisnika();
 
-    }, [navigate]);
+    }, [navigate, postaviToken, state]);
 
     return <div>Prijava u tijeku...</div>;
 }

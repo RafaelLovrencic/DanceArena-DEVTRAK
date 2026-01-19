@@ -38,8 +38,8 @@ export default function NavigacijskaTraka() {
     <div className='tipke'>
       {!korisnik && lokacija.pathname !== '/unospodataka' && (
         <button className="prijava" onClick={() => {
-          const fp = generateFingerprint();
-          window.location.href=`${BACKEND_IP}/auth/google?fp=${encodeURIComponent(fp)}`
+          const fp = encodeURIComponent(generateFingerprint());
+          window.location.href=`${BACKEND_IP}/auth/google?fp=${fp}`
         }
         }>Prijava</button>
       )}
