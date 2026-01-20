@@ -1,6 +1,6 @@
 import { BACKEND_IP } from '../config.js';
 import '../izgled/obavijestsucu.css'
-
+import { generateFingerprint } from "../kontekst/fingerprint";
 
 export default function ObavijestSucu(){
     return (
@@ -13,7 +13,7 @@ export default function ObavijestSucu(){
                 Kliknite tipku da biste nastavili dalje.
                 </p>
             </div>
-            <button className="registracijaSuca" onClick={() => window.location.href=`${BACKEND_IP}/auth/google?state=judge-invite`}>Registriraj se!</button>
+            <button className="registracijaSuca" onClick={() => window.location.href=`${BACKEND_IP}/auth/google?state=judge-invite&fp=${encodeURIComponent(generateFingerprint())}`}>Registriraj se!</button>
         </div>
     )
 }
