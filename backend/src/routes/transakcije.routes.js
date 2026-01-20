@@ -7,6 +7,7 @@ const { FRONTEND_URL } = require("../../config");
 
 const User = require("../models/user");
 const Natjecanje = require("../models/natjecanje");
+const Settings = require("../models/settings");
 
 const GODISNJA_CLANARINA_PRICE_ID = process.env.STRIPE_GODISNJA_CLANARINA_PRICE_ID;
 
@@ -41,12 +42,22 @@ router.post("/clanarina", authMiddleware, async (req, res) => {
             });
         }
 
+        const settings = await Settings.findOne({});
+        let priceId = settings?.godisnjaClanarinaPriceId;
+
+        if (!priceId && !GODISNJA_CLANARINA_PRICE_ID) {
+            return res.status(500).json({ error: "Cijena članarine nije definirana" });
+        }
+        if (!priceId) {
+            priceId = GODISNJA_CLANARINA_PRICE_ID;
+        }
+
         const session = await stripe.checkout.sessions.create({
             mode: "subscription",
             payment_method_types: ["card"],
             line_items: [
                 {
-                    price: GODISNJA_CLANARINA_PRICE_ID,
+                    price: priceId,
                     quantity: 1,
                 },
             ],
@@ -77,6 +88,56 @@ router.post("/otkazi-clanarinu", authMiddleware, async (req, res) => {
         await stripe.subscriptions.cancel(subscriptionId);
 
         res.json({ message: "Članarina uspješno otkazana" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+router.post("/clanarina/promijeni-cijenu", authMiddleware, async (req, res) => {
+    try {
+        const user = await User.findById(req.korisnik.id);
+
+        if (user.role !== "admin") {
+            return res.status(403).json({
+                error: "Nemate dopuštenje za mijenjanje cijene",
+            }); 
+        }
+        const { novaCijena } = req.body;
+        if (!novaCijena || novaCijena <= 0) {
+            return res.status(400).json({ error: "Neispravna cijena" });
+        }
+
+        const price = await stripe.prices.create({
+            unit_amount: Math.round(novaCijena * 100),
+            currency: "eur",
+            recurring: { interval: "year" },
+            product: process.env.STRIPE_GODISNJA_CLANARINA_PRODUCT_ID,
+        });
+
+        // spremanje novog priceId u bazu
+        const settings = await Settings.findOneAndUpdate(
+            {},
+            { godisnjaClanarinaPriceId: price.id },
+            { upsert: true, new: true }
+        );
+
+
+        // migriranje svih aktivnih pretplata na novi priceId
+        const korisnici = await User.find({ "stripePayment.subscription.active": true });
+        for (const korisnik of korisnici) {
+            const subscriptionId = korisnik.stripePayment.subscription.subscriptionId;
+            if (!subscriptionId) continue;
+
+            const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+            const subscriptionItemId = subscription.items.data[0].id;
+
+            await stripe.subscriptions.update(subscriptionId, {
+                items: [{ id: subscriptionItemId, price: price.id }]
+            });
+        }
+
+        res.json({ message: "Cijena članarine promijenjena i pretplate migrirane", priceId: price.id });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: err.message });
@@ -223,6 +284,11 @@ router.post("/webhook", express.raw({ type: "application/json" }), async (req, r
                 }
             );
         }
+
+        // za promjenu cijene članarine
+        /*if (event.type === "customer.subscription.updated") {
+            console.log("Pretplate uspješno migrirane")
+        }*/
 
         res.json({ received: true });
     } catch (err) {

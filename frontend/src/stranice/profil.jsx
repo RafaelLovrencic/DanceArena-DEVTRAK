@@ -7,6 +7,8 @@ export default function Profil({ onClose }) {
     const { korisnik, odjava, azurirajKorisnika, klub, azurirajKlub, loading, token, fp } = useAuth();
     const [clanarinaAktivna, setClanarinaAktivna] = useState(false);
     const [vrijediDo, setVrijediDo] = useState(null);
+    const [novaCijena, setNovaCijena] = useState("");
+    const [porukaCijene, setPorukaCijene] = useState("");
     const [ucitavanje, setUcitavanje] = useState(true);
     const [greska, setGreska] = useState(null);
     const [editiranje, setEditiranje] = useState(false);
@@ -166,6 +168,41 @@ export default function Profil({ onClose }) {
         }
     };
 
+    const promijeniCijenuClanarine = async () => {
+        const cijena = parseInt(novaCijena, 10);
+
+        if (!cijena || cijena <= 0) {
+            alert("Unesi ispravnu cijenu (cijeli broj ≥ 1)");
+            return;
+        }
+
+        try {
+            const res = await fetch(`${BACKEND_IP}/napravi-transakciju/clanarina/promijeni-cijenu`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                        "X-Fingerprint": fp,
+                    },
+                    body: JSON.stringify({ novaCijena: cijena }),
+                }
+            );
+
+            const data = await res.json();
+
+            if (res.ok) {
+                alert(`Nova cijena godišnje članarine je ${cijena} €`);
+                setNovaCijena("");
+            } else {
+                alert(data.error || "Greška pri promjeni cijene");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Greška pri promjeni cijene");
+        }
+    }  ;
+
     return (
         <div className="profilSucelje">
             <div className="podaciKorisnik">
@@ -232,6 +269,29 @@ export default function Profil({ onClose }) {
                 {greska && <p style={{ color: "red" }}>{greska}</p>}
             </div>
             )}
+
+            {korisnik?.role === "admin" && (
+            <div className="podaciKorisnik">
+                <div>
+                    <span>Promijeni cijenu godišnje članarine (€):</span>
+                    <input
+                        type="number"
+                        min="1"
+                        step="1"
+                        inputMode="numeric"
+                        value={novaCijena}
+                        onChange={(e) => setNovaCijena(e.target.value)}
+                    />
+                </div>
+
+                <div>
+                    <button onClick={promijeniCijenuClanarine}>
+                        Spremi cijenu
+                    </button>
+                </div>
+            </div>
+        )}
+
 
             <div className="profilTipke">
                 {editiranje ? (
