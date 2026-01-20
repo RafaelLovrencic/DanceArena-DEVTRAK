@@ -5,58 +5,54 @@ import { useAuth } from "../kontekst/AuthContext";
 import { generateFingerprint } from "../kontekst/fingerprint";
 
 export default function OAuthCallback() {
-  const navigate = useNavigate();
-  const { postaviToken } = useAuth();
+    const navigate = useNavigate();
+    const { postaviToken } = useAuth();
+    
+    useEffect(() => {  
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get("token");
+        const state = params.get("state");
+        console.log("Token iz URL-a:", token);
+        console.log("State iz URL-a:", state);
+        const fp = generateFingerprint();
+        console.log("Fingerprint koji šaljemo:", fp);
+        const provjeriKorisnika = async () => {
+            if (!token) {
+            console.error("Nema tokena u URL-u");
+            navigate("/");
+            return;
+            }
+            try {
+                const res = await fetch(`${BACKEND_IP}/auth/provjera-autentifikacije`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "X-Fingerprint": fp,
+                },
+                });
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
-    const state = params.get("state");
-    console.log("Token iz URL-a:", token);
-    console.log("State iz URL-a:", state);
+                if (!res.ok) throw new Error("Neuspjela provjera");
 
-    if (!token) {
-      console.error("Nema tokena u URL-u");
-      window.location.href = "/";
-      return;
-    }
+                const data = await res.json();
+                postaviToken(token);
 
-    window.history.replaceState({}, "", "/");
+                const { korisnik } = data;
 
-    const fp = generateFingerprint();
-    console.log("Fingerprint koji šaljemo:", fp);
+                if (!korisnik.role) {
+                    if (state === "normal-login") navigate("/unospodataka");
+                    else if (state === "judge-invite") navigate("/unospodatakasuci");
+                } else {
+                    window.history.replaceState({}, "", "/");
+                    navigate("/");
+                }
 
-    const provjeriKorisnika = async () => {
-      try {
-        const res = await fetch(`${BACKEND_IP}/auth/provjera-autentifikacije`, {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "X-Fingerprint": fp,
-          },
-        });
+            } catch (err) {
+                console.error("Greška pri provjeri korisnika:", err);
+                navigate("/");
+            }
+        };
 
-        if (!res.ok) throw new Error("Neuspjela provjera");
-
-        const data = await res.json();
-        postaviToken(token);
-
-        const { korisnik } = data;
-
-        if (!korisnik.role) {
-          if (state === "normal-login") navigate("/unospodataka");
-          else if (state === "judge-invite") navigate("/unospodatakasuci");
-        } else {
-          navigate("/");
-        }
-
-      } catch (err) {
-        console.error("Greška pri provjeri korisnika:", err);
-        navigate("/");
-      }
-    };
-
-    provjeriKorisnika();
-  }, [navigate, postaviToken]);
+        provjeriKorisnika();
+    }, [navigate]);
 
   return <div>Prijava u tijeku...</div>;
 }
