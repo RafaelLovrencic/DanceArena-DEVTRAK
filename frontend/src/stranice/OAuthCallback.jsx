@@ -36,10 +36,10 @@ export default function OAuthCallback() {
                 postaviToken(token);
 
                 const { korisnik } = data;
-
-                if (!korisnik.role) {
-                    if (state === "normal-login") navigate("/unospodataka");
-                    else if (state === "judge-invite") navigate("/unospodatakasuci");
+                console.log(korisnik.role, state);
+                if (!korisnik.role || !korisnik) {
+                    if (state === "normal-login") window.location.href = "/unospodataka";
+                    else if (state === "judge-invite") window.location.href = "/unospodatakasuci";
                 } else {
                     window.history.replaceState({}, "", "/");
                     navigate("/");
