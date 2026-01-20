@@ -153,10 +153,10 @@ export default function pojedinoNatjecanje(){
 
     const promijeniStanje = async (novoStanje) => {
         if (!natjecanje) return;
-        if (!(await provjeriClanarinuSvjeze())) return;
+        if (!(await provjeriClanarinuSvjeze()) && korisnik?.role === "organizator") return;
         if(novoStanje === "zaključano") if (!window.confirm("Jeste li sigurni da želite zaključati natjecanje?")) return;
         if (novoStanje === "zatvoreno") {
-            if (!sviSuciGlasali()) {
+            if (!sviSuciGlasali() && korisnik?.role !== "admin") {
                 alert("Nije moguće zatvoriti natjecanje jer svi suci još nisu ocijenili sve prijave!");
                 return;
             }
@@ -198,6 +198,7 @@ export default function pojedinoNatjecanje(){
     };
 
     const provjeriClanarinuSvjeze = async () => {
+        if (korisnik?.role === "admin") return;
         try {
             const res = await fetch(`${BACKEND_IP}/napravi-transakciju/status-clanarine`, {
                 headers: { "Authorization": `Bearer ${token}`, "X-Fingerprint": fp, },
@@ -272,6 +273,17 @@ export default function pojedinoNatjecanje(){
         prijave.length > 0 &&
         !!klub?._id &&
         prijave.some(p => String(p.klubId?._id) === String(klub._id));
+
+    const mozeUrediti = (nastup) => {
+        if (korisnik?.role === "admin") return true; 
+        if (korisnik?.role === "organizator" && korisnik._id === natjecanje.organizatorId?._id) {
+            return natjecanje?.stanje === "otvoreno";
+        }
+        if (korisnik?.role === "voditelj" && nastup.klubId?._id === klub?._id) {
+            return natjecanje?.stanje === "otvoreno";
+        }
+        return false;
+    };
 
     return (
         <>
@@ -356,12 +368,12 @@ export default function pojedinoNatjecanje(){
                     </div>
                 </div>
                 <div className="prijava_box">
-                    {korisnik?.role === "organizator" && natjecanje?.stanje === "otvoreno" && korisnik._id === natjecanje.organizatorId?._id && (
+                    {(korisnik?.role === "organizator" || korisnik?.role === "admin") && natjecanje?.stanje === "otvoreno" && (korisnik._id === natjecanje.organizatorId?._id || korisnik?.role === "admin") && (
                         <button className="gumb_zakljucaj" onClick={() => promijeniStanje("zaključano")}>
                             Zaključaj!
                         </button>
                     )}
-                    {korisnik?.role === "organizator" && natjecanje?.stanje === "zaključano" && korisnik._id === natjecanje.organizatorId?._id && (
+                    {(korisnik?.role === "organizator" || korisnik?.role === "admin") && natjecanje?.stanje === "zaključano" && (korisnik._id === natjecanje.organizatorId?._id || korisnik?.role === "admin") && (
                         <button className="gumb_zatvori" onClick={() => promijeniStanje("zatvoreno")}>
                             Zatvori!
                         </button>
@@ -401,10 +413,7 @@ export default function pojedinoNatjecanje(){
                         {prijave.map((nastup) => (
                             <div key={nastup._id} className="red_prijave">
                                 <span className="tekst_prijave_red">{nastup.klubId?.ime} ; {nastup.imekoreografije}</span>
-                                {natjecanje?.stanje === "otvoreno" && (
-                                    (korisnik?.role === "organizator" && korisnik._id === natjecanje.organizatorId?._id) ||
-                                    (korisnik?.role === "voditelj" && nastup.klubId?._id === klub?._id)
-                                ) && (
+                                {mozeUrediti(nastup) && (
                                     <>
                                         <button className="gumb_uredi" onClick={async () => {
                                             if (korisnik?.role === "organizator") {

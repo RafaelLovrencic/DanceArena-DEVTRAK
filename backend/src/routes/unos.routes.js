@@ -150,6 +150,27 @@ router.put('/:id/:idKlub', authMiddleware, async function(req, res) {
     }
 });
 
+router.put('/:id', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { ime, prezime, role, email } = req.body;
+
+        const updateData = {};
+        if (ime) updateData.ime = ime;
+        if (prezime) updateData.prezime = prezime;
+        if (role) updateData.role = role;
+        if (email) updateData.email = email;
+
+        const azurirano = await Korisnici.findByIdAndUpdate(id, updateData, { new: true });
+        if (!azurirano) return res.status(404).json({ poruka: "Korisnik nije pronađen" });
+
+        res.json({ poruka: "Korisnik uspješno ažuriran", korisnik: azurirano });
+    } catch (err) {
+        console.error("Greška pri ažuriranju korisnika:", err);
+        res.status(500).json({ poruka: "Greška pri ažuriranju korisnika" });
+    }
+});
+
 // Endpoint za sudce / prijavu sudca
 router.get('/prijaviSuca', async function(req, res) {
     const { token } = req.query;

@@ -57,7 +57,10 @@ export default function Profil({ onClose }) {
         }
 
         try {
-            await fetch(`${BACKEND_IP}/unospodataka/${korisnik._id}/${klub?._id || ""}`, {
+            const url = korisnik.role === "voditelj" 
+                ? `${BACKEND_IP}/unospodataka/${korisnik._id}/${klub._id}` 
+                : `${BACKEND_IP}/unospodataka/${korisnik._id}`;  
+            await fetch(url, {
                 method: "PUT",
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -73,7 +76,7 @@ export default function Profil({ onClose }) {
         }
 
         azurirajKorisnika(noviPodaci);
-        azurirajKlub(noviPodaciKlub);
+        if (korisnik?.role === "voditelj") azurirajKlub(noviPodaciKlub);
         setEditiranje(false);
     };
 

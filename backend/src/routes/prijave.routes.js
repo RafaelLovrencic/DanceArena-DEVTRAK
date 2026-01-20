@@ -122,13 +122,24 @@ router.put("/application/edit/:id", authMiddleware, async (req, res) => {
         let kategorija;        
         const klubId = req.user.klubId;
 
-        if (!klubId) {
+        if (!klubId && req.user.role !== "admin") {
             return res.status(403).json({ poruka: "Korisnik nema pridružen klub" });
         }
         
         var nastup = await Nastup.findById(id);
         if (!nastup) {
             return res.status(404).json({ "error": "Nije pronađena ta prijava" });
+        }
+
+        if (req.user.role !== "admin") {
+            if (req.user.role === "voditelj") {
+                if (!req.user.klubId || nastup.klubId.toString() !== req.user.klubId.toString()) {
+                    return res.status(403).json({ error: "Ne smijete uređivati tuđu prijavu" });
+                }
+            }
+            else {
+                return res.status(403).json({ error: "Nemate dozvolu za uređivanje prijave" });
+            }
         }
         
         if (nazivKoreografije != null) nastup.imekoreografije = nazivKoreografije;
@@ -177,19 +188,24 @@ router.put("/application/edit/:id", authMiddleware, async (req, res) => {
 router.delete("/application/del/:id", authMiddleware, async (req, res) => {
     const { id } = req.params;
     try {
-        const postojeci = await Nastup.findById(id);
-        if (req.user.role === "sudac" || 
-            (postojeci.klubId.toString() !== req.user.klubId.toString() && req.user.role === "voditelj")) {
-            return res.status(400).json({ "error": "Nije moguće obrisati tuđi nastup" });
+        const nastup = await Nastup.findById(id);
+        if (!nastup) return res.status(404).json({ error: "Nastup nije pronađen" });
+
+        if (req.user.role !== "admin") {
+            if (req.user.role === "voditelj") {
+                if (!req.user.klubId || nastup.klubId.toString() !== req.user.klubId.toString()) {
+                    return res.status(403).json({ error: "Ne smijete brisati tuđu prijavu" });
+                }
+            } else {
+                return res.status(403).json({ error: "Nemate dozvolu za brisanje prijave" });
+            }
         }
-        const nastup = await Nastup.findByIdAndDelete(id);
-        if (!nastup){
-            return res.status(404).json({ "error": "Nastup nije pronađen" });
-        }
-        res.status(200).json({ "message": "Nastup uspješno obrisan", nastup });
+
+        await Nastup.findByIdAndDelete(id);
+        res.status(200).json({ message: "Nastup uspješno obrisan" });
     } catch (err) {
         console.error("Greška pri brisanju:", err);
-        res.status(500).json({ "error": "Greška pri brisanju nastupa" });
+        res.status(500).json({ error: "Greška pri brisanju nastupa" });
     }
 });
 

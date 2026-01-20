@@ -43,6 +43,8 @@ router.get("/user", authMiddleware, async (req, res) => {
                 .populate("organizatorId")
                 .populate("kategorije")
                 .populate("suci");
+        } else if (uloga === "admin") {
+            res.status(200).json(natjecanja);
         }
 
         if (!natjecanja.length) {

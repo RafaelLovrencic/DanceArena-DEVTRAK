@@ -16,7 +16,9 @@ export default function Natjecanja() {
     const [pozvaniSuci, setPozvaniSuci] = useState(null);
     const [kotizacijaPlacena, setKotizacijaPlacena] = useState(false);
     const [urediMod, setUrediMod] = useState(false);
-    const jeZakljucano = odabranoNatjecanje && odabranoNatjecanje.stanje !== "otvoreno";
+    const jeZakljucano = odabranoNatjecanje 
+            && odabranoNatjecanje.stanje !== "otvoreno" 
+            && korisnik?.role !== "admin";
 
     const [clanarinaAktivna, setClanarinaAktivna] = useState(false);
     const [vrijediDo, setVrijediDo] = useState(null);
@@ -24,11 +26,11 @@ export default function Natjecanja() {
 
     const dohvatiPodatkeONatjecanju = async () => {
         if (!odabranoNatjecanje) return;
-        if (odabranoNatjecanje.stanje !== "otvoreno") {
+        if (odabranoNatjecanje.stanje !== "otvoreno" && korisnik?.role !== "admin") {
             alert("Natjecanje se ne može uređivati u ovom stanju.");
             return;
         }
-        if (!(await provjeriClanarinuSvjeze())) return;
+        if (!(await provjeriClanarinuSvjeze()) && korisnik?.role === "organizator") return;
         const response = await fetch(`${BACKEND_IP}/natjecanja/${odabranoNatjecanje._id}`, {
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -44,7 +46,7 @@ export default function Natjecanja() {
         const organizatorId = natjecanje.organizatorId?._id || natjecanje.organizatorId;
         console.log(organizatorId);
 
-        if (organizatorId !== korisnik._id) {
+        if (organizatorId !== korisnik._id && korisnik?.role === "organizator") {
             alert('Nemate dopuštenje uređivati ovo natjecanje.');
             return;
         }
@@ -82,44 +84,36 @@ export default function Natjecanja() {
     };
 
 
-   const obrisiNatjecanje = async () => {
+    const obrisiNatjecanje = async () => {
         if (!odabranoNatjecanje) return;
-        if (!(await provjeriClanarinuSvjeze())) return;
-        const response = await fetch(`${BACKEND_IP}/natjecanja/${odabranoNatjecanje._id}`, {
-            method: "DELETE",
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                "X-Fingerprint": fp,
-                "Content-Type": "application/json",
-            }
-        });
-        const data = await response.json();
-        const { natjecanje } = data;
-
-        const organizatorId = natjecanje.organizatorId?._id || natjecanje.organizatorId;
-
-        if (organizatorId !== korisnik._id) {
-            alert('Nemate dopuštenje uređivati ovo natjecanje.');
-            return;
-        }
+        if (!(await provjeriClanarinuSvjeze()) && korisnik?.role === "organizator") return;
 
         try {
-            const response = await fetch (`${BACKEND_IP}/natjecanja/${odabranoNatjecanje._id}`, {
+            const response = await fetch(`${BACKEND_IP}/natjecanja/${odabranoNatjecanje._id}`, {
                 method: "DELETE",
-                credentials: "include"
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "X-Fingerprint": fp,
+                    "Content-Type": "application/json",
+                }
             });
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.poruka || "Greška pri brisanju natjecanja");
-        };
-        setCompetitions((prev) => 
-            prev.filter((comp) => comp._id !== odabranoNatjecanje._id));
-        setOdabranoNatjecanje(null);
-        /*alert("Natjecanje uspješno obrisano");*/
-    } catch (err){
-        console.error("Greška", err);
-        /*alert("Došlo je do greške pri brisanju natjecanja");*/
-    };
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.poruka || "Greška pri brisanju natjecanja");
+            }
+
+            const data = await response.json();
+            console.log("Obrisano natjecanje:", data.natjecanje);
+
+            setCompetitions((prev) =>
+                prev.filter((comp) => comp._id !== odabranoNatjecanje._id)
+            );
+            setOdabranoNatjecanje(null);
+
+        } catch (err) {
+            console.error("Greška pri brisanju:", err);
+        }
     };
     const osvjeziNatjecanja = async () => {
         try {
@@ -169,6 +163,7 @@ export default function Natjecanja() {
     }, [korisnik]);
 
     const provjeriClanarinuSvjeze = async () => {
+        if (korisnik?.role === "admin") return;
         try {
             const res = await fetch(`${BACKEND_IP}/napravi-transakciju/status-clanarine`, {
                 headers: {
@@ -221,7 +216,7 @@ export default function Natjecanja() {
                     <tbody>
                         {competitions.map((comp) => (
                             <tr key={comp._id} onClick={() => {
-                            if (korisnik?.role !== "organizator") return;
+                            if (korisnik?.role !== "organizator" && korisnik?.role !== "admin") return;
                             if (odabranoNatjecanje?._id === comp._id) {
                             setOdabranoNatjecanje(null); 
                             } else {
@@ -246,7 +241,7 @@ export default function Natjecanja() {
                 )}
             </div> 
             <div className="gumbovi">
-                {korisnik?.role === "organizator" && (
+                {(korisnik?.role === "organizator" || korisnik?.role === "admin") && (
                 <>
                     <button className="dodaj" onClick={dodajNatjecanje}>Dodaj natjecanje</button>
                     <button className="uredi" onClick={dohvatiPodatkeONatjecanju} style={{backgroundColor: (!odabranoNatjecanje || jeZakljucano) ? 'rgba(23, 101, 25, 1)' : '#2CDE32', cursor: (!odabranoNatjecanje || jeZakljucano) ? 'not-allowed' : 'pointer'}}>Uredi natjecanje</button>
