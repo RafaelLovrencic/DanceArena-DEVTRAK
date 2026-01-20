@@ -6,7 +6,7 @@ import { BACKEND_IP } from "../config";
 import { useAuth } from "../kontekst/AuthContext";
 
 export default function PrijavaNaNatjecanje({onClose, prijavaPodaci, urediPrijavu, onSuccess}){
-    const{ korisnik, token } = useAuth();
+    const{ korisnik, token, fp } = useAuth();
 
     const dobneKategorije = [...new Set(prijavaPodaci.kategorije.map(k => k.godiste))];
     const stilovi = [...new Set(prijavaPodaci.kategorije.map(k => k.stil))];
@@ -89,7 +89,8 @@ export default function PrijavaNaNatjecanje({onClose, prijavaPodaci, urediPrijav
                 method: method,
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${token}`,
+                    "X-Fingerprint": fp,
                 },
                 body: JSON.stringify(podaci)
             });

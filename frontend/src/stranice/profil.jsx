@@ -4,7 +4,7 @@ import { BACKEND_IP } from "../config";
 import "../izgled/profil.css";
 
 export default function Profil({ onClose }) {
-    const { korisnik, odjava, azurirajKorisnika, klub, azurirajKlub, loading, token } = useAuth();
+    const { korisnik, odjava, azurirajKorisnika, klub, azurirajKlub, loading, token, fp } = useAuth();
     const [clanarinaAktivna, setClanarinaAktivna] = useState(false);
     const [vrijediDo, setVrijediDo] = useState(null);
     const [ucitavanje, setUcitavanje] = useState(true);
@@ -62,6 +62,7 @@ export default function Profil({ onClose }) {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json",
+                    "X-Fingerprint": fp,
                 },
                 body: JSON.stringify(noviPodaci),
             });
@@ -87,7 +88,8 @@ export default function Profil({ onClose }) {
                 const res = await fetch(`${BACKEND_IP}/napravi-transakciju/status-clanarine`, {
                     headers: {
                         "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
+                        "X-Fingerprint": fp,
                     }
                 });
                 const data = await res.json();
@@ -115,7 +117,8 @@ export default function Profil({ onClose }) {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "X-Fingerprint": fp,
                 }
             });
             const data = await res.json();
@@ -142,7 +145,8 @@ export default function Profil({ onClose }) {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "X-Fingerprint": fp,
                 }
             });
             const data = await res.json();

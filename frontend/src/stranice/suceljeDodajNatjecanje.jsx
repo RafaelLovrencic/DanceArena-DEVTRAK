@@ -7,7 +7,7 @@ import { useAuth } from "../kontekst/AuthContext";
 import Select from "react-select";
 
 export default function DodajNatjecanje({onClose, natjecanjeZaUredi, pozvaniSuci, urediMod}) {
-    const { korisnik, token } = useAuth();
+    const { korisnik, token, fp } = useAuth();
     const [suciOpcije, setSuciOpcije] = useState([]);
     const [odabraniSuci, setOdabraniSuci] = useState(() => {
                             if (natjecanjeZaUredi && natjecanjeZaUredi.suci) {
@@ -100,7 +100,8 @@ export default function DodajNatjecanje({onClose, natjecanjeZaUredi, pozvaniSuci
                 method,
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${token}`,
+                    "X-Fingerprint": fp,
                 },
                 body: JSON.stringify(podaci)
             });
@@ -122,7 +123,8 @@ export default function DodajNatjecanje({onClose, natjecanjeZaUredi, pozvaniSuci
             const res = await fetch(`${BACKEND_IP}/users/suci`, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "X-Fingerprint": fp,
                 }
             });
             if (!res.ok) throw new Error("Greška pri dohvaćanju sudaca");

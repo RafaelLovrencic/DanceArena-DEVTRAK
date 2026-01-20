@@ -6,7 +6,7 @@ import { useAuth } from "../kontekst/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 export default function UnosPodatakaSudac() {
-  const { korisnik, loading, token } = useAuth();
+  const { korisnik, loading, token, fp } = useAuth();
   const [ime, setIme] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -39,7 +39,8 @@ export default function UnosPodatakaSudac() {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          "Authorization": `Bearer ${token}`,
+          "X-Fingerprint": fp,
         },
         body: JSON.stringify({
           ime,

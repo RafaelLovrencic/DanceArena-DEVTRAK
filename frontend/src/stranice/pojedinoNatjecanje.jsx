@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom";
 import PrijavaNaNatjecanje from './suceljePrijava.jsx';
 
 export default function pojedinoNatjecanje(){
-    const { korisnik, klub, token } = useAuth();
+    const { korisnik, klub, token, fp } = useAuth();
     const { id } = useParams();
     const [natjecanje, setNatjecanje] = useState(null);
     const [pokaziSucelje, setPokaziSucelje] = useState(false);
@@ -41,6 +41,7 @@ export default function pojedinoNatjecanje(){
                 const res = await fetch(`${BACKEND_IP}/prijave/natjecanje/${id}`, {
                     headers: {
                         "Authorization": `Bearer ${token}`,
+                        "X-Fingerprint": fp,
                     },
                 });
                 const data_prijava = await res.json();
@@ -69,6 +70,7 @@ export default function pojedinoNatjecanje(){
                 method: "DELETE",
                 headers: {
                     "Authorization": `Bearer ${token}`,
+                    "X-Fingerprint": fp,
                 },
             });
 
@@ -94,6 +96,7 @@ export default function pojedinoNatjecanje(){
                 const response = await fetch(`${BACKEND_IP}/natjecanja/${id}`, {
                     headers: {
                         "Authorization": `Bearer ${token}`,
+                        "X-Fingerprint": fp,
                     },
                 });
                 const data = await response.json();
@@ -129,6 +132,7 @@ export default function pojedinoNatjecanje(){
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`,
+                    "X-Fingerprint": fp,
                 },
                 body: JSON.stringify({
                     ocjena: broj,
@@ -161,7 +165,7 @@ export default function pojedinoNatjecanje(){
         try {
             const res = await fetch(`${BACKEND_IP}/natjecanja/stanje/${natjecanje._id}/${novoStanje}`, {
                 method: "PUT",
-                headers: { "Authorization": `Bearer ${token}` },
+                headers: { "Authorization": `Bearer ${token}`, "X-Fingerprint": fp, },
             });
 
             if (!res.ok) {
@@ -196,7 +200,7 @@ export default function pojedinoNatjecanje(){
     const provjeriClanarinuSvjeze = async () => {
         try {
             const res = await fetch(`${BACKEND_IP}/napravi-transakciju/status-clanarine`, {
-                headers: { "Authorization": `Bearer ${token}` },
+                headers: { "Authorization": `Bearer ${token}`, "X-Fingerprint": fp, },
             });
             const data = await res.json();
 
@@ -223,6 +227,7 @@ export default function pojedinoNatjecanje(){
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`,
+                    "X-Fingerprint": fp,
                 },
                 body: JSON.stringify({
                     natjecanjeId: natjecanje._id,
@@ -250,7 +255,7 @@ export default function pojedinoNatjecanje(){
         const provjeriKotizaciju = async () => {
             try {
                 const res = await fetch(`${BACKEND_IP}/napravi-transakciju/status-kotizacije/${natjecanje._id}`, {
-                    headers: { "Authorization": `Bearer ${token}` },
+                    headers: { "Authorization": `Bearer ${token}`, "X-Fingerprint": fp, },
                 });
                 const data = await res.json();
                 setKotizacijaPlacena(data.placeno);

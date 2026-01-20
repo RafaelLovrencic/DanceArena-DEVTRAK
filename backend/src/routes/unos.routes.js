@@ -20,6 +20,10 @@ function authMiddleware(req, res, next) {
         if (!token) return res.status(401).json({ greska: "Token nedostaje" });
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const clientFp = req.headers["x-fingerprint"];
+        if (!clientFp || clientFp !== decoded.fp) {
+            return res.status(401).json({ greska: "Nevažeći token (fingerprint mismatch)" });
+        }
         req.korisnik = decoded; // spremi podatke iz tokena
         next();
     } catch (err) {

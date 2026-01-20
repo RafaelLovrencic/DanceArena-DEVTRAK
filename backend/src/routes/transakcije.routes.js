@@ -19,6 +19,10 @@ function authMiddleware(req, res, next) {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const clientFp = req.headers["x-fingerprint"];
+        if (!clientFp || clientFp !== decoded.fp) {
+            return res.status(401).json({ error: "Nevažeći token (fingerprint mismatch)" });
+        }
         req.korisnik = decoded;
         next();
     } catch (err) {

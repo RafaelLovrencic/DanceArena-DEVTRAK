@@ -7,7 +7,7 @@ import { BACKEND_IP } from "../config";
 import { useAuth } from "../kontekst/AuthContext";
 
 export default function Natjecanja() {
-    const { korisnik, token } = useAuth();
+    const { korisnik, token, fp } = useAuth();
     const [loading, setLoading] = useState(true);
     const [competitions, setCompetitions] = useState([]);
     const [pokaziSucelje, setPokaziSucelje] = useState(false);
@@ -32,6 +32,7 @@ export default function Natjecanja() {
         const response = await fetch(`${BACKEND_IP}/natjecanja/${odabranoNatjecanje._id}`, {
             headers: {
                 "Authorization": `Bearer ${token}`,
+                "X-Fingerprint": fp,
                 "Content-Type": "application/json",
             }
         });
@@ -59,6 +60,7 @@ export default function Natjecanja() {
                 const response = await fetch(`${BACKEND_IP}/natjecanja`, {
                     headers: {
                         "Authorization": `Bearer ${token}`,
+                        "X-Fingerprint": fp,
                         "Content-Type": "application/json",
                     }
                 });
@@ -87,6 +89,7 @@ export default function Natjecanja() {
             method: "DELETE",
             headers: {
                 "Authorization": `Bearer ${token}`,
+                "X-Fingerprint": fp,
                 "Content-Type": "application/json",
             }
         });
@@ -123,6 +126,7 @@ export default function Natjecanja() {
             const response = await fetch(`${BACKEND_IP}/natjecanja`, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
+                    "X-Fingerprint": fp,
                     "Content-Type": "application/json",
                 }
             });
@@ -146,6 +150,7 @@ export default function Natjecanja() {
                 const res = await fetch(`${BACKEND_IP}/napravi-transakciju/status-clanarine`, {
                     headers: {
                         "Authorization": `Bearer ${token}`,
+                        "X-Fingerprint": fp,
                         "Content-Type": "application/json",
                     }
                 });
@@ -168,6 +173,7 @@ export default function Natjecanja() {
             const res = await fetch(`${BACKEND_IP}/napravi-transakciju/status-clanarine`, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
+                    "X-Fingerprint": fp,
                     "Content-Type": "application/json",
                 }
             });

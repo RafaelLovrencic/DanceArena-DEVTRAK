@@ -6,7 +6,7 @@ import { useAuth } from "../kontekst/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 export default function UnosPodataka() {
-  const { korisnik, loading, token } = useAuth();
+  const { korisnik, loading, token, fp } = useAuth();
   const [uloga, setUloga] = useState('');
   const [ime, setIme] = useState('');
   const [lokacija, setLokacija] = useState('');
@@ -42,7 +42,8 @@ export default function UnosPodataka() {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          "Authorization": `Bearer ${token}`,
+          "X-Fingerprint": fp,
         },
         body: JSON.stringify({
           ime,
