@@ -271,24 +271,19 @@ export default function Profil({ onClose }) {
             )}
 
             {korisnik?.role === "admin" && (
-            <div className="podaciKorisnik">
-                <div>
-                    <span>Promijeni cijenu godišnje članarine (€):</span>
-                    <input
-                        type="number"
-                        min="1"
-                        step="1"
-                        inputMode="numeric"
-                        value={novaCijena}
-                        onChange={(e) => setNovaCijena(e.target.value)}
-                    />
-                </div>
-
-                <div>
-                    <button onClick={promijeniCijenuClanarine}>
-                        Spremi cijenu
-                    </button>
-                </div>
+            <div className="promjenaClanarine">
+                <h3>Promijeni cijenu godišnje članarine (€):</h3>
+                <input
+                    type="number"
+                    min="1"
+                    step="1"
+                    inputMode="numeric"
+                    value={novaCijena}
+                    onChange={(e) => setNovaCijena(e.target.value)}
+                />
+                <button onClick={promijeniCijenuClanarine}>
+                    Spremi cijenu
+                </button>
             </div>
         )}
 

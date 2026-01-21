@@ -110,11 +110,11 @@
     border: 0;
 }
 
-.clanarinaStatus > * {
+.clanarinaStatus > *, .promjenaClanarine > * {
     margin: 0px;
 }
 
-.clanarinaStatus {
+.clanarinaStatus, .promjenaClanarine {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -129,7 +129,7 @@
     margin-bottom: 20px;
 }
 
-.clanarinaStatus button {
+.clanarinaStatus button, .promjenaClanarine button {
     background: #2CDE32;
     font-family: 'Sedan SC';
     font-style: normal;
@@ -144,7 +144,7 @@
     text-align: center;
 }
 
-.clanarinaStatus button:hover {
+.clanarinaStatus button:hover, .promjenaClanarine button:hover {
     cursor: pointer;
     transform: scale(1.05);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
@@ -175,12 +175,16 @@
         box-shadow: none !important;
     }
 
-    .clanarinaStatus button:hover {
+    .promjenaClanarine {
+        text-align: center;
+    }
+
+    .clanarinaStatus button:hover, .promjenaClanarine button:hover {
         transform: none !important;
         box-shadow: none !important;
     }
 
-    .clanarinaStatus button {
+    .clanarinaStatus button, .promjenaClanarine button {
         box-shadow: none;
         transition: none; 
     }
