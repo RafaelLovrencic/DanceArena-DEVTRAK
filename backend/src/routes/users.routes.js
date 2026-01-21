@@ -35,7 +35,7 @@ router.delete("/:id", async (req, res) => {
         if (!deleted) {
             return res.status(404).json({ poruka: "Korisnik nije pronađen" });
         }
-        res.json({ poruka: "Korisnik uspješno obrisano", natjecanje: deleted });
+        res.json({ poruka: "Korisnik uspješno obrisan!", natjecanje: deleted });
 
     } catch (err) {
         console.error("Greška pri brisanju korisnika:", err);

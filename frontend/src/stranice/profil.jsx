@@ -13,6 +13,9 @@ export default function Profil({ onClose }) {
     const [greska, setGreska] = useState(null);
     const [editiranje, setEditiranje] = useState(false);
 
+    const [sviKorisnici, setSviKorisnici] = useState([]);
+    const [odabraniKorisnik, setOdabraniKorisnik] = useState("");
+
     const imePrezime = korisnik?.ime?.split(" ") || ["", ""];
     const [podaciOKorisniku, setPodaciOKorisniku] = useState({
         ime: imePrezime[0],
@@ -22,6 +25,57 @@ export default function Profil({ onClose }) {
         imeKluba: klub?.ime || "",
         lokacijaKluba: klub?.lokacija || "",
     });
+
+    useEffect(() => {
+        if (korisnik?.role !== "admin" || !token) return;
+
+        const dohvatiKorisnike = async () => {
+            try {
+                const res = await fetch(`${BACKEND_IP}/users`, {
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "X-Fingerprint": fp,
+                    }
+                });
+
+                const data = await res.json();
+                setSviKorisnici(data);
+            } catch (err) {
+                console.error("Greška pri dohvaćanju korisnika:", err);
+            }
+        };
+
+        dohvatiKorisnike();
+    }, [korisnik, token]);
+    
+    const obrisiKorisnika = async () => {
+        if (!odabraniKorisnik) return;
+
+        if (!window.confirm("Jeste li sigurni da želite obrisati korisnika?")) return;
+
+        try {
+            const res = await fetch(`${BACKEND_IP}/users/${odabraniKorisnik}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "X-Fingerprint": fp,
+                }
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                alert(data.poruka);
+                setSviKorisnici(prev => prev.filter(k => k._id !== odabraniKorisnik));
+                setOdabraniKorisnik("");
+            } else {
+                alert(data.poruka || "Greška pri brisanju");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Greška pri brisanju korisnika");
+        }
+    };
 
     const promijeniPodatke = (e) => {
         const { name, value } = e.target;
@@ -285,7 +339,23 @@ export default function Profil({ onClose }) {
                     Spremi cijenu
                 </button>
             </div>
-        )}
+            )}
+            {korisnik?.role === "admin" && (
+            <div className="brisanjeKorisnika">
+                <h3>Odaberite korisnika za brisanje:</h3>
+                <select className="selectBrisanjaKorisnika" value={odabraniKorisnik} onChange={(e) => setOdabraniKorisnik(e.target.value)}>
+                    <option value="">---</option>
+                    {sviKorisnici.map(k => (
+                        <option key={k._id} value={k._id}>
+                            {k.ime} ({k.email}) ({k.role})
+                        </option>
+                    ))}
+                </select>
+                <button onClick={obrisiKorisnika} disabled={!odabraniKorisnik}>
+                    Obriši korisnika
+                </button>
+            </div>
+            )}
 
 
             <div className="profilTipke">
