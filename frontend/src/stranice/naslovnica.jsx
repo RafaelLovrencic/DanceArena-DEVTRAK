@@ -11,9 +11,6 @@ export default function Naslovnica() {
     const [loadingNat, setLoadingNat] = useState(true);
     const [competitions, setCompetitions] = useState([]);
     useEffect(() => {
-    console.log("FP init:", fp);
-    }, [fp]);
-    useEffect(() => {
         if (!korisnik) {
             setCompetitions([]);
             setLoadingNat(false);

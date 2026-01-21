@@ -12,10 +12,7 @@ export default function OAuthCallback() {
         const params = new URLSearchParams(window.location.search);
         const token = params.get("token");
         const state = params.get("state");
-        console.log("Token iz URL-a:", token);
-        console.log("State iz URL-a:", state);
         const fp = generateFingerprint();
-        console.log("Fingerprint koji šaljemo:", fp);
         const provjeriKorisnika = async () => {
             if (!token) {
             console.error("Nema tokena u URL-u");
