@@ -1,6 +1,6 @@
 import { BACKEND_IP } from '../config.js';
 import '../izgled/obavijestsucu.css'
-import { generateFingerprint } from "../kontekst/fingerprint";
+import { generateFingerprint } from "../kontekst/tokenZastita.js";
 
 export default function ObavijestSucu(){
     return (

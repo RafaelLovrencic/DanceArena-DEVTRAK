@@ -6,7 +6,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { BACKEND_IP } from '../config.js';
 import { useAuth } from "../kontekst/AuthContext";
-import { generateFingerprint } from "../kontekst/fingerprint";
+import { generateFingerprint } from "../kontekst/tokenZastita.js";
 
 
 export default function NavigacijskaTraka() {

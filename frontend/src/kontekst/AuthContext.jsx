@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { BACKEND_IP } from "../config";
-import { generateFingerprint } from "../kontekst/fingerprint";
+import { generateFingerprint } from "./tokenZastita.js";
 
 const AuthContext = createContext();
 
