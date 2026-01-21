@@ -285,6 +285,7 @@ export default function pojedinoNatjecanje(){
     }, [id]);
 
     const mozeUrediti = (nastup) => {
+        if (!natjecanje || !korisnik) return false;
         if (korisnik?.role === "admin") return true; 
         if (korisnik?.role === "organizator" && korisnik._id === natjecanje.organizatorId?._id) {
             return natjecanje?.stanje === "otvoreno";
