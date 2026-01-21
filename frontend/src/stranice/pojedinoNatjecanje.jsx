@@ -527,7 +527,7 @@ export default function pojedinoNatjecanje(){
                                             <p>{nastup.imekoreografa}:{nastup.imekoreografije}</p>
                                         </div>
                                         <div className="stupac">
-                                            {korisnik?.role === "voditelj" && nastup.klubId?._id === klub?._id
+                                            {(korisnik?.role === "voditelj" && nastup.klubId?._id === klub?._id) || korisnik?.role === "admin"
                                                 ? <p> {nastup.ukupno} bodova</p>
                                                 : <p>N/A</p>}
                                         </div>
