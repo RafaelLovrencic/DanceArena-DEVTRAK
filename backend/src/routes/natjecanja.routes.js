@@ -44,7 +44,7 @@ router.get("/user", authMiddleware, async (req, res) => {
                 .populate("kategorije")
                 .populate("suci");
         } else if (uloga === "admin") {
-            res.status(200).json(natjecanja);
+            return res.status(200).json(natjecanja);
         }
 
         if (!natjecanja.length) {
