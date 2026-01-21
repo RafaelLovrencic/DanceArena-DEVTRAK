@@ -153,7 +153,6 @@ export default function Natjecanja() {
                 setVrijediDo(data.vrijediDo || null);
             } catch (err) {
                 console.error(err);
-                setGreska("Greška pri dohvaćanju statusa članarine");
             } finally {
                 setUcitavanje(false);
             }
