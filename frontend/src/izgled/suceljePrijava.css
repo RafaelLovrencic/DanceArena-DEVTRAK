@@ -33,7 +33,9 @@
     max-width: 600px;
 }
 
-.formaZaPrijavu select, option {
+.dobKat input,
+.stilPlesa input,
+.velGrupe input {
     text-transform: capitalize;
 }
 
@@ -93,19 +95,6 @@
     font-family: 'Sedan SC';
 }
 
-.formaZaPrijavu select {
-    width: 300px;
-    height: 36px;
-    padding: 6px 10px;
-    background: #E3C1EE;
-    border: none;
-    font-family: 'Inter';
-    font-size: 14px;
-    color: black;
-    appearance: auto;
-    cursor: pointer;
-}
-
 .kotizacija_iznos {
     width: 300px;
     height: 36px;
@@ -123,6 +112,34 @@
     font-family: 'Inter';
     font-size: 14px;
     color: black;
+}
+
+.klub_podaci {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 12px;
+  background: rgba(152, 61, 182, 0.15);
+}
+
+.formaZaPrijavu > .klub_podaci {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.klub_podaci > div {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+}
+
+.formaZaPrijavu input[readonly] {
+    background: transparent;   
+    color: black;             
+    cursor: default;
+    padding: 0;   
 }
 
 @media (max-width: 700px) {
@@ -163,6 +180,21 @@
     }
 
     .formaZaPrijavu input[type="file"] {
+        width: 100%;
+    }
+
+    .klub_podaci > div {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+    }
+
+    .formaZaPrijavu select:disabled {
+        text-align: center;      
+        width: 100%;             
+    }
+    .formaZaPrijavu input[readonly] {
+        text-align: center;   
         width: 100%;
     }
 }
