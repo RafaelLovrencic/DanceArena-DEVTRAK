@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const Korisnici = require("../models/user");
 const Klub = require("../models/klub");
 const { FRONTEND_URL } = require("../../config");
-const PozivSucu = require("../models/poziv_sucu");
+const PozivSucu = require("../models/poziv_sudaca");
 const Natjecanje = require("../models/natjecanje");
 
 var router = express.Router();
