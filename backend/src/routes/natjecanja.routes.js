@@ -3,7 +3,7 @@ const User = require("../models/user");
 const Kategorije = require("../models/kategorije");
 const Natjecanje = require("../models/natjecanje");
 const Nastup = require("../models/nastup");
-const PozivSucu = require("../models/poziv_sudaca");
+const PozivSucu = require("../models/poziv_sucu");
 const { posaljiPozivNaEmail } = require("../services/email.service");
 const authMiddleware = require("../services/authMiddleware");
 
